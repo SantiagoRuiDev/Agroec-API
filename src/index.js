@@ -4,6 +4,8 @@ import { APP_SETTINGS } from "./libs/config.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { router as authRoutes } from "./routes/auth.routes.js";
+import { router as tutorialRoutes } from "./routes/tutorials.routes.js";
+import { router as suggestionRoutes } from "./routes/suggestion.routes.js";
 import { connect } from './database/index.js';
 // ---
 
@@ -29,6 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 // RUTAS
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/category', tutorialRoutes);
+app.use('/api/v1/suggestion', suggestionRoutes)
+
 
 app.listen(APP_SETTINGS.port, () =>
   console.log("API RUNNING ON PORT: " + APP_SETTINGS.port)

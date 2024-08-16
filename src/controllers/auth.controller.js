@@ -18,7 +18,7 @@ export const createAccount = async (req, res) => {
       const registration_uuid = uuidv4();
       const code =
         "AGROEC-" +
-        Math.floor(Math.random() * 10000)
+        Math.floor(Math.random() * 9999)
           .toString()
           .padStart(4, "0");
       const insertedCode = await codesModel.insertCode(
