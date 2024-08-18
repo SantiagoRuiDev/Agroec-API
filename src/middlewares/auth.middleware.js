@@ -1,58 +1,60 @@
-import Joi from "joi";
 import { validateSchemas } from "../libs/schema.js";
 import { decodeToken } from "../libs/token.js";
+import { accountSchema } from "../schemas/account.schema.js";
+import { authSchema } from "../schemas/auth.schema.js";
+import { codeSchema } from "../schemas/code.schema.js";
+import { buyerSchema } from "../schemas/buyer.schema.js";
+import { bankAccount } from "../schemas/bank_account.schema.js";
+import { contactSchemaArray } from "../schemas/contact.schema.js";
 
 export const createAccount = async (req, res, next) => {
   try {
-    const schema = Joi.object({
-      nombre: Joi.string().min(3).required(),
-      apellido: Joi.string().min(3).required(),
-      tipo_identificacion: Joi.string().min(3).required(),
-      numero_identificacion: Joi.string().min(3).required(),
-      correo: Joi.string().email().required(),
-      clave: Joi.string().required(),
-      provincia: Joi.string().min(3).required(),
-      canton: Joi.string().min(3).required(),
-      acepto_terminos: Joi.bool().required(),
-      direccion: Joi.string().min(3).required(),
-      ubicacion: Joi.string().min(3).required(),
-      telefono: Joi.string().min(3).required(),
-    });
+    validateSchemas(req.body.user, accountSchema);
 
-    validateSchemas(req.body, schema);
+    // Se verifica que tipo de Perfil va a crear.
 
+    // El campo req.body.profile.type, desde el frontend va a enviar el tipo "Comprador", "Agroquimicos", "Comerciante"
+
+    switch(req.body.profile.type){
+      case 'Comprador': 
+        validateSchemas(req.body.profile, buyerSchema);
+        break;
+      default:
+        throw new Error('Ingresa un tipo de Perfil Valido');
+    }
+
+    if(req.body.contact){
+      validateSchemas(req.body.contact, contactSchemaArray);
+    }
+
+    if(req.body.bank_account){
+      validateSchemas(req.body.bank_account, bankAccount);
+    }
+
+    return res.status(200).json(1)
     next();
   } catch (error) {
-    return res.status(400).json(error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
 
 export const loginAccount = async (req, res, next) => {
   try {
-    const schema = Joi.object({
-      correo: Joi.string().email().required(),
-      clave: Joi.string().required(),
-    });
-
-    validateSchemas(req.body, schema);
+    validateSchemas(req.body, authSchema);
 
     next();
   } catch (error) {
-    return res.status(400).json(error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
 
 export const finishAccount = async (req, res, next) => {
   try {
-    const schema = Joi.object({
-      codigo: Joi.string().min(10).max(10).required(),
-    });
-
-    validateSchemas(req.body, schema);
+    validateSchemas(req.body, codeSchema);
 
     next();
   } catch (error) {
-    return res.status(400).json(error.message);
+    return res.status(400).json({ error: error.message });
   }
 };
 

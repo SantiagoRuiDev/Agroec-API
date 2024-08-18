@@ -1,17 +1,19 @@
 import * as authModel from "../models/auth.model.js";
 import * as codesModel from "../models/codes.model.js";
+import * as profileModel from "../models/profile.model.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
 import Twilio from "twilio";
+import { APP_SETTINGS } from "../libs/config.js";
 
 export const createAccount = async (req, res) => {
   try {
     const uuid = uuidv4();
 
-    req.body.clave = await hashPassword(req.body.clave);
+    req.body.user.clave = await hashPassword(req.body.user.clave);
 
-    const insertedRow = await authModel.createAccount(uuid, req.body);
+    const insertedRow = await authModel.createAccount(uuid, req.body.user);
 
     if (insertedRow > 0) {
       // AGROEC-0000 : Codigo telefonico enviado.
@@ -28,8 +30,28 @@ export const createAccount = async (req, res) => {
       );
 
       if (insertedCode > 0) {
-        const accountSid = "AC0a1209bc7014673630ec5c52a24878cb";
-        const authToken = "f8a19f8eaf962436d6352841a254d7e8";
+        const profile_uuid = uuidv4();
+        const bankAccount_uuid = uuidv4();
+        const bodyProfile = req.body.profile
+        switch(req.body.profile.type){
+          case 'Comprador': 
+            await profileModel.createBuyerProfile(
+              profile_uuid,
+              uuid,
+              bodyProfile
+            ); // Se crea el Perfil
+            break;
+          case 'Comerciante': 
+            await bankAccount.createAccount(bankAccount_uuid);
+            await profileModel.createMerchantProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+            break;
+          default:
+            throw new Error('Ingresa un tipo de Perfil Valido');
+        }
+
+        /*
+        const accountSid = APP_SETTINGS.account_sid_twilio;
+        const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
 
         client.messages
@@ -39,7 +61,7 @@ export const createAccount = async (req, res) => {
             to: req.body.telefono,
           })
           .then()
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => console.error("Error:", error));*/
 
         return res
           .status(200)
