@@ -1,6 +1,8 @@
 import * as authModel from "../models/auth.model.js";
 import * as codesModel from "../models/codes.model.js";
 import * as profileModel from "../models/profile.model.js";
+import * as contactModel from "../models/contact.model.js";
+import * as pointsModel from "../models/points.model.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
@@ -20,9 +22,7 @@ export const createAccount = async (req, res) => {
       const registration_uuid = uuidv4();
       const code =
         "AGROEC-" +
-        Math.floor(Math.random() * 9999)
-          .toString()
-          .padStart(4, "0");
+        Math.floor(Math.random() * 999)
       const insertedCode = await codesModel.insertCode(
         registration_uuid,
         code,
@@ -48,6 +48,19 @@ export const createAccount = async (req, res) => {
           default:
             throw new Error('Ingresa un tipo de Perfil Valido');
         }
+
+        // Si se envian Contactos, se agregan.
+        if(req.body.contact){
+          req.body.contact.forEach(async contact => {
+            await contactModel.createContact(uuidv4(), uuid, contact);
+          });
+        }
+        if(req.body.points){
+          req.body.points.forEach(async point => {
+            await pointsModel.createPoint(uuidv4(), uuid, point);
+          });
+        }
+
 
         /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
