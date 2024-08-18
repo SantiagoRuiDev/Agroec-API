@@ -5,8 +5,11 @@ import { authSchema } from "../schemas/auth.schema.js";
 import { codeSchema } from "../schemas/code.schema.js";
 import { buyerSchema } from "../schemas/buyer.schema.js";
 import { bankAccount } from "../schemas/bank_account.schema.js";
+import { farmerSchema } from "../schemas/farmer.schema.js";
 import { contactSchemaArray } from "../schemas/contact.schema.js";
 import { merchantSchema } from "../schemas/merchant.schema.js";
+import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
+import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 
 export const createAccount = async (req, res, next) => {
   try {
@@ -23,6 +26,16 @@ export const createAccount = async (req, res, next) => {
         case 'Comerciante': 
         validateSchemas(req.body.profile, merchantSchema);
         break;
+        case 'Agricultor': 
+        validateSchemas(req.body.profile, farmerSchema);
+        break;
+        case 'Asociacion Agricola': 
+        validateSchemas(req.body.profile, assocAgriculturalSchema);
+        break;
+        case 'Comerciante Agroquimico': 
+        validateSchemas(req.body.profile, merchantAgrochemicalSchema);
+        break;
+
       default:
         throw new Error('Ingresa un tipo de Perfil Valido');
     }

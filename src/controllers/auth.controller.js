@@ -1,7 +1,7 @@
 import * as authModel from "../models/auth.model.js";
 import * as codesModel from "../models/codes.model.js";
 import * as profileModel from "../models/profile.model.js";
-import * as bankAccountModel from "../models/bank.account.model.js";
+import * as bankAccountModel from "../models/bankaccount.model.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
@@ -21,7 +21,7 @@ export const createAccount = async (req, res) => {
       const registration_uuid = uuidv4();
       const code =
         "AGROEC-" +
-        Math.floor(Math.random() * 999)
+        Math.floor(Math.random() * 9999)
           .toString()
           .padStart(4, "0");
       const insertedCode = await codesModel.insertCode(
@@ -34,8 +34,7 @@ export const createAccount = async (req, res) => {
         const profile_uuid = uuidv4();
         const bankAccount_uuid = uuidv4();
         const bodyProfile = req.body.profile
-        const bankAccount = req.body.bank_account;
-        
+        const bodyBankAccount = req.body.bank_account;
         switch(req.body.profile.type){
           case 'Comprador': 
             await profileModel.createBuyerProfile(
@@ -45,8 +44,20 @@ export const createAccount = async (req, res) => {
             ); // Se crea el Perfil
             break;
           case 'Comerciante': 
-            await bankAccountModel.createBankAccount(bankAccount_uuid, bankAccount);
+            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
             await profileModel.createMerchantProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+            break;
+          case 'Agricultor': 
+            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
+            await profileModel.createFarmerProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+            break;
+            case 'Asociacion Agricola': 
+            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
+            await profileModel.createAssocAgriculturalProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+            break;
+            case 'Comerciante Agroquimico': 
+            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
+            await profileModel.createMerchantAgrochemicalProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
             break;
           default:
             throw new Error('Ingresa un tipo de Perfil Valido');

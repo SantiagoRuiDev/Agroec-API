@@ -19,7 +19,46 @@ export const createMerchantProfile = async (profile_uuid, uuid_user, bankAccount
         `INSERT INTO perfil_comerciante (id, id_usuario, id_cuenta_bancaria, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
         [profile_uuid, uuid_user, bankAccount_uuid, schema.centro_acopio, schema.capacidad_secado, schema.capacidad_almacenamiento, schema.capacidad, schema.acceso_internet]
       );
-  
+
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const createFarmerProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `INSERT INTO perfil_agricultor (id, id_usuario, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, asociacion_id, nueva_asociacion, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.asociacion_id, schema.nueva_asociacion, schema.acceso_internet]
+      );
+
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const createAssocAgriculturalProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `INSERT INTO perfil_asociacion_agricola (id, id_usuario, id_cuenta_bancaria, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, bankAccount_uuid, schema.centro_acopio, schema.capacidad_secado, schema.capacidad_almacenamiento, schema.capacidad, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.acceso_internet]
+      );
+
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const createMerchantAgrochemicalProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `INSERT INTO perfil_comerciante_agroquimicos (id, id_usuario, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, asociacion_id, nueva_asociacion, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.asociacion_id, schema.nueva_asociacion, schema.acceso_internet]
+      );
+
       return statement.affectedRows;
     } catch (error) {
       throw new Error(error.message);

@@ -6,7 +6,7 @@ export const createBankAccount = async (uuid, schema) => {
       `INSERT INTO cuenta_bancaria
       (id, tipo_de_cuenta, tipo_de_banco) 
       VALUES(?,?,?)`,
-      [uuid, schema]
+      [uuid, schema.tipo_de_cuenta, schema.tipo_de_banco]
     );
 
     return statement.affectedRows;
