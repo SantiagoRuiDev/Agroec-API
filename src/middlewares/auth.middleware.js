@@ -6,6 +6,7 @@ import { codeSchema } from "../schemas/code.schema.js";
 import { buyerSchema } from "../schemas/buyer.schema.js";
 import { bankAccount } from "../schemas/bank_account.schema.js";
 import { contactSchemaArray } from "../schemas/contact.schema.js";
+import { merchantSchema } from "../schemas/merchant.schema.js";
 
 export const createAccount = async (req, res, next) => {
   try {
@@ -19,6 +20,9 @@ export const createAccount = async (req, res, next) => {
       case 'Comprador': 
         validateSchemas(req.body.profile, buyerSchema);
         break;
+        case 'Comerciante': 
+        validateSchemas(req.body.profile, merchantSchema);
+        break;
       default:
         throw new Error('Ingresa un tipo de Perfil Valido');
     }
@@ -31,7 +35,6 @@ export const createAccount = async (req, res, next) => {
       validateSchemas(req.body.bank_account, bankAccount);
     }
 
-    return res.status(200).json(1)
     next();
   } catch (error) {
     return res.status(400).json({ error: error.message });

@@ -13,6 +13,19 @@ export const createBuyerProfile = async (profile_id, user_id, schema) => {
       }
 }
 
+export const createMerchantProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `INSERT INTO perfil_comerciante (id, id_usuario, id_cuenta_bancaria, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, bankAccount_uuid, schema.centro_acopio, schema.capacidad_secado, schema.capacidad_almacenamiento, schema.capacidad, schema.acceso_internet]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
 export const updateBuyerProfile = async (profile_id, user_id, schema) => {
   try {
       const [statement] = await connection.query(
