@@ -26,11 +26,11 @@ export const createMerchantProfile = async (profile_uuid, uuid_user, bankAccount
     }
 }
 
-export const createFarmerProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+export const createFarmerProfile = async (profile_uuid, uuid_user, association_uuid ,bankAccount_uuid, schema) => {
   try {
       const [statement] = await connection.query(
-        `INSERT INTO perfil_agricultor (id, id_usuario, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, asociacion_id, nueva_asociacion, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
-        [profile_uuid, uuid_user, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.asociacion_id, schema.nueva_asociacion, schema.acceso_internet]
+        `INSERT INTO perfil_agricultor (id, id_usuario, id_asociacion, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, association_uuid, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.acceso_internet]
       );
 
       return statement.affectedRows;
@@ -52,11 +52,11 @@ export const createAssocAgriculturalProfile = async (profile_uuid, uuid_user, ba
     }
 }
 
-export const createMerchantAgrochemicalProfile = async (profile_uuid, uuid_user, bankAccount_uuid, schema) => {
+export const createMerchantAgrochemicalProfile = async (profile_uuid, uuid_user, id_asociacion, bankAccount_uuid, schema) => {
   try {
       const [statement] = await connection.query(
-        `INSERT INTO perfil_comerciante_agroquimicos (id, id_usuario, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, asociacion_id, nueva_asociacion, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
-        [profile_uuid, uuid_user, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.asociacion_id, schema.nueva_asociacion, schema.acceso_internet]
+        `INSERT INTO perfil_comerciante_agroquimicos (id, id_usuario, id_asociacion, id_cuenta_bancaria, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?)`,
+        [profile_uuid, uuid_user, id_asociacion, bankAccount_uuid, schema.numero_hectareas, schema.cantidad_hectareas_siembras, schema.acceso_internet]
       );
 
       return statement.affectedRows;

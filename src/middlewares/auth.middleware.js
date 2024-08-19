@@ -11,6 +11,7 @@ import { merchantSchema } from "../schemas/merchant.schema.js";
 import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 import { pointsSchemaArray } from "../schemas/points.schema.js";
+import { associationSchema } from "../schemas/association.schema.js";
 
 export const createAccount = async (req, res, next) => {
   try {
@@ -51,6 +52,10 @@ export const createAccount = async (req, res, next) => {
 
     if(req.body.bank_account){
       validateSchemas(req.body.bank_account, bankAccount);
+    }
+
+    if(req.body.association){
+      validateSchemas(req.body.association, associationSchema);
     }
 
     next();

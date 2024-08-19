@@ -4,6 +4,7 @@ import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
 import * as contactModel from "../models/contact.model.js";
 import * as pointsModel from "../models/points.model.js";
+import * as associationModel from "../models/association.model.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
@@ -33,6 +34,8 @@ export const createAccount = async (req, res) => {
         const bankAccount_uuid = uuidv4();
         const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
+        const bodyAssociation = req.body.association;
+        const idAssociation = uuidv4();
         switch (req.body.profile.type) {
           case "Comprador":
             await profileModel.createBuyerProfile(
@@ -54,6 +57,7 @@ export const createAccount = async (req, res) => {
             );
             break;
           case "Agricultor":
+            await associationModel.createAssociation(idAssociation, bodyAssociation);
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
@@ -61,6 +65,7 @@ export const createAccount = async (req, res) => {
             await profileModel.createFarmerProfile(
               profile_uuid,
               uuid,
+              idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
@@ -78,6 +83,7 @@ export const createAccount = async (req, res) => {
             );
             break;
           case "Comerciante Agroquimico":
+            await associationModel.createAssociation(idAssociation, bodyAssociation);
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
@@ -85,6 +91,7 @@ export const createAccount = async (req, res) => {
             await profileModel.createMerchantAgrochemicalProfile(
               profile_uuid,
               uuid,
+              idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
@@ -104,6 +111,9 @@ export const createAccount = async (req, res) => {
             await pointsModel.createPoint(uuidv4(), uuid, point);
           });
         }
+
+        
+        
 
         /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
