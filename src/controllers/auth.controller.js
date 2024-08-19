@@ -2,6 +2,8 @@ import * as authModel from "../models/auth.model.js";
 import * as codesModel from "../models/codes.model.js";
 import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
+import * as contactModel from "../models/contact.model.js";
+import * as pointsModel from "../models/points.model.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
@@ -19,11 +21,7 @@ export const createAccount = async (req, res) => {
     if (insertedRow > 0) {
       // AGROEC-0000 : Codigo telefonico enviado.
       const registration_uuid = uuidv4();
-      const code =
-        "AGROEC-" +
-        Math.floor(Math.random() * 9999)
-          .toString()
-          .padStart(4, "0");
+      const code = "AGROEC-" + Math.floor(Math.random() * 999);
       const insertedCode = await codesModel.insertCode(
         registration_uuid,
         code,
@@ -33,34 +31,78 @@ export const createAccount = async (req, res) => {
       if (insertedCode > 0) {
         const profile_uuid = uuidv4();
         const bankAccount_uuid = uuidv4();
-        const bodyProfile = req.body.profile
+        const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
-        switch(req.body.profile.type){
-          case 'Comprador': 
+        switch (req.body.profile.type) {
+          case "Comprador":
             await profileModel.createBuyerProfile(
               profile_uuid,
               uuid,
               bodyProfile
             ); // Se crea el Perfil
             break;
-          case 'Comerciante': 
-            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
-            await profileModel.createMerchantProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+          case "Comerciante":
+            await bankAccountModel.createBankAccount(
+              bankAccount_uuid,
+              bodyBankAccount
+            );
+            await profileModel.createMerchantProfile(
+              profile_uuid,
+              uuid,
+              bankAccount_uuid,
+              bodyProfile
+            );
             break;
-          case 'Agricultor': 
-            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
-            await profileModel.createFarmerProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+          case "Agricultor":
+            await bankAccountModel.createBankAccount(
+              bankAccount_uuid,
+              bodyBankAccount
+            );
+            await profileModel.createFarmerProfile(
+              profile_uuid,
+              uuid,
+              bankAccount_uuid,
+              bodyProfile
+            );
             break;
-            case 'Asociacion Agricola': 
-            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
-            await profileModel.createAssocAgriculturalProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+          case "Asociacion Agricola":
+            await bankAccountModel.createBankAccount(
+              bankAccount_uuid,
+              bodyBankAccount
+            );
+            await profileModel.createAssocAgriculturalProfile(
+              profile_uuid,
+              uuid,
+              bankAccount_uuid,
+              bodyProfile
+            );
             break;
-            case 'Comerciante Agroquimico': 
-            await bankAccountModel.createBankAccount(bankAccount_uuid, bodyBankAccount);
-            await profileModel.createMerchantAgrochemicalProfile(profile_uuid, uuid, bankAccount_uuid, bodyProfile);
+          case "Comerciante Agroquimico":
+            await bankAccountModel.createBankAccount(
+              bankAccount_uuid,
+              bodyBankAccount
+            );
+            await profileModel.createMerchantAgrochemicalProfile(
+              profile_uuid,
+              uuid,
+              bankAccount_uuid,
+              bodyProfile
+            );
             break;
           default:
-            throw new Error('Ingresa un tipo de Perfil Valido');
+            throw new Error("Ingresa un tipo de Perfil Valido");
+        }
+
+        // Si se envian Contactos, se agregan.
+        if (req.body.contact) {
+          req.body.contact.forEach(async (contact) => {
+            await contactModel.createContact(uuidv4(), uuid, contact);
+          });
+        }
+        if (req.body.points) {
+          req.body.points.forEach(async (point) => {
+            await pointsModel.createPoint(uuidv4(), uuid, point);
+          });
         }
 
         /*
@@ -97,8 +139,8 @@ export const loginAccount = async (req, res) => {
       throw new Error("Tu cuenta no finalizo el registro");
     }
 
-    if(!await comparePassword(req.body.clave, fetchUser.clave)){
-        throw new Error("Contraseña incorrecta");
+    if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
+      throw new Error("Contraseña incorrecta");
     }
 
     const token = encodeToken(fetchUser.id, "1h");

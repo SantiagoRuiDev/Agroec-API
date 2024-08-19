@@ -10,6 +10,7 @@ import { contactSchemaArray } from "../schemas/contact.schema.js";
 import { merchantSchema } from "../schemas/merchant.schema.js";
 import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
+import { pointsSchemaArray } from "../schemas/points.schema.js";
 
 export const createAccount = async (req, res, next) => {
   try {
@@ -42,6 +43,10 @@ export const createAccount = async (req, res, next) => {
 
     if(req.body.contact){
       validateSchemas(req.body.contact, contactSchemaArray);
+    }
+
+    if(req.body.points){
+      validateSchemas(req.body.points, pointsSchemaArray);
     }
 
     if(req.body.bank_account){
