@@ -4,9 +4,9 @@ export const createAccount = async (uuid, schema) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO usuarios
-      (id, nombre, apellido, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, acepto_terminos, direccion, ubicacion_google_maps, telefono) 
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-      [uuid, schema.nombre, schema.apellido, schema.tipo_identificacion, schema.numero_identificacion, schema.correo, schema.clave, schema.provincia, schema.canton, schema.acepto_terminos, schema.direccion, schema.ubicacion, schema.telefono]
+      (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono) 
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [uuid, schema.tipo_identificacion, schema.numero_identificacion, schema.correo, schema.clave, schema.provincia, schema.canton, schema.parroquia, schema.acepto_terminos, schema.direccion, schema.ubicacion, schema.telefono]
     );
 
     return statement.affectedRows;

@@ -4,7 +4,8 @@ import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
 import * as contactModel from "../models/contact.model.js";
 import * as pointsModel from "../models/points.model.js";
-import * as associationModel from "../models/association.model.js";
+import { sendMail } from "../libs/emailer.js";
+import { formatMailBuyer } from "../email/buyer.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeToken } from "../libs/token.js";
@@ -43,6 +44,8 @@ export const createAccount = async (req, res) => {
               uuid,
               bodyProfile
             ); // Se crea el Perfil
+            // Envia Email al comprador
+            await sendMail(formatMailBuyer(req.body.profile), req.body.user.correo);
             break;
           case "Comerciante":
             await bankAccountModel.createBankAccount(
@@ -112,10 +115,6 @@ export const createAccount = async (req, res) => {
           });
         }
 
-        
-        
-
-        /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
@@ -124,10 +123,10 @@ export const createAccount = async (req, res) => {
           .create({
             body: "[AGROEC] Código de confirmación de Registro: " + code,
             from: "+17089494566",
-            to: req.body.telefono,
+            to: req.body.user.telefono,
           })
           .then()
-          .catch((error) => console.error("Error:", error));*/
+          .catch((error) => console.error("Error:", error));
 
         return res
           .status(200)
@@ -145,12 +144,16 @@ export const loginAccount = async (req, res) => {
   try {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
+    if (!fetchUser) {
+      throw new Error("Esta cuenta no existe");
+    }
+
     if (fetchUser.estado == 0) {
       throw new Error("Tu cuenta no finalizo el registro");
     }
 
     if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
-      throw new Error("Contraseña incorrecta");
+      throw new Error("Clave Incorrecta");
     }
 
     const token = encodeToken(fetchUser.id, "1h");
@@ -181,6 +184,14 @@ export const finishAccount = async (req, res) => {
     }
 
     throw new Error("Codigo de registro invalido");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const isAuthentified = async (req, res) => {
+  try {
+    return res.status(200).json({ loggedIn: true });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
