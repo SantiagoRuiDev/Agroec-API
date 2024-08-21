@@ -7,6 +7,7 @@ import { router as authRoutes } from "./routes/auth.routes.js";
 import { router as tutorialRoutes } from "./routes/tutorials.routes.js";
 import { router as suggestionRoutes } from "./routes/suggestion.routes.js";
 import { router as productsRoutes } from "./routes/products.routes.js";
+import { router as profilesRoutes } from "./routes/profiles.routes.js";
 import { connect } from './database/index.js';
 // ---
 
@@ -35,6 +36,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/category', tutorialRoutes);
 app.use('/api/v1/suggestion', suggestionRoutes);
 app.use('/api/v1/products', productsRoutes);
+app.use('/api/v1/profile', profilesRoutes);
+
 
 
 app.listen(APP_SETTINGS.port, () =>

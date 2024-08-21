@@ -12,4 +12,5 @@ export const accountSchema = Joi.object({
   direccion: Joi.string().min(3).required(),
   ubicacion: Joi.string().min(3).required(),
   telefono: Joi.string().min(3).required(),
+  
 });

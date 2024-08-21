@@ -4,6 +4,7 @@ import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
 import * as contactModel from "../models/contact.model.js";
 import * as pointsModel from "../models/points.model.js";
+import * as associationModel from "../models/association.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
@@ -36,6 +37,8 @@ export const createAccount = async (req, res) => {
         const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
         const bodyAssociation = req.body.association;
+        
+
         const idAssociation = uuidv4();
         switch (req.body.profile.type) {
           case "Comprador":
@@ -115,6 +118,7 @@ export const createAccount = async (req, res) => {
           });
         }
 
+        /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
@@ -128,6 +132,7 @@ export const createAccount = async (req, res) => {
           .then()
           .catch((error) => console.error("Error:", error));
 
+          */
         return res
           .status(200)
           .json({ message: "Codigo enviado a tu telefono revisalo porfavor" });
