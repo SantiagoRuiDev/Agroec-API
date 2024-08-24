@@ -233,3 +233,137 @@ export const updateAssociationAgriculturalProfile = async (user_id, schema) => {
       throw new Error(error.message);
     }
 }
+
+//Updated bank account for profiles
+
+export const updatebankAccountMerchant = async (user_id, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `UPDATE cuenta_bancaria c
+JOIN perfil_comerciante p ON p.id_cuenta_bancaria = c.id
+SET 
+    c.tipo_de_cuenta = ?, 
+    c.tipo_de_banco = ?, 
+    c.numero_de_cuenta = ?, 
+    c.seleccionar_banco = ?, 
+    c.tipo_de_documento = ?, 
+    c.numero_de_documento = ?, 
+    c.nombre_del_propietario = ?
+WHERE 
+    p.id_usuario = ?`,
+        [
+          schema.tipo_de_cuenta,
+          schema.tipo_de_banco,
+          schema.numero_de_cuenta,
+          schema.seleccionar_banco,
+          schema.tipo_de_documento,
+          schema.numero_de_documento,
+          schema.nombre_del_propietario,
+          user_id
+        ]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const updatebankAccountFarmer = async (user_id, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `UPDATE cuenta_bancaria c
+JOIN perfil_agricultor p ON p.id_cuenta_bancaria = c.id
+SET 
+    c.tipo_de_cuenta = ?, 
+    c.tipo_de_banco = ?, 
+    c.numero_de_cuenta = ?, 
+    c.seleccionar_banco = ?, 
+    c.tipo_de_documento = ?, 
+    c.numero_de_documento = ?, 
+    c.nombre_del_propietario = ?
+WHERE 
+    p.id_usuario = ?`,
+        [
+          schema.tipo_de_cuenta,
+          schema.tipo_de_banco,
+          schema.numero_de_cuenta,
+          schema.seleccionar_banco,
+          schema.tipo_de_documento,
+          schema.numero_de_documento,
+          schema.nombre_del_propietario,
+          user_id
+        ]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const updatebankAccountAssociationAgricultural = async (user_id, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `UPDATE cuenta_bancaria c
+JOIN perfil_asociacion_agricola p ON p.id_cuenta_bancaria = c.id
+SET 
+    c.tipo_de_cuenta = ?, 
+    c.tipo_de_banco = ?, 
+    c.numero_de_cuenta = ?, 
+    c.seleccionar_banco = ?, 
+    c.tipo_de_documento = ?, 
+    c.numero_de_documento = ?, 
+    c.nombre_del_propietario = ?
+WHERE 
+    p.id_usuario = ?`,
+        [
+          schema.tipo_de_cuenta,
+          schema.tipo_de_banco,
+          schema.numero_de_cuenta,
+          schema.seleccionar_banco,
+          schema.tipo_de_documento,
+          schema.numero_de_documento,
+          schema.nombre_del_propietario,
+          user_id
+        ]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
+export const updatebankAccountMerchantAgrochemical = async (user_id, schema) => {
+  try {
+      const [statement] = await connection.query(
+        `UPDATE cuenta_bancaria c
+JOIN perfil_comerciante_agroquimicos p ON p.id_cuenta_bancaria = c.id
+SET 
+    c.tipo_de_cuenta = ?, 
+    c.tipo_de_banco = ?, 
+    c.numero_de_cuenta = ?, 
+    c.seleccionar_banco = ?, 
+    c.tipo_de_documento = ?, 
+    c.numero_de_documento = ?, 
+    c.nombre_del_propietario = ?
+WHERE 
+    p.id_usuario = ?`,
+        [
+          schema.tipo_de_cuenta,
+          schema.tipo_de_banco,
+          schema.numero_de_cuenta,
+          schema.seleccionar_banco,
+          schema.tipo_de_documento,
+          schema.numero_de_documento,
+          schema.nombre_del_propietario,
+          user_id
+        ]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}

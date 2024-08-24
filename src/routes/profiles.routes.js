@@ -20,3 +20,13 @@ router.get('/assoc-agricultural/:profile_id', authMiddleware.isAuthentified, pro
 //Comerciante Agroquimicos
 router.get('/merchant-agrochemical/:profile_id', authMiddleware.isAuthentified, profileController.getMerchantAgrochemicalProfile)
 
+
+//UPDATE bank accounts
+//Comerciante
+router.put('/merchant', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
+//Agricultor
+router.put('/farmer', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
+//Asociacion Agricola
+router.put('/assoc-agricultural', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
+//Comerciante Agroquimicos
+router.put('/merchant-agrochemical', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)

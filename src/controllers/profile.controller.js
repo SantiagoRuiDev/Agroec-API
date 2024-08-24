@@ -7,7 +7,8 @@ export const updateProfile = async (req, res) => {
         
         const bodyProfile = req.body.profile;
         const idUser = req.user_id; 
-        const bankAccount = req.body.bank_account;
+        const bankAccountProfile = req.body.bank_account;
+       
 
         switch (req.body.profile.type) {
           case "Comprador":
@@ -18,8 +19,15 @@ export const updateProfile = async (req, res) => {
  
             break;
           case "Comerciante":
-           if(bankAccount){
-              //updatear
+           
+           if(bankAccountProfile){
+            const bankAccountUpdated = await profileModel.updatebankAccountMerchant(idUser,bankAccountProfile)
+              if(bankAccountUpdated){
+                res.status(200).send({message: 'Datos de la cuenta bancaria del perfil comprador actualizados'})
+              }else {
+                res.status(404).send({message: 
+              'No se pudo actualizar los datos de la cuenta bancaria del perfil comprador'})
+              }
            }
           
             const merchantUpdated = await profileModel.updateMerchantProfile(idUser, bodyProfile);
@@ -29,6 +37,17 @@ export const updateProfile = async (req, res) => {
 
             break;
           case "Agricultor":
+
+          if(bankAccountProfile){
+            const bankAccountUpdated = await profileModel.updatebankAccountFarmer(idUser,bankAccountProfile)
+              if(bankAccountUpdated){
+                res.status(200).send({message: 'Datos de la cuenta bancaria del perfil agricultor actualizados'})
+              }else {
+                res.status(404).send({message: 
+              'No se pudo actualizar los datos de la cuenta bancaria del perfil agricultor'})
+              }
+           }
+
             const farmerUpdated = await profileModel.updateFarmerProfile(idUser, bodyProfile);
             if(farmerUpdated){
                res.status(200).send({message: 'Datos del perfil agricultor actualizados'})
@@ -36,6 +55,17 @@ export const updateProfile = async (req, res) => {
 
             break;
           case "Asociacion Agricola":
+
+          if(bankAccountProfile){
+            const bankAccountUpdated = await profileModel.updatebankAccountAssociationAgricultural(idUser,bankAccountProfile)
+              if(bankAccountUpdated){
+                res.status(200).send({message: 'Datos de la cuenta bancaria del perfil asociacion agricola actualizados'})
+              }else {
+                res.status(404).send({message: 
+              'No se pudo actualizar los datos de la cuenta bancaria del perfil asociacion agricola'})
+              }
+           }
+
             const assocAgriculturalUpdated = await profileModel.updateAssociationAgriculturalProfile(idUser, bodyProfile);
             if(assocAgriculturalUpdated){
                res.status(200).send({message: 'Datos del perfil asociación agrícola actualizados'})
@@ -43,6 +73,17 @@ export const updateProfile = async (req, res) => {
 
             break;
           case "Comerciante Agroquimico":
+
+          if(bankAccountProfile){
+            const bankAccountUpdated = await profileModel.updatebankAccountMerchantAgrochemical(idUser,bankAccountProfile)
+              if(bankAccountUpdated){
+                res.status(200).send({message: 'Datos de la cuenta bancaria del perfil comerciante agroquimicos actualizados'})
+              }else {
+                res.status(404).send({message: 
+              'No se pudo actualizar los datos de la cuenta bancaria del perfil comerciante agroquimicos'})
+              }
+           }
+
             const merchantAgrochemicalUpdated = await profileModel.updateMerchantAgrochemicalProfile(idUser, bodyProfile);
             if(merchantAgrochemicalUpdated){
                res.status(200).send({message: 'Datos del perfil comerciante agroquimico actualizados'})
