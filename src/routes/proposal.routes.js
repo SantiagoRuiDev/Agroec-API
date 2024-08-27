@@ -1,0 +1,16 @@
+import { Router } from "express";
+import * as proposalController from '../controllers/proposal.controller.js'
+import * as authMiddleware from '../middlewares/auth.middleware.js'
+import * as proposalMiddleware from '../middlewares/proposal.middleware.js'
+
+export const router = Router();
+
+// Propuestas de Ventas a Licitaciones
+router.post('/sale/:id', authMiddleware.isAuthentified, proposalMiddleware.createSaleProposal, proposalController.createSaleProposal)
+router.get('/sale/me', authMiddleware.isAuthentified, proposalController.getSaleProposalByUser)
+router.get('/sale/:id', authMiddleware.isAuthentified, proposalController.getSaleProposalById)
+
+// Propuestas de Compras a Ventas
+router.post('/licitation/:id', authMiddleware.isAuthentified, proposalMiddleware.createLicitationProposal, proposalController.createLicitationProposal)
+router.get('/licitation/me', authMiddleware.isAuthentified, proposalController.getLicitationProposalByUser)
+router.get('/licitation/:id', authMiddleware.isAuthentified, proposalController.getLicitationProposalById)

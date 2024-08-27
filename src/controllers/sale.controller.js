@@ -1,0 +1,105 @@
+import * as salesModel from "../models/sale.model.js";
+import * as qualityParamsModel from "../models/qualityParams.model.js";
+import { v4 as uuidv4 } from "uuid";
+
+export const createSale = async (req, res) => {
+    try {
+        const product_id = req.params.id;
+        const user_id = req.user_id;
+        const sale_id = uuidv4();
+
+        const insertSale = await salesModel.createSale(sale_id, product_id, user_id, req.body.sale);
+
+        if(insertSale > 0){
+            if(req.body.quality_params){
+                for(const param of req.body.quality_params){
+                    const newParamRowId = uuidv4();
+                    await qualityParamsModel.createQualityParam(newParamRowId, user_id, param);
+                    await qualityParamsModel.createQualityParamForSale(newParamRowId, sale_id);
+                }
+            }
+
+            return res.status(200).send({message: `Venta publicada con exito`});
+        }
+
+        throw new Error("La creacion de la venta ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const insertImageSale = async (req, res) => {
+    try {
+        const sale_id = req.params.id;
+
+        if(req.images_urls){
+            for(const image of req.images_urls){
+                await salesModel.insertSaleImage(uuidv4(), sale_id, image);
+            }
+            return res.status(200).json({message: "Imagenes subidas con exito"});
+        }
+
+        throw new Error("La subida de la imagen ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+
+export const getSalesByProduct = async (req, res) => {
+    try {
+        const productSales = await salesModel.getSalesByProduct(req.params.id);
+
+        if(productSales) {
+            return res.status(200).json(productSales);
+        }
+
+        throw new Error("La obtención de las ventas ha fallado")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+
+export const getSalesByUser = async (req, res) => {
+    try {
+        const userSales = await salesModel.getSalesByUser(req.user_id);
+
+        if(userSales) {
+            return res.status(200).json(userSales);
+        }
+
+        throw new Error("La obtención de las ventas ha fallado")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const getAllSales = async (req, res) => {
+    try {
+        const sales = await salesModel.getAllSales();
+
+        if(sales) {
+            return res.status(200).json(sales);
+        }
+
+        throw new Error("La obtención de las ventas ha fallado")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const deleteSale = async (req, res) => {
+    try {
+        const deletedRow = await salesModel.deleteSale(req.user_id, req.params.id);
+
+        if(deletedRow > 0) {
+
+            return res.status(200).json({message: "Venta eliminada correctamente"});
+        }
+
+        throw new Error("La eliminación de la venta ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
