@@ -11,6 +11,7 @@ import { router as profilesRoutes } from "./routes/profiles.routes.js";
 import { router as licitationRoutes } from "./routes/licitation.routes.js";
 import { router as saleRoutes } from "./routes/sale.routes.js";
 import { router as proposalRoutes } from "./routes/proposal.routes.js";
+import { router as inputRoutes } from "./routes/input.routes.js";
 import { connect } from './database/index.js';
 // ---
 
@@ -43,6 +44,8 @@ app.use('/api/v1/profile', profilesRoutes);
 app.use('/api/v1/licitation', licitationRoutes);
 app.use('/api/v1/sale', saleRoutes);
 app.use('/api/v1/proposal', proposalRoutes);
+app.use('/api/v1/input', inputRoutes);
+
 
 
 app.use('/public/images/products', express.static('public/images/products'));
