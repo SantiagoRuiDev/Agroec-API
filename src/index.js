@@ -12,6 +12,7 @@ import { router as licitationRoutes } from "./routes/licitation.routes.js";
 import { router as saleRoutes } from "./routes/sale.routes.js";
 import { router as proposalRoutes } from "./routes/proposal.routes.js";
 import { router as inputRoutes } from "./routes/input.routes.js";
+import { router as qualificationRoutes } from "./routes/qualification.routes.js";
 import { connect } from './database/index.js';
 // ---
 
@@ -45,6 +46,7 @@ app.use('/api/v1/licitation', licitationRoutes);
 app.use('/api/v1/sale', saleRoutes);
 app.use('/api/v1/proposal', proposalRoutes);
 app.use('/api/v1/input', inputRoutes);
+app.use('/api/v1/qualification', qualificationRoutes)
 
 
 
