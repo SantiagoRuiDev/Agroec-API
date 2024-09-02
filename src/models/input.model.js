@@ -40,3 +40,42 @@ export const deleteInput = async (input_id) => {
         throw new Error(error.message);
     }
 };
+
+
+export const getInputById = async (input_id) => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos WHERE id = ?`,
+            [input_id]
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const getInputByCreatorId = async (user_id) => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos WHERE id_usuario = ?`,
+            [user_id]
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const getAllInputs = async () => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos`,
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
