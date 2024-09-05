@@ -40,3 +40,16 @@ export const deleteInput = async (input_id) => {
         throw new Error(error.message);
     }
 };
+
+export const insertInputImage = async (image_id, input_id, url_imagen) => {
+    try {
+      const [statement] = await connection.query(
+        `INSERT INTO input (id, id_insumo, url_imagen) VALUES (?,?,?)`,
+        [image_id, input_id, url_imagen]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };

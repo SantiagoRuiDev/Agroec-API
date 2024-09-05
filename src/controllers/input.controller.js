@@ -1,6 +1,6 @@
 import * as inputModel from "../models/input.model.js";
 import { v4 as uuidv4 } from "uuid";
-import * as profileChecker from '../libs/checker.js';
+import * as profileChecker from "../libs/checker.js";
 
 export const createInput = async (req, res) => {
   try {
@@ -8,10 +8,12 @@ export const createInput = async (req, res) => {
     const uuid_table = uuidv4();
     const inputSchema = req.body;
 
-    // Prueba de como funciona el checker por tipo de perfil 
+    // Prueba de como funciona el checker por tipo de perfil
     // ( Se envia UUID de usuario y devuelve true/false si tiene ese tipo de perfil)
-    if(!await profileChecker.isMerchantAgrochemical(uuid_user)){
-        throw new Error("Perfil de tipo invalido, necesitas ser Comerciante de Agroquimicos");
+    if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
+      throw new Error(
+        "Perfil de tipo invalido, necesitas ser Comerciante de Agroquimicos"
+      );
     }
 
     const createInput = await inputModel.createInput(
@@ -57,6 +59,23 @@ export const deleteInput = async (req, res) => {
     }
 
     res.status(200).send({ message: "Insumo eliminado correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const insertInputImage = async (req, res) => {
+  try {
+    const input_id = req.params.input_id;
+
+    if (req.images_urls) {
+      for (const image of req.images_urls) {
+        await inputModel.insertInputImage(uuidv4(), input_id, image);
+      }
+      return res.status(200).json({ message: "Imagenes subidas con exito" });
+    }
+
+    throw new Error("La subida de la imagen ha fallado, intenta nuevamente");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
