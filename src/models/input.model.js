@@ -53,3 +53,42 @@ export const insertInputImage = async (image_id, input_id, url_imagen) => {
       throw new Error(error.message);
     }
   };
+
+
+export const getInputById = async (input_id) => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos WHERE id = ?`,
+            [input_id]
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const getInputByCreatorId = async (user_id) => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos WHERE id_usuario = ?`,
+            [user_id]
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const getAllInputs = async () => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM insumos`,
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};

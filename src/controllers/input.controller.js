@@ -80,3 +80,57 @@ export const insertInputImage = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const getInputById = async (req, res) => {
+  try{
+    const input_id = req.params.input_id;
+
+    const input = await inputModel.getInputById(input_id);
+  
+    if (!input) {
+      return res.status(404).send({ message: 'Error al obtener el insumo por id' });
+    }
+  
+    res.status(200).send({ message: 'Insumo obtenido correctamente:', input });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+};
+
+export const getInputByCreatorId = async (req, res) => {
+  try{
+
+    const creatorUserId = req.user_id;
+
+    const inputCreator = await inputModel.getInputByCreatorId(creatorUserId);
+  
+    if (!inputCreator) {
+      return res.status(404).send({ message: 'Error al obtener el insumo del creador' });
+    }
+  
+   return res.status(200).send({ message: `Insumo obtenido correctamente del creador con id: ${creatorUserId}`, inputCreator });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+};
+
+export const getAllInputs = async (req, res) => {
+  try{
+
+    const getAllInputs = await inputModel.getAllInputs();
+  
+    if (!getAllInputs) {
+      return res.status(404).send({ message: 'Error al obtener los insumos' });
+    }
+  
+   return res.status(200).send({ message: 'Insumos obtenidos correctamente', getAllInputs });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+};
+
+
+
