@@ -10,5 +10,6 @@ router.post('/:id', authMiddleware.isAuthentified, licitationMiddleware.createLi
 
 router.get('/me', authMiddleware.isAuthentified, licitationController.getLicitationsByUser)
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)
+router.get('/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 
 router.delete('/:id', authMiddleware.isAuthentified, licitationController.deleteLicitation)

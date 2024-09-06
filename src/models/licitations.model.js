@@ -75,6 +75,20 @@ export const getAllLicitations = async () => {
 };
 
 
+export const getAllLicitationsByProduct = async (product_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM producto_licitar LIMIT 30 WHERE id_producto = ?`,
+      [product_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const deleteLicitation = async (user_id, licitation_id) => {
   try {
     const [statement] = await connection.query(

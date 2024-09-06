@@ -1,3 +1,5 @@
+import * as authModel from "../models/auth.model.js";
+import * as profileChecker from "../libs/checker.js";
 import * as profileModel from "../models/profile.model.js";
 //importar esquemas
 
@@ -28,19 +30,15 @@ export const updateProfile = async (req, res) => {
               bankAccountProfile
             );
           if (bankAccountUpdated) {
-            res
-              .status(200)
-              .send({
-                message:
-                  "Datos de la cuenta bancaria del perfil comprador actualizados",
-              });
+            res.status(200).send({
+              message:
+                "Datos de la cuenta bancaria del perfil comprador actualizados",
+            });
           } else {
-            res
-              .status(404)
-              .send({
-                message:
-                  "No se pudo actualizar los datos de la cuenta bancaria del perfil comprador",
-              });
+            res.status(404).send({
+              message:
+                "No se pudo actualizar los datos de la cuenta bancaria del perfil comprador",
+            });
           }
         }
 
@@ -62,19 +60,15 @@ export const updateProfile = async (req, res) => {
             bankAccountProfile
           );
           if (bankAccountUpdated) {
-            res
-              .status(200)
-              .send({
-                message:
-                  "Datos de la cuenta bancaria del perfil agricultor actualizados",
-              });
+            res.status(200).send({
+              message:
+                "Datos de la cuenta bancaria del perfil agricultor actualizados",
+            });
           } else {
-            res
-              .status(404)
-              .send({
-                message:
-                  "No se pudo actualizar los datos de la cuenta bancaria del perfil agricultor",
-              });
+            res.status(404).send({
+              message:
+                "No se pudo actualizar los datos de la cuenta bancaria del perfil agricultor",
+            });
           }
         }
 
@@ -97,19 +91,15 @@ export const updateProfile = async (req, res) => {
               bankAccountProfile
             );
           if (bankAccountUpdated) {
-            res
-              .status(200)
-              .send({
-                message:
-                  "Datos de la cuenta bancaria del perfil asociacion agricola actualizados",
-              });
+            res.status(200).send({
+              message:
+                "Datos de la cuenta bancaria del perfil asociacion agricola actualizados",
+            });
           } else {
-            res
-              .status(404)
-              .send({
-                message:
-                  "No se pudo actualizar los datos de la cuenta bancaria del perfil asociacion agricola",
-              });
+            res.status(404).send({
+              message:
+                "No se pudo actualizar los datos de la cuenta bancaria del perfil asociacion agricola",
+            });
           }
         }
 
@@ -119,11 +109,9 @@ export const updateProfile = async (req, res) => {
             bodyProfile
           );
         if (assocAgriculturalUpdated) {
-          res
-            .status(200)
-            .send({
-              message: "Datos del perfil asociación agrícola actualizados",
-            });
+          res.status(200).send({
+            message: "Datos del perfil asociación agrícola actualizados",
+          });
         }
 
         break;
@@ -135,19 +123,15 @@ export const updateProfile = async (req, res) => {
               bankAccountProfile
             );
           if (bankAccountUpdated) {
-            res
-              .status(200)
-              .send({
-                message:
-                  "Datos de la cuenta bancaria del perfil comerciante agroquimicos actualizados",
-              });
+            res.status(200).send({
+              message:
+                "Datos de la cuenta bancaria del perfil comerciante agroquimicos actualizados",
+            });
           } else {
-            res
-              .status(404)
-              .send({
-                message:
-                  "No se pudo actualizar los datos de la cuenta bancaria del perfil comerciante agroquimicos",
-              });
+            res.status(404).send({
+              message:
+                "No se pudo actualizar los datos de la cuenta bancaria del perfil comerciante agroquimicos",
+            });
           }
         }
 
@@ -157,11 +141,9 @@ export const updateProfile = async (req, res) => {
             bodyProfile
           );
         if (merchantAgrochemicalUpdated) {
-          res
-            .status(200)
-            .send({
-              message: "Datos del perfil comerciante agroquimico actualizados",
-            });
+          res.status(200).send({
+            message: "Datos del perfil comerciante agroquimico actualizados",
+          });
         }
 
         break;
@@ -175,20 +157,50 @@ export const updateProfile = async (req, res) => {
 
 //gets
 
-export const getBuyerProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
   try {
-    const idProfile = req.params.profile_id;
-    const buyerProfile = await profileModel.getBuyerProfileById(idProfile);
+    const user_id = req.params.id;
+    const findUser = await authModel.getAccountById(user_id);
 
-    if (buyerProfile) {
-      return res
-        .status(200)
-        .json({ message: "Datos del perfil comprador:", perfil: buyerProfile });
-    } else {
-      return res
-        .status(404)
-        .json({ message: "Datos del perfil comprador no encontrados" });
+    if (!findUser) {
+      throw new Error("Usuario no encontrado");
     }
+
+    let sellerProfile;
+
+    if (await profileChecker.isAssociationAgricultural(findUser.id)) {
+      sellerProfile =
+        await profileModel.getAssociationAgriculturalProfileByUser(findUser.id);
+      return res.status(200).json({
+        ...sellerProfile,
+        type: "Asociación Agricola",
+      });
+    }
+    if (await profileChecker.isFarmerProfile(findUser.id)) {
+      sellerProfile = await profileModel.getFarmerProfileByUser(findUser.id);
+      return res.status(200).json({
+        ...sellerProfile,
+        type: "Agricultor",
+      });
+    }
+    if (await profileChecker.isMerchant(findUser.id)) {
+      sellerProfile = await profileModel.getMerchantProfileByUser(findUser.id);
+      return res.status(200).json({
+        ...sellerProfile,
+        type: "Comerciante",
+      });
+    }
+    if (await profileChecker.isMerchantAgrochemical(findUser.id)) {
+      sellerProfile = await profileModel.getMerchantAgrochemicalProfileByUser(
+        findUser.id
+      );
+      return res.status(200).json({
+        ...sellerProfile,
+        type: "Comerciante Agroquimicos",
+      });
+    }
+
+    throw new Error("Perfil no encontrado");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -202,12 +214,10 @@ export const getMerchantProfile = async (req, res) => {
     );
 
     if (merchantProfile) {
-      return res
-        .status(200)
-        .json({
-          message: "Datos del perfil comerciante:",
-          perfil: merchantProfile,
-        });
+      return res.status(200).json({
+        message: "Datos del perfil comerciante:",
+        perfil: merchantProfile,
+      });
     } else {
       return res
         .status(404)
@@ -224,12 +234,10 @@ export const getFarmerProfile = async (req, res) => {
     const farmerProfile = await profileModel.getFarmerProfileById(idProfile);
 
     if (farmerProfile) {
-      return res
-        .status(200)
-        .json({
-          message: "Datos del perfil agricultor:",
-          perfil: farmerProfile,
-        });
+      return res.status(200).json({
+        message: "Datos del perfil agricultor:",
+        perfil: farmerProfile,
+      });
     } else {
       return res
         .status(404)
@@ -247,18 +255,14 @@ export const getAssociationAgriculturalProfile = async (req, res) => {
       await profileModel.getAssociationAgriculturalProfileById(idProfile);
 
     if (associationAgriculturalProfile) {
-      return res
-        .status(200)
-        .json({
-          message: "Datos del perfil asociacion agricola:",
-          perfil: associationAgriculturalProfile,
-        });
+      return res.status(200).json({
+        message: "Datos del perfil asociacion agricola:",
+        perfil: associationAgriculturalProfile,
+      });
     } else {
-      return res
-        .status(404)
-        .json({
-          message: "Datos del perfil asociacion agricola no encontrados",
-        });
+      return res.status(404).json({
+        message: "Datos del perfil asociacion agricola no encontrados",
+      });
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -272,18 +276,14 @@ export const getMerchantAgrochemicalProfile = async (req, res) => {
       await profileModel.getMerchantAgrochemicalProfileById(idProfile);
 
     if (merchantAgrochemicalProfile) {
-      return res
-        .status(200)
-        .json({
-          message: "Datos del perfil comerciante agroquimicos:",
-          perfil: merchantAgrochemicalProfile,
-        });
+      return res.status(200).json({
+        message: "Datos del perfil comerciante agroquimicos:",
+        perfil: merchantAgrochemicalProfile,
+      });
     } else {
-      return res
-        .status(404)
-        .json({
-          message: "Datos del perfil comerciante agroquimicos no encontrados",
-        });
+      return res.status(404).json({
+        message: "Datos del perfil comerciante agroquimicos no encontrados",
+      });
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });

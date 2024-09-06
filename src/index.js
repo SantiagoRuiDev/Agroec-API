@@ -15,12 +15,17 @@ import { router as inputRoutes } from "./routes/input.routes.js";
 import { router as qualificationRoutes } from "./routes/qualification.routes.js";
 import { router as ordersRoutes } from "./routes/order.routes.js";
 import { connect } from './database/index.js';
+import { createServer } from 'node:http'
+import { Server } from "socket.io";
+
 // ---
 
 // Abro la conexión aca para evitar realizar muchas conexiones en modelo.
 export const connection = await connect();
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 app.use(
   "*",
@@ -50,10 +55,14 @@ app.use('/api/v1/input', inputRoutes);
 app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/qualification', qualificationRoutes)
 
-
-
+// Rutas de archivos estaticos en el servidor
 app.use('/public/images/products', express.static('public/images/products'));
+app.use('/public/images/sales', express.static('public/images/sales'));
 
-app.listen(APP_SETTINGS.port, () =>
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+server.listen(APP_SETTINGS.port, () =>
   console.log("API RUNNING ON PORT: " + APP_SETTINGS.port)
 );

@@ -9,17 +9,8 @@ export const router = Router();
 router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
 
 //GETS
-//Comprador            
-router.get('/buyer/:profile_id', authMiddleware.isAuthentified, profileController.getBuyerProfile)
-//Comerciante
-router.get('/merchant/:profile_id', authMiddleware.isAuthentified, profileController.getMerchantProfile)
-//Agricultor
-router.get('/farmer/:profile_id', authMiddleware.isAuthentified, profileController.getFarmerProfile)
-//Asociacion Agricola
-router.get('/assoc-agricultural/:profile_id', authMiddleware.isAuthentified, profileController.getAssociationAgriculturalProfile)
-//Comerciante Agroquimicos
-router.get('/merchant-agrochemical/:profile_id', authMiddleware.isAuthentified, profileController.getMerchantAgrochemicalProfile)
-
+// Envio el ID del usuario a buscar, y busco entre todos los perfiles cual tiene.      
+router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile)
 
 //UPDATE bank accounts
 //Comerciante

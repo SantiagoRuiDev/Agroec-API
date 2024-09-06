@@ -33,7 +33,10 @@ export const createSale = async (
 export const getSalesByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, p.nombre, p.imagen FROM producto_vender pv INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id_producto = ?`,
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto 
+      INNER JOIN usuarios u ON u.id = pv.id_usuario
+      WHERE pv.id_producto = ?`,
       [
         product_id
       ]
@@ -55,6 +58,34 @@ export const getSalesByUser = async (user_id) => {
     );
 
     return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getSaleByIdentifier = async (identifer, product) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto 
+      INNER JOIN usuarios u ON u.id = pv.id_usuario
+      WHERE pv.id = ? AND pv.id_producto = ?`,
+      [
+        identifer,
+        product
+      ]
+    );
+    const [images] = await connection.query(
+      `SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = ?`,
+      [
+        identifer
+      ]
+    );
+
+    return {
+      ...statement[0],
+      images
+    };
   } catch (error) {
     throw new Error(error.message);
   }

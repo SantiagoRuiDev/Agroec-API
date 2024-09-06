@@ -9,7 +9,8 @@ export const router = Router();
 
 router.post('/:id', authMiddleware.isAuthentified, saleMiddleware.createSale, saleController.createSale)
 router.post('/set-images/:id', authMiddleware.isAuthentified, upload.array('sale-image'), addFileUrls, saleController.insertImageSale)
-router.get('/product/:id', authMiddleware.isAuthentified, saleController.getSalesByProduct)
+router.get('/:id/:sale', authMiddleware.isAuthentified, saleController.getSaleByIdentifier)
+router.get('/:id', authMiddleware.isAuthentified, saleController.getSalesByProduct)
 router.get('/me', authMiddleware.isAuthentified, saleController.getSalesByUser)
 router.get('/', authMiddleware.isAuthentified, saleController.getAllSales)
 router.delete('/:id', authMiddleware.isAuthentified, saleController.deleteSale)

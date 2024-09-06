@@ -1,4 +1,6 @@
 import * as salesModel from "../models/sale.model.js";
+import * as profileModel from "../models/profile.model.js";
+import * as profileChecker from "../libs/checker.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -74,6 +76,53 @@ export const getSalesByUser = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 }
+
+
+export const getSaleByIdentifier = async (req, res) => {
+    try {
+        const sale = await salesModel.getSaleByIdentifier(req.params.sale, req.params.id);
+
+        let sellerProfile;
+
+        if(await profileChecker.isAssociationAgricultural(sale.id_usuario)){
+            sellerProfile = await profileModel.getAssociationAgriculturalProfileByUser(sale.id_usuario);
+            return res.status(200).json({
+                ...sale,
+                ...sellerProfile,
+                type: "Asociación Agricola"
+            });
+        }
+        if(await profileChecker.isFarmerProfile(sale.id_usuario)){
+            sellerProfile = await profileModel.getFarmerProfileByUser(sale.id_usuario);
+            return res.status(200).json({
+                ...sale,
+                ...sellerProfile,
+                type: "Agricultor"
+            });
+        }
+        if(await profileChecker.isMerchant(sale.id_usuario)){
+            sellerProfile = await profileModel.getMerchantProfileByUser(sale.id_usuario);
+            return res.status(200).json({
+                ...sale,
+                ...sellerProfile,
+                type: "Comerciante"
+            });
+        }
+        if(await profileChecker.isMerchantAgrochemical(sale.id_usuario)){
+            sellerProfile = await profileModel.getMerchantAgrochemicalProfileByUser(sale.id_usuario);
+            return res.status(200).json({
+                ...sale,
+                ...sellerProfile,
+                type: "Comerciante Agroquimicos"
+            });
+        }
+
+        throw new Error("La obtención de las ventas ha fallado")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
 
 export const getAllSales = async (req, res) => {
     try {
