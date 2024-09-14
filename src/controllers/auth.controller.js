@@ -5,6 +5,7 @@ import * as bankAccountModel from "../models/bankaccount.model.js";
 import * as contactModel from "../models/contact.model.js";
 import * as pointsModel from "../models/points.model.js";
 import * as associationModel from "../models/association.model.js";
+import * as walletModel from "../models/wallet.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
@@ -34,6 +35,7 @@ export const createAccount = async (req, res) => {
       if (insertedCode > 0) {
         const profile_uuid = uuidv4();
         const bankAccount_uuid = uuidv4();
+        const table_id = uuidv4();
         const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
         const bodyAssociation = req.body.association;
@@ -49,6 +51,7 @@ export const createAccount = async (req, res) => {
             ); // Se crea el Perfil
             // Envia Email al comprador
             await sendMail(formatMailBuyer(req.body.profile), req.body.user.correo);
+            await walletModel.createWallet(table_id, uuid);
             break;
           case "Comerciante":
             await bankAccountModel.createBankAccount(
@@ -61,6 +64,7 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
+            await walletModel.createWallet(table_id, uuid);
             break;
           case "Agricultor":
             await associationModel.createAssociation(idAssociation, bodyAssociation);
@@ -75,6 +79,7 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
+            await walletModel.createWallet(table_id, uuid);
             break;
           case "Asociacion Agricola":
             await bankAccountModel.createBankAccount(
@@ -87,6 +92,7 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
+            await walletModel.createWallet(table_id, uuid);
             break;
           case "Comerciante Agroquimico":
             await associationModel.createAssociation(idAssociation, bodyAssociation);
@@ -94,13 +100,17 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyBankAccount
             );
-            await profileModel.createMerchantAgrochemicalProfile(
+           const profile =  await profileModel.createMerchantAgrochemicalProfile(
               profile_uuid,
               uuid,
               idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
+            if(profile){
+              await walletModel.createWallet(table_id, uuid);
+            }
+            
             break;
           default:
             throw new Error("Ingresa un tipo de Perfil Valido");

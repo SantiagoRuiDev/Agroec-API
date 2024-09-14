@@ -15,6 +15,7 @@ import { router as inputRoutes } from "./routes/input.routes.js";
 import { router as qualificationRoutes } from "./routes/qualification.routes.js";
 import { router as ordersRoutes } from "./routes/order.routes.js";
 import { router as chatRoutes } from "./routes/chat.routes.js";
+import { router as walletRoutes } from "./routes/wallet.routes.js";
 import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
@@ -64,6 +65,8 @@ app.use("/api/v1/input", inputRoutes);
 app.use("/api/v1/orders", ordersRoutes);
 app.use("/api/v1/qualification", qualificationRoutes);
 app.use("/api/v1/chat", chatRoutes);
+app.use('/api/v1/wallet', walletRoutes)
+
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));
