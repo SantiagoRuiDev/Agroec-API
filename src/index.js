@@ -14,10 +14,12 @@ import { router as proposalRoutes } from "./routes/proposal.routes.js";
 import { router as inputRoutes } from "./routes/input.routes.js";
 import { router as qualificationRoutes } from "./routes/qualification.routes.js";
 import { router as ordersRoutes } from "./routes/order.routes.js";
-import { connect } from './database/index.js';
-import { createServer } from 'node:http'
+import { router as chatRoutes } from "./routes/chat.routes.js";
+import { connect } from "./database/index.js";
+import { createServer } from "node:http";
 import { Server } from "socket.io";
-
+import './socket/socket.js'
+import { initializeSocket } from "./socket/socket.js";
 // ---
 
 // Abro la conexión aca para evitar realizar muchas conexiones en modelo.
@@ -25,7 +27,12 @@ export const connection = await connect();
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+export const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true // Permitir credenciales en las conexiones de socket
+  },
+});
 
 app.use(
   "*",
@@ -41,27 +48,26 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+initializeSocket(io); // Inicia el socket, y lo envia a otra función para que controle los eventos.
 // RUTAS
 
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/category', tutorialRoutes);
-app.use('/api/v1/suggestion', suggestionRoutes);
-app.use('/api/v1/products', productsRoutes);
-app.use('/api/v1/profile', profilesRoutes);
-app.use('/api/v1/licitation', licitationRoutes);
-app.use('/api/v1/sale', saleRoutes);
-app.use('/api/v1/proposal', proposalRoutes);
-app.use('/api/v1/input', inputRoutes);
-app.use('/api/v1/orders', ordersRoutes);
-app.use('/api/v1/qualification', qualificationRoutes)
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/category", tutorialRoutes);
+app.use("/api/v1/suggestion", suggestionRoutes);
+app.use("/api/v1/products", productsRoutes);
+app.use("/api/v1/profile", profilesRoutes);
+app.use("/api/v1/licitation", licitationRoutes);
+app.use("/api/v1/sale", saleRoutes);
+app.use("/api/v1/proposal", proposalRoutes);
+app.use("/api/v1/input", inputRoutes);
+app.use("/api/v1/orders", ordersRoutes);
+app.use("/api/v1/qualification", qualificationRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 // Rutas de archivos estaticos en el servidor
-app.use('/public/images/products', express.static('public/images/products'));
-app.use('/public/images/sales', express.static('public/images/sales'));
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
+app.use("/public/images/products", express.static("public/images/products"));
+app.use("/public/images/sales", express.static("public/images/sales"));
 
 server.listen(APP_SETTINGS.port, () =>
   console.log("API RUNNING ON PORT: " + APP_SETTINGS.port)

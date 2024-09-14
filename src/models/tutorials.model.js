@@ -15,7 +15,7 @@ export const getAllCategories = async () => {
 export const getTutorialsByCategories = async (category) => {
   try {
     const [statement] = await connection.query(
-      `SELECT t.id, t.titulo, t.url_video FROM tutoriales t INNER JOIN categoria c ON t.id_categoria = c.id WHERE c.id = ?`,
+      `SELECT t.id, t.titulo, t.url_video, t.nuevo FROM tutoriales t INNER JOIN categoria c ON t.id_categoria = c.id WHERE c.id = ?`,
       [category]
     );
 

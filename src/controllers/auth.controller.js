@@ -201,3 +201,13 @@ export const isAuthentified = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+
+export const logoutAccount = async (req, res) => {
+  try {
+    res.clearCookie('auth-token', { path: '/', httpOnly: true, secure: true, sameSite: 'Strict' });
+    res.status(200).json({ message: 'Logout successful, token removed' });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};

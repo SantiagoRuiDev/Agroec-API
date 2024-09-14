@@ -2,12 +2,7 @@ import { connection } from "../index.js";
 
 // Modelo de Ventas
 
-export const createSale = async (
-  sale_id,
-  product_id,
-  user_id,
-  schema
-) => {
+export const createSale = async (sale_id, product_id, user_id, schema) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO producto_vender(id, id_producto, id_usuario, precio, precio_unidad, cantidad, cantidad_unidad, presentacion_entrega, fecha_entrega) VALUES (?,?,?,?,?,?,?,?,?)`,
@@ -33,13 +28,16 @@ export const createSale = async (
 export const getSalesByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+      FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
+      LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       WHERE pv.id_producto = ?`,
-      [
-        product_id
-      ]
+      [product_id]
     );
 
     return statement;
@@ -51,10 +49,11 @@ export const getSalesByProduct = async (product_id) => {
 export const getSalesByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, p.nombre, p.imagen FROM producto_vender pv INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ?`,
-      [
-        user_id
-      ]
+      `SELECT pv.*, p.nombre, p.imagen, 
+        (SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = pv.id LIMIT 1) AS producto_imagen
+        FROM producto_vender pv 
+       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ?`,
+      [user_id]
     );
 
     return statement;
@@ -70,21 +69,16 @@ export const getSaleByIdentifier = async (identifer, product) => {
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
       WHERE pv.id = ? AND pv.id_producto = ?`,
-      [
-        identifer,
-        product
-      ]
+      [identifer, product]
     );
     const [images] = await connection.query(
       `SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = ?`,
-      [
-        identifer
-      ]
+      [identifer]
     );
 
     return {
       ...statement[0],
-      images
+      images,
     };
   } catch (error) {
     throw new Error(error.message);
@@ -94,18 +88,16 @@ export const getSaleByIdentifier = async (identifer, product) => {
 export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, p.nombre, p.imagen FROM producto_vender pv INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
-      [
-        sale_id
-      ]
+      `SELECT pv.*, p.nombre, p.imagen FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
+      [sale_id]
     );
 
-    return statement;
+    return statement[0];
   } catch (error) {
     throw new Error(error.message);
   }
 };
-
 
 export const getAllSales = async () => {
   try {
@@ -136,10 +128,7 @@ export const deleteSale = async (user_id, sale_id) => {
   try {
     const [statement] = await connection.query(
       `DELETE FROM product_vender WHERE id_usuario = ? AND id = ?`,
-      [
-        user_id,
-        sale_id
-      ]
+      [user_id, sale_id]
     );
 
     return statement.affectedRows;
@@ -147,4 +136,3 @@ export const deleteSale = async (user_id, sale_id) => {
     throw new Error(error.message);
   }
 };
-

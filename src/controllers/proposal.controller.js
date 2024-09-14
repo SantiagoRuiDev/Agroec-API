@@ -174,6 +174,24 @@ export const acceptSaleProposal = async (req, res) => {
   }
 };
 
+
+export const getSaleProposalByUserAndProduct = async (req, res) => {
+  try {
+    const proposals = await proposalModel.getSaleProposalByUserAndProduct(
+      req.user_id, req.params.id
+    );
+
+    if (proposals) {
+      return res.status(200).json(proposals);
+    }
+
+    throw new Error("La obtención de las ofertas de venta ha fallado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
 // Propuestas de Compras a Ventas
 
 export const createLicitationProposal = async (req, res) => {
@@ -247,6 +265,23 @@ export const getLicitationProposalById = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const getLicitationProposalByUserAndProduct = async (req, res) => {
+  try {
+    const proposals = await proposalModel.getLicitationProposalByUserAndProduct(
+      req.user_id, req.params.id
+    );
+
+    if (proposals) {
+      return res.status(200).json(proposals);
+    }
+
+    throw new Error("La obtención de las ofertas de compra ha fallado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 
 export const getLicitationProposalByUser = async (req, res) => {
   try {

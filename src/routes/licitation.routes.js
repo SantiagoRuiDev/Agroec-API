@@ -9,6 +9,7 @@ export const router = Router();
 router.post('/:id', authMiddleware.isAuthentified, licitationMiddleware.createLicitation, licitationController.createLicitation)
 
 router.get('/me', authMiddleware.isAuthentified, licitationController.getLicitationsByUser)
+router.get('/me/:id', authMiddleware.isAuthentified, licitationController.getLicitationsByUserAndProduct)
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)
 router.get('/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 

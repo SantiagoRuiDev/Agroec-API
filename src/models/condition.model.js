@@ -62,7 +62,7 @@ export const getConditionBySaleProposal = async (proposal_id) => {
       [proposal_id]
     );
 
-    return statement.affectedRows;
+    return statement;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -75,7 +75,21 @@ export const getConditionByBuyProposal = async (proposal_id) => {
       [proposal_id]
     );
 
-    return statement.affectedRows;
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getConditionByChat = async (chat_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT cc.* FROM condiciones_compra cc INNER JOIN chat ch ON cc.id = ch.id_condiciones WHERE ch.id = ?`,
+      [chat_id]
+    );
+
+    return statement[0];
   } catch (error) {
     throw new Error(error.message);
   }
