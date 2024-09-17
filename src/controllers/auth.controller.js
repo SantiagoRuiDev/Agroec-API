@@ -35,11 +35,10 @@ export const createAccount = async (req, res) => {
       if (insertedCode > 0) {
         const profile_uuid = uuidv4();
         const bankAccount_uuid = uuidv4();
-        const table_id = uuidv4();
+        const wallet_id = uuidv4();
         const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
         const bodyAssociation = req.body.association;
-        
 
         const idAssociation = uuidv4();
         switch (req.body.profile.type) {
@@ -50,8 +49,11 @@ export const createAccount = async (req, res) => {
               bodyProfile
             ); // Se crea el Perfil
             // Envia Email al comprador
-            await sendMail(formatMailBuyer(req.body.profile), req.body.user.correo);
-            await walletModel.createWallet(table_id, uuid);
+            await sendMail(
+              formatMailBuyer(req.body.profile),
+              req.body.user.correo
+            );
+            await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Comerciante":
             await bankAccountModel.createBankAccount(
@@ -64,10 +66,13 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
-            await walletModel.createWallet(table_id, uuid);
+            await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Agricultor":
-            await associationModel.createAssociation(idAssociation, bodyAssociation);
+            await associationModel.createAssociation(
+              idAssociation,
+              bodyAssociation
+            );
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
@@ -79,7 +84,7 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
-            await walletModel.createWallet(table_id, uuid);
+            await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Asociacion Agricola":
             await bankAccountModel.createBankAccount(
@@ -92,25 +97,27 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
-            await walletModel.createWallet(table_id, uuid);
+            await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Comerciante Agroquimico":
-            await associationModel.createAssociation(idAssociation, bodyAssociation);
+            await associationModel.createAssociation(
+              idAssociation,
+              bodyAssociation
+            );
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
             );
-           const profile =  await profileModel.createMerchantAgrochemicalProfile(
+            await profileModel.createMerchantAgrochemicalProfile(
               profile_uuid,
               uuid,
               idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
-            if(profile){
-              await walletModel.createWallet(table_id, uuid);
-            }
-            
+
+            await walletModel.createWallet(wallet_id, uuid);
+
             break;
           default:
             throw new Error("Ingresa un tipo de Perfil Valido");
@@ -212,11 +219,15 @@ export const isAuthentified = async (req, res) => {
   }
 };
 
-
 export const logoutAccount = async (req, res) => {
   try {
-    res.clearCookie('auth-token', { path: '/', httpOnly: true, secure: true, sameSite: 'Strict' });
-    res.status(200).json({ message: 'Logout successful, token removed' });
+    res.clearCookie("auth-token", {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
+    res.status(200).json({ message: "Logout successful, token removed" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

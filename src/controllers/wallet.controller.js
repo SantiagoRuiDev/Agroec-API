@@ -22,12 +22,11 @@ export const rechargeWallet = async (req, res) => {
     try {
         const table_id = uuidv4();
         const user_id = req.user_id;
-        const rechargeSchema = req.body.recharge;
+        const rechargeSchema = req.body;
 
         const {wallet} = await walletModel.getWalletByUser(user_id);
 
         const idWallet = wallet?.id;
-        console.log(wallet)
 
         if (!idWallet) {
             return res.status(404).send({ message: `La billetera con id: ${idWallet} no existe` });
@@ -59,7 +58,7 @@ export const createFee = async (req, res) => {
         const table_id = uuidv4();
         const user_id = req.user_id;
         const id_delivery = req.params.id_entrega;
-        const feeSchema = req.body.fee;
+        const feeSchema = req.body;
 
         const {wallet} = await walletModel.getWalletByUser(user_id);
 

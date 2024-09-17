@@ -4,6 +4,7 @@ import * as profileModel from "../models/profile.model.js";
 import * as orderModel from "../models/order.model.js";
 import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
+import * as walletModel from "../models/wallet.model.js";
 import * as licitationsModel from "../models/licitations.model.js";
 //importar esquemas
 
@@ -238,13 +239,15 @@ export const getProfileStats = async (req, res) => {
       const activeLicitations = await licitationsModel.getLicitationsByUser(req.user_id);
       const proposals = await proposalModel.getSaleProposalByLicitation(req.user_id);
       const buyProposals = await proposalModel.getLicitationProposalByUser(req.user_id);
+      const walletAmount = await walletModel.getBalance(req.user_id);
 
       return res.status(200).json({
         profile: profile,
         orders: receivedOrders.length,
         licitations: activeLicitations.length,
         proposals: proposals.length,
-        buyProposals: buyProposals.length
+        buyProposals: buyProposals.length,
+        wallet: walletAmount
       });
     }
 
