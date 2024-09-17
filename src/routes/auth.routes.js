@@ -8,3 +8,4 @@ router.post('/', authMiddleware.createAccount, authController.createAccount);
 router.post('/session', authMiddleware.loginAccount, authController.loginAccount);
 router.get('/check', authMiddleware.isAuthentified, authController.isAuthentified);
 router.post('/finish', authMiddleware.finishAccount, authController.finishAccount);
+router.post('/logout', authController.logoutAccount);

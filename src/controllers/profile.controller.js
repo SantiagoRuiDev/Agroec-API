@@ -1,6 +1,11 @@
 import * as authModel from "../models/auth.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as profileModel from "../models/profile.model.js";
+import * as orderModel from "../models/order.model.js";
+import * as salesModel from "../models/sale.model.js";
+import * as proposalModel from "../models/proposal.model.js";
+import * as walletModel from "../models/wallet.model.js";
+import * as licitationsModel from "../models/licitations.model.js";
 //importar esquemas
 
 export const updateProfile = async (req, res) => {
@@ -155,7 +160,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-//gets
+// GET PROFILE
 
 export const getProfile = async (req, res) => {
   try {
@@ -167,26 +172,36 @@ export const getProfile = async (req, res) => {
     }
 
     let sellerProfile;
+    let sellerSales;
 
     if (await profileChecker.isAssociationAgricultural(findUser.id)) {
       sellerProfile =
         await profileModel.getAssociationAgriculturalProfileByUser(findUser.id);
+      sellerSales = 
+        await salesModel.getSalesByUser(findUser.id);
       return res.status(200).json({
         ...sellerProfile,
+        sales: sellerSales,
         type: "Asociación Agricola",
       });
     }
     if (await profileChecker.isFarmerProfile(findUser.id)) {
       sellerProfile = await profileModel.getFarmerProfileByUser(findUser.id);
+      sellerSales = 
+        await salesModel.getSalesByUser(findUser.id);
       return res.status(200).json({
         ...sellerProfile,
+        sales: sellerSales,
         type: "Agricultor",
       });
     }
     if (await profileChecker.isMerchant(findUser.id)) {
       sellerProfile = await profileModel.getMerchantProfileByUser(findUser.id);
+      sellerSales = 
+        await salesModel.getSalesByUser(findUser.id);
       return res.status(200).json({
         ...sellerProfile,
+        sales: sellerSales,
         type: "Comerciante",
       });
     }
@@ -194,9 +209,45 @@ export const getProfile = async (req, res) => {
       sellerProfile = await profileModel.getMerchantAgrochemicalProfileByUser(
         findUser.id
       );
+      sellerSales = 
+        await salesModel.getSalesByUser(findUser.id);
       return res.status(200).json({
         ...sellerProfile,
+        sales: sellerSales,
         type: "Comerciante Agroquimicos",
+      });
+    }
+
+    throw new Error("Perfil no encontrado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
+export const getProfileStats = async (req, res) => {
+  try {
+    const findUser = await authModel.getAccountById(req.user_id);
+
+    if (!findUser) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    if(profileChecker.isBuyerProfile(req.user_id)){
+      const profile = await profileModel.getBuyerProfileByUser(req.user_id);
+      const receivedOrders = await orderModel.getOrdersByBuyerDelivered(req.user_id);
+      const activeLicitations = await licitationsModel.getLicitationsByUser(req.user_id);
+      const proposals = await proposalModel.getSaleProposalByLicitation(req.user_id);
+      const buyProposals = await proposalModel.getLicitationProposalByUser(req.user_id);
+      const walletAmount = await walletModel.getBalance(req.user_id);
+
+      return res.status(200).json({
+        profile: profile,
+        orders: receivedOrders.length,
+        licitations: activeLicitations.length,
+        proposals: proposals.length,
+        buyProposals: buyProposals.length,
+        wallet: walletAmount
       });
     }
 

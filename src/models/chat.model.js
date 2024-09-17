@@ -13,6 +13,33 @@ export const createChat = async (uuid, buyer_id, seller_id, condition_id) => {
   }
 };
 
+export const getChatById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT c.*, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+        FROM chat c
+        LEFT JOIN perfil_agricultor pa ON pa.id_usuario = c.id_vendedor
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = c.id_vendedor
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = c.id_vendedor
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = c.id_vendedor
+        WHERE c.id = ?
+      `,
+      [uuid]
+    );
+    const [messages] = await connection.query(
+      `SELECT * FROM mensajes m WHERE m.id_chat = ? ORDER BY m.fecha ASC`,
+      [statement[0].id]
+    );
+
+    return {
+      chat: statement[0],
+      messages: messages,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getChatByCondition = async (uuid) => {
   try {
     const [statement] = await connection.query(

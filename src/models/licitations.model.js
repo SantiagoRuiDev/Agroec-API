@@ -35,9 +35,21 @@ export const getLicitationsByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ?`,
-      [
-        user_id
-      ]
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl 
+      INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.id_producto = ?`,
+      [user_id, product_id]
     );
 
     return statement;
@@ -50,9 +62,7 @@ export const getLicitationById = async (licitation_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE pl.id = ?`,
-      [
-        licitation_id
-      ]
+      [licitation_id]
     );
 
     return statement[0];
@@ -60,7 +70,6 @@ export const getLicitationById = async (licitation_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getAllLicitations = async () => {
   try {
@@ -73,7 +82,6 @@ export const getAllLicitations = async () => {
     throw new Error(error.message);
   }
 };
-
 
 export const getAllLicitationsByProduct = async (product_id) => {
   try {
@@ -88,15 +96,11 @@ export const getAllLicitationsByProduct = async (product_id) => {
   }
 };
 
-
 export const deleteLicitation = async (user_id, licitation_id) => {
   try {
     const [statement] = await connection.query(
       `DELETE FROM producto_licitar WHERE id_usuario = ? AND id = ?`,
-      [
-        user_id,
-        licitation_id
-      ]
+      [user_id, licitation_id]
     );
 
     return statement.affectedRows;
@@ -104,4 +108,3 @@ export const deleteLicitation = async (user_id, licitation_id) => {
     throw new Error(error.message);
   }
 };
-

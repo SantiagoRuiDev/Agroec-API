@@ -9,7 +9,8 @@ export const router = Router();
 router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
 
 //GETS
-// Envio el ID del usuario a buscar, y busco entre todos los perfiles cual tiene.      
+// Envio el ID del usuario a buscar, y busco entre todos los perfiles cual tiene.  
+router.get('/me/stats', authMiddleware.isAuthentified, profileController.getProfileStats)    
 router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile)
 
 //UPDATE bank accounts
