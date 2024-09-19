@@ -88,7 +88,7 @@ export const getSaleByIdentifier = async (identifer, product) => {
 export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, p.nombre, p.imagen FROM producto_vender pv 
+      `SELECT pv.*, p.nombre, p.imagen, p.id_producto FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
       [sale_id]
     );

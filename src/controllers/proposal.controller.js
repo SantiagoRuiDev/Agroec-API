@@ -40,7 +40,8 @@ export const createSaleProposal = async (req, res) => {
 
     if (insertProposal > 0) {
       const insertCondition = await conditionModel.createContidion(
-        contidion_id
+        contidion_id,
+        fetchLicitation.id_producto
       );
       if (insertCondition > 0) {
         await proposalModel.createSaleCondition(
@@ -49,7 +50,12 @@ export const createSaleProposal = async (req, res) => {
           contidion_id
         );
 
-        await chatModel.createChat(uuidv4(), fetchLicitation.id_usuario, user_id, contidion_id);
+        await chatModel.createChat(
+          uuidv4(),
+          fetchLicitation.id_usuario,
+          user_id,
+          contidion_id
+        );
       }
 
       return res
@@ -95,90 +101,11 @@ export const getSaleProposalByUser = async (req, res) => {
   }
 };
 
-export const declineSaleProposal = async (req, res) => {
-  try {
-    if (await profileChecker.isBuyerProfile(req.user_id)) {
-      await proposalModel.updateSaleProposalStateByBuyer(
-        req.params.id,
-        "Rechazada"
-      );
-    } else {
-      await proposalModel.updateSaleProposalStateBySeller(
-        req.params.id,
-        "Rechazada"
-      );
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Propuesta rechazada correctamente" });
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-};
-export const acceptSaleProposal = async (req, res) => {
-  try {
-    // Si la propuesta esta aceptada por ambas partes, enviar orden:
-    let proposal = await proposalModel.getSaleProposalById(req.params.id);
-
-    if (!proposal[0]) {
-      throw new Error("Propuesta inexistente");
-    }
-
-    if (proposal[0].estado_comprador == proposal[0].estado_vendedor) {
-      throw new Error("Esta propuesta ya esta aceptada");
-    }
-
-    if (await profileChecker.isBuyerProfile(req.user_id)) {
-      await proposalModel.updateSaleProposalStateByBuyer(
-        req.params.id,
-        "Aceptada"
-      );
-    } else {
-      await proposalModel.updateSaleProposalStateBySeller(
-        req.params.id,
-        "Aceptada"
-      );
-    }
-
-    proposal = await proposalModel.getSaleProposalById(req.params.id);
-
-    if (proposal[0].estado_comprador == proposal[0].estado_vendedor) {
-      // Si ambos estados son iguales
-      const delivery = await proposalModel.getSaleDeliveryWithConditionsById(
-        req.params.id
-      ); // Consigo las entregas marcadas en condiciones
-
-      for (const order of delivery) {
-        // Por cada entrega creo una orden.
-        await orderModel.createOrder(
-          uuidv4(),
-          proposal[0].id_comprador,
-          proposal[0].id_vendedor,
-          order.id
-        );
-      }
-
-      return res
-        .status(200)
-        .json({
-          message: "Propuesta aceptada correctamente, se ha creado la orden/es",
-        });
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Propuesta aceptada correctamente" });
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-};
-
-
 export const getSaleProposalByUserAndProduct = async (req, res) => {
   try {
     const proposals = await proposalModel.getSaleProposalByUserAndProduct(
-      req.user_id, req.params.id
+      req.user_id,
+      req.params.id
     );
 
     if (proposals) {
@@ -190,7 +117,6 @@ export const getSaleProposalByUserAndProduct = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 // Propuestas de Compras a Ventas
 
@@ -226,7 +152,8 @@ export const createLicitationProposal = async (req, res) => {
 
     if (insertProposal > 0) {
       const insertCondition = await conditionModel.createContidion(
-        contidion_id
+        contidion_id,
+        fetchSale.id_producto
       );
       if (insertCondition > 0) {
         await proposalModel.createLicitationCondition(
@@ -234,8 +161,13 @@ export const createLicitationProposal = async (req, res) => {
           proposal_id,
           contidion_id
         );
-        
-        await chatModel.createChat(uuidv4(), user_id, fetchSale.id_usuario, contidion_id);
+
+        await chatModel.createChat(
+          uuidv4(),
+          user_id,
+          fetchSale.id_usuario,
+          contidion_id
+        );
       }
       return res
         .status(200)
@@ -269,7 +201,8 @@ export const getLicitationProposalById = async (req, res) => {
 export const getLicitationProposalByUserAndProduct = async (req, res) => {
   try {
     const proposals = await proposalModel.getLicitationProposalByUserAndProduct(
-      req.user_id, req.params.id
+      req.user_id,
+      req.params.id
     );
 
     if (proposals) {
@@ -281,7 +214,6 @@ export const getLicitationProposalByUserAndProduct = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 export const getLicitationProposalByUser = async (req, res) => {
   try {
@@ -299,96 +231,19 @@ export const getLicitationProposalByUser = async (req, res) => {
   }
 };
 
-export const declineLicitationProposal = async (req, res) => {
-  try {
-    if (await profileChecker.isBuyerProfile(req.user_id)) {
-      await proposalModel.updateLicitationProposalStateByBuyer(
-        req.params.id,
-        "Rechazada"
-      );
-    } else {
-      await proposalModel.updateLicitationProposalStateBySeller(
-        req.params.id,
-        "Rechazada"
-      );
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Propuesta rechazada correctamente" });
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-};
-
-export const acceptLicitationProposal = async (req, res) => {
-  try {
-    let proposal = await proposalModel.getLicitationProposalById(req.params.id);
-
-    if (!proposal[0]) {
-      throw new Error("Propuesta inexistente");
-    }
-
-    if (proposal[0].estado_comprador == proposal[0].estado_vendedor) {
-      throw new Error("Esta propuesta ya esta aceptada");
-    }
-
-    if (await profileChecker.isBuyerProfile(req.user_id)) {
-      await proposalModel.updateLicitationProposalStateByBuyer(
-        req.params.id,
-        "Aceptada"
-      );
-    } else {
-      await proposalModel.updateLicitationProposalStateBySeller(
-        req.params.id,
-        "Aceptada"
-      );
-    }
-
-    proposal = await proposalModel.getLicitationProposalById(req.params.id);
-
-    if (proposal[0].estado_comprador == proposal[0].estado_vendedor) {
-      // Si ambos estados son iguales
-      const delivery = await proposalModel.getLicitationDeliveryWithConditionsById(
-        req.params.id
-      ); // Consigo las entregas marcadas en condiciones
-
-      for (const order of delivery) {
-        // Por cada entrega creo una orden.
-        await orderModel.createOrder(
-          uuidv4(),
-          proposal[0].id_comprador,
-          proposal[0].id_vendedor,
-          order.id
-        );
-      }
-
-      return res
-        .status(200)
-        .json({
-          message: "Propuesta aceptada correctamente, se ha creado la orden/es",
-        });
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Propuesta aceptada correctamente" });
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-};
-
 export const updateCondition = async (req, res) => {
   try {
     const condition_id = req.params.id;
     const condition_schema = req.body.condition;
     const delivery_schema = req.body.delivery;
-    const warranty_schema = req.body.warranty;
 
     if (condition_schema.modo_pago == "Modo Garantía") {
-      if (!warranty_schema) {
+      if (
+        condition_schema.porcentaje_inicial == 0 ||
+        condition_schema.porcentaje_final == 0
+      ) {
         throw new Error(
-          "Si pagaras en garantía necesitas ingresar los porcentajes"
+          "En modo garantia, los porcentajes deben ser mayores a 0."
         );
       }
     }
@@ -403,18 +258,20 @@ export const updateCondition = async (req, res) => {
         for (const delivery of delivery_schema) {
           await deliveryModel.createDelivery(
             uuidv4(),
-            delivery.id_punto,
+            delivery.punto.id,
             condition_id,
             delivery
           );
         }
       }
 
-      if (warranty_schema) {
-        await conditionModel.updateConditionWarranty(
-          condition_id,
-          warranty_schema
-        );
+      if (condition_schema.modo_pago == "Modo Garantía") {
+        await conditionModel.updateConditionWarranty(condition_id, {
+          modo_pago_final: condition_schema.modo_pago_final,
+          porcentaje_inicial: condition_schema.porcentaje_inicial,
+          porcentaje_final: condition_schema.porcentaje_final,
+        });
+        console.log(1)
       }
 
       return res
@@ -423,6 +280,120 @@ export const updateCondition = async (req, res) => {
     }
 
     throw new Error("No se pudo actualizar esta condición de compra");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+// Esta funcion acepta una propuesta por condiciones, es decir busca a partir de una condicion una propuesta, de venta o compra y la acepta
+export const acceptProposalByConditions = async (req, res) => {
+  try {
+    let proposal = await proposalModel.getProposalByConditions(req.params.id);
+
+    if (proposal == undefined) {
+      throw new Error("Propuesta inexistente");
+    }
+
+    if (
+      proposal.proposal.estado_comprador == "Aceptada" &&
+      proposal.proposal.estado_vendedor == "Aceptada"
+    ) {
+      throw new Error("Esta propuesta ya esta aceptada");
+    }
+
+    if (
+      proposal.proposal.estado_comprador == "Rechazada" ||
+      proposal.proposal.estado_vendedor == "Rechazada"
+    ) {
+      throw new Error("Esta propuesta ya esta rechazada");
+    }
+
+    const conditions = await conditionModel.getConditionById(req.params.id);
+
+    const deliveries = await conditionModel.getDeliveriesByCondition(
+      req.params.id
+    ); // Consigo las entregas marcadas en condiciones
+
+    if (deliveries.length == 0) {
+      throw new Error("Define al menos una entrega");
+    }
+
+    if (conditions.precio <= 0) {
+      throw new Error("El precio en las condiciones debe ser mayor a 0");
+    }
+    if (conditions.cantidad <= 0) {
+      throw new Error(
+        "La cantidad negociada en las condiciones debe ser mayor a 0"
+      );
+    }
+    if (conditions.modo_pago == "Modo Garantia") {
+      if (conditions.porcentaje_inicial <= 0) {
+        throw new Error("El porcentaje inicial debe ser mayor a 0");
+      }
+      if (conditions.porcentaje_inicial + conditions.porcentaje_final > 100) {
+        throw new Error("La suma de ambos porcentajes no debe superar 100");
+      }
+    }
+
+    if (
+      (await profileChecker.isBuyerProfile(req.user_id)) &&
+      proposal.type == "Sale"
+    ) {
+      await proposalModel.updateSaleProposalStateByBuyer(
+        proposal.proposal.id,
+        "Aceptada"
+      );
+    } else {
+      await proposalModel.updateSaleProposalStateBySeller(
+        proposal.proposal.id,
+        "Aceptada"
+      );
+    }
+
+    if (
+      (await profileChecker.isBuyerProfile(req.user_id)) &&
+      proposal.type == "Licitation"
+    ) {
+      await proposalModel.updateLicitationProposalStateByBuyer(
+        proposal.proposal.id,
+        "Aceptada"
+      );
+    } else {
+      await proposalModel.updateLicitationProposalStateBySeller(
+        proposal.proposal.id,
+        "Aceptada"
+      );
+    }
+
+    proposal = await proposalModel.getProposalByConditions(req.params.id);
+
+    if (
+      proposal.proposal.estado_comprador == "Aceptada" &&
+      proposal.proposal.estado_vendedor == "Aceptada"
+    ) {
+      // Si ambos estados son iguales
+      const delivery = await conditionModel.getDeliveriesByCondition(
+        req.params.id
+      ); // Consigo las entregas marcadas en condiciones
+
+      for (const order of delivery) {
+        // Por cada entrega creo una orden.
+        await orderModel.createOrder(
+          uuidv4(),
+          proposal.proposal.id_comprador,
+          proposal.proposal.id_vendedor,
+          order.id
+        );
+      }
+
+      return res.status(200).json({
+        message: "Propuesta aceptada correctamente, se ha creado la orden/es",
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Propuesta aceptada correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

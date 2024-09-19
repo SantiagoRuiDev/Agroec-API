@@ -69,12 +69,18 @@ export const getOrdersById = async (order_id) => {
     const [statement] = await connection.query(
       `SELECT o.id, o.id_comprador, o.id_vendedor, o.creado,p.id as producto, p.imagen, cc.precio, cc.politicas_recepcion, cc.id as id_negociacion, cc.precio_unidad
 		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
-		pr.nombre, pr.ubicacion_google_maps, pr.direccion
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion,
+       COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre,
+       COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS vendedor_apellido
 	   FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN productos p ON p.id = cc.id_producto
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       LEFT JOIN perfil_agricultor pa ON pa.id_usuario = o.id_vendedor
+       LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = o.id_vendedor
+       LEFT JOIN perfil_comerciante pca ON pca.id_usuario = o.id_vendedor
+       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = o.id_vendedor
        WHERE o.id = ?
       `,
       [order_id]

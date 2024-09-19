@@ -1,8 +1,9 @@
 import * as warrantyModel from "../models/warranty.model.js";
+import * as walletModel from "../models/wallet.model.js";
 import * as profileChecker from "../libs/checker.js";
 import { v4 as uuidv4 } from "uuid";
 
-export const getWarrantyByUser= async (req, res) => {
+export const getWarrantyByUser = async (req, res) => {
     try {
 
         const user_id = req.user_id;
@@ -13,13 +14,15 @@ export const getWarrantyByUser= async (req, res) => {
             );
           }
 
-        const getWarrantyByUser = await warrantyModel.getWarrantyByUser(user_id);
+        const warranties = await warrantyModel.getWarrantyPayments(user_id);
 
-        if(!getWarrantyByUser){
-            res.status(404).send({message: 'No se pudo obtener la garantia del usuario'});
+        const balance = await walletModel.getBalance(user_id);
+
+        if(!warranties){
+            return res.status(404).send({message: 'No se pudo obtener las garantias del usuario'});
         }
 
-            res.status(200).send({getWarrantyByUser});
+        return res.status(200).send({...balance, warranties: warranties});
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
@@ -43,7 +46,7 @@ export const createWarranty = async (req, res) => {
         return;
       }
 
-      const paymentCondition = await warrantyModel.getPaymentCondition(idCondition);
+      const paymentCondition = await warrantyModel.getCondition(idCondition);
 
       if(!paymentCondition){
         res.status(404).send({message: 'La condicion de pago no existe o el modo de pago es invalido'})
@@ -65,6 +68,7 @@ export const createWarranty = async (req, res) => {
 
       if(createWarranty > 0){
         res.status(200).send({ message: 'Garantia pagada exitosamente'});
+        return;
       }
       
     } catch (error) {

@@ -6,6 +6,7 @@ import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as walletModel from "../models/wallet.model.js";
 import * as licitationsModel from "../models/licitations.model.js";
+import * as pointsModel from "../models/points.model.js";
 //importar esquemas
 
 export const updateProfile = async (req, res) => {
@@ -252,6 +253,21 @@ export const getProfileStats = async (req, res) => {
     }
 
     throw new Error("Perfil no encontrado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
+export const getProfilePoints = async (req, res) => {
+  try {
+    if(profileChecker.isBuyerProfile(req.user_id)){
+      const reception_points = await pointsModel.getPoints(req.user_id);
+
+      return res.status(200).json(reception_points);
+    }
+
+    throw new Error("No ha sido posible cargar tus puntos de recepción");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

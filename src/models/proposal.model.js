@@ -383,3 +383,51 @@ export const createLicitationCondition = async (
     throw new Error(error.message);
   }
 };
+
+
+
+export const getProposalByConditions = async (condition_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta
+      FROM condiciones_compra cc 
+      LEFT JOIN propuesta_compra_contiene_condicion pccc ON pccc.id_condicion = cc.id
+      LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
+      WHERE cc.id = ?`,
+      [condition_id]
+    );
+    
+
+    if(statement[0]){
+      const [sale] = await connection.query(
+        `SELECT *
+        FROM propuesta_venta pv 
+        WHERE pv.id = ?`,
+        [statement[0].id_propuesta]
+      );
+
+      if(sale[0]){
+        return {
+          proposal: sale[0],
+          type: "Sale"
+        }
+      }
+
+      const [licitation] = await connection.query(
+        `SELECT *
+        FROM propuesta_compra pc 
+        WHERE pc.id = ?`,
+        [statement[0].id_propuesta]
+      );
+
+      if(licitation[0]){
+        return {
+          proposal: licitation[0],
+          type: "Licitation"
+        }
+      }
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

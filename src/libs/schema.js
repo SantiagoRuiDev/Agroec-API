@@ -4,7 +4,7 @@ export const validateSchemas = (InputBuffer, Schema) => {
       "string.base": "{{#label}} debe ser de tipo texto",
       "string.empty": "{{#label}} no puede estar vacio",
       "string.min": "{{#label}} debe ser de al menos {{#limit}} caracteres",
-      "number.min": "{{#label}} debe ser mayor que {{#limit}}",
+      "number.min": "{{#label}} debe ser mayor o igual que {{#limit}}",
       "string.email": "Ingresa un email valido",
       "string.pattern.base":
         "Tu contraseña debe contener al menos una mayuscula",

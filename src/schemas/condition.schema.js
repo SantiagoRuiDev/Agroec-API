@@ -1,23 +1,24 @@
 import Joi from "joi";
+import { pointsDeliverySchema } from "./points.schema.js";
 
 export const conditionSchema = Joi.object({
+  id: Joi.string().min(0).required(),
+  id_producto: Joi.string().min(0).required(),
   precio: Joi.number().min(1).required(),
   precio_unidad: Joi.string().min(2).max(2).required(),
   cantidad: Joi.number().min(1).required(),
   cantidad_unidad: Joi.string().min(2).max(2).required(),
-  modo_pago: Joi.string().required(),
-  notas: Joi.string(),
+  politicas_recepcion: Joi.string().min(0).required(),
+  modo_pago: Joi.string().min(0).required(),
+  porcentaje_inicial: Joi.number().min(0).max(100).required(),
+  modo_pago_final: Joi.string().min(0).required(),
+  porcentaje_final: Joi.number().min(0).max(100).required(),
+  notas: Joi.string().min(0),
   precio_puesto_domicilio: Joi.boolean().required(),
 });
 
-export const warrantySchema = Joi.object({
-  porcentaje_inicial: Joi.number().min(1).max(100).required(),
-  modo_pago_final: Joi.string().required(),
-  porcentaje_final: Joi.number().min(1).max(100).required(),
-});
-
 export const deliverySchema = Joi.object({
-  id_punto: Joi.string().required(),
+  punto: pointsDeliverySchema,
   cantidad: Joi.number().min(1).required(),
   cantidad_unidad: Joi.string().min(2).max(2).required(),
   fecha_entrega: Joi.string()

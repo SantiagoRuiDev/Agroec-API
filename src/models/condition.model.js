@@ -1,10 +1,10 @@
 import { connection } from "../index.js";
 
-export const createContidion = async (condition_id) => {
+export const createContidion = async (condition_id, product_id) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO condiciones_compra(id) VALUES (?)`,
-      [condition_id]
+      `INSERT INTO condiciones_compra(id, id_producto) VALUES (?, ?)`,
+      [condition_id, product_id]
     );
 
     return statement.affectedRows;
@@ -16,7 +16,7 @@ export const createContidion = async (condition_id) => {
 export const updateCondition = async (condition_id, schema) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE condiciones_compra SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, modo_pago = ?, notas = ?, precio_puesto_domicilio = ? WHERE id = ?`,
+      `UPDATE condiciones_compra SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, modo_pago = ?, notas = ?, precio_puesto_domicilio = ?, politicas_recepcion = ? WHERE id = ?`,
       [
         schema.precio,
         schema.precio_unidad,
@@ -25,6 +25,7 @@ export const updateCondition = async (condition_id, schema) => {
         schema.modo_pago,
         schema.notas,
         schema.precio_puesto_domicilio,
+        schema.politicas_recepcion,
         condition_id,
       ]
     );
@@ -82,14 +83,52 @@ export const getConditionByBuyProposal = async (proposal_id) => {
 };
 
 
-export const getConditionByChat = async (chat_id) => {
+export const getConditionById = async (condition_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT cc.* FROM condiciones_compra cc INNER JOIN chat ch ON cc.id = ch.id_condiciones WHERE ch.id = ?`,
-      [chat_id]
+      `SELECT * FROM condiciones_compra WHERE id = ?`,
+      [condition_id]
     );
 
     return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getDeliveriesByCondition = async (condition_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM entregas WHERE id_condicion = ?`,
+      [condition_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getConditionByChat = async (chat_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT cc.*
+      FROM condiciones_compra cc 
+      INNER JOIN chat ch ON cc.id = ch.id_condiciones 
+      WHERE ch.id = ?`,
+      [chat_id]
+    );
+
+    const [deliveries] = await connection.query(
+      `SELECT e.*, pr.nombre, pr.ubicacion_google_maps, pr.id as id_punto, pr.direccion
+      FROM entregas e 
+      INNER JOIN puntos_recepcion pr ON pr.id = e.id_punto
+      WHERE e.id_condicion = ?`,
+      [statement[0].id]
+    );
+
+    return {condition: statement[0], deliveries: deliveries};
   } catch (error) {
     throw new Error(error.message);
   }

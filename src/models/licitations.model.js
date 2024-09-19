@@ -61,7 +61,7 @@ export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
 export const getLicitationById = async (licitation_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE pl.id = ?`,
+      `SELECT pl.*, p.nombre, p.imagen, p.id_producto FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE pl.id = ?`,
       [licitation_id]
     );
 
