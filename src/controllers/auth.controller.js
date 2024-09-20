@@ -181,7 +181,7 @@ export const loginAccount = async (req, res) => {
     const token = encodeToken(fetchUser.id, "1h");
 
     res.cookie("auth-token", token, {
-      expires: new Date(Date.now() + 900000),
+      expires: new Date(Date.now() + 18000000),
       httpOnly: true,
     });
     return res.status(200).json({ message: "Sesion iniciada correctamente" });

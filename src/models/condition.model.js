@@ -128,7 +128,16 @@ export const getConditionByChat = async (chat_id) => {
       [statement[0].id]
     );
 
-    return {condition: statement[0], deliveries: deliveries};
+    const [quality_params] = await connection.query(
+      `SELECT pc.*
+      FROM parametros_calidad pc
+      INNER JOIN condicion_contiene_parametros ccp ON ccp.id_parametros = pc.id
+      INNER JOIN condiciones_compra cc ON cc.id = ccp.id_condicion
+      WHERE cc.id = ?`,
+      [statement[0].id]
+    );
+
+    return {condition: statement[0], deliveries: deliveries, quality_params: quality_params};
   } catch (error) {
     throw new Error(error.message);
   }

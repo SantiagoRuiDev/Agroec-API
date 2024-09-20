@@ -100,3 +100,18 @@ export const deleteLicitation = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 }
+
+export const closeLicitation = async (req, res) => {
+    try {
+        const closedRow = await licitationModel.closeLicitation(req.user_id, req.params.id);
+
+        if(closedRow > 0) {
+
+            return res.status(200).json({message: "Licitación cerrada correctamente"});
+        }
+
+        throw new Error("El cierre de la licitacion ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}

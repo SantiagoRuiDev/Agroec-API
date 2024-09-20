@@ -2,7 +2,7 @@ import Joi from "joi";
 
 export const accountSchema = Joi.object({
   tipo_identificacion: Joi.string().min(3).required(),
-  numero_identificacion: Joi.string().min(3).required(),
+  numero_identificacion: Joi.string().min(8).max(13).required(),
   correo: Joi.string().email().required(),
   clave: Joi.string().required(),
   provincia: Joi.string().min(3).required(),

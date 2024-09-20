@@ -5,3 +5,5 @@ export const router = Router();
 
 router.get('/', productController.getAllProducts)
 
+// ENDPOINT CREAR PRODUCTO
+// ENDPOINT ELIMINAR PRODUCTO

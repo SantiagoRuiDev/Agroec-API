@@ -1,6 +1,7 @@
 import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as licitationModel from "../models/licitations.model.js";
+import * as qualityParamsModel from "../models/qualityParams.model.js";
 import * as conditionModel from "../models/condition.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
 import * as profileChecker from "../libs/checker.js";
@@ -233,9 +234,11 @@ export const getLicitationProposalByUser = async (req, res) => {
 
 export const updateCondition = async (req, res) => {
   try {
+    const user_id = req.user_id;
     const condition_id = req.params.id;
     const condition_schema = req.body.condition;
     const delivery_schema = req.body.delivery;
+    const quality_params = req.body.quality_params;
 
     if (condition_schema.modo_pago == "Modo Garantía") {
       if (
@@ -254,14 +257,38 @@ export const updateCondition = async (req, res) => {
     );
 
     if (updateRow > 0) {
+      if (quality_params) {
+        for (const param of req.body.quality_params) {
+          if (param.id == "") {
+            const newParamRowId = uuidv4();
+            await qualityParamsModel.createQualityParam(
+              newParamRowId,
+              user_id,
+              param
+            );
+            await qualityParamsModel.createQualityParamForCondition(
+              uuidv4(),
+              newParamRowId,
+              condition_id
+            );
+          } else {
+            continue;
+          }
+        }
+      }
+
       if (delivery_schema) {
         for (const delivery of delivery_schema) {
-          await deliveryModel.createDelivery(
-            uuidv4(),
-            delivery.punto.id,
-            condition_id,
-            delivery
-          );
+          if (delivery.id == "") {
+            await deliveryModel.createDelivery(
+              uuidv4(),
+              delivery.punto.id,
+              condition_id,
+              delivery
+            );
+          } else {
+            continue;
+          }
         }
       }
 
@@ -271,7 +298,6 @@ export const updateCondition = async (req, res) => {
           porcentaje_inicial: condition_schema.porcentaje_inicial,
           porcentaje_final: condition_schema.porcentaje_final,
         });
-        console.log(1)
       }
 
       return res
@@ -394,6 +420,83 @@ export const acceptProposalByConditions = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Propuesta aceptada correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const deleteDelivery = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const affected = await orderModel.deleteDelivery(id);
+
+    if (affected) {
+      return res
+        .status(200)
+        .json({ message: "Entrega eliminada correctamente" });
+    }
+
+    throw new Error("La eliminación de la entrega ha fallado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const deleteParam = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user_id = req.user_id;
+
+    const affected = await qualityParamsModel.deleteQualityParamForCondition(
+      id
+    );
+
+    if (affected) {
+      await qualityParamsModel.deleteQualityParam(id, user_id);
+
+      return res
+        .status(200)
+        .json({ message: "Parametro de calidad elimiando correctamente" });
+    }
+
+    throw new Error("La eliminación del parametro ha fallado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const updateDelivery = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const affected = await deliveryModel.updateDelivery(id, req.body);
+
+    if (affected > 0) {
+      return res
+        .status(200)
+        .json({ message: "Entrega actualizada correctamente" });
+    }
+
+    throw new Error("La actualizacion de la entrega ha fallado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const updateParam = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const affected = await qualityParamsModel.updateQualityParam(id, req.body);
+
+    if (affected > 0) {
+      return res
+        .status(200)
+        .json({ message: "Parametro actualizado correctamente" });
+    }
+
+    throw new Error("La actualizacion del parametro ha fallado");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

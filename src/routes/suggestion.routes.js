@@ -6,3 +6,4 @@ export const router = Router();
 
 router.post('/', authMiddleware.isAuthentified, suggestionController.createSuggestion)
 
+// ENDPOINT LISTAR SUGERENCIAS

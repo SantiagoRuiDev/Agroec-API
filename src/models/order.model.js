@@ -91,3 +91,32 @@ export const getOrdersById = async (order_id) => {
     throw new Error(error.message);
   }
 };
+
+
+export const deleteOrder = async (delivery_id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM order WHERE id_entrega = ?
+      `,
+      [delivery_id]
+    );
+
+    return (statement.affectedRows > 0) ? true : false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export const deleteDelivery = async (delivery_id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM entregas WHERE id = ?
+      `,
+      [delivery_id]
+    );
+
+    return (statement.affectedRows > 0) ? true : false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

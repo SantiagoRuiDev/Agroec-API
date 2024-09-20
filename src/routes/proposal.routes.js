@@ -20,3 +20,7 @@ router.get('/licitation/:id', authMiddleware.isAuthentified, proposalController.
 router.get('/licitation/product-filter/:id', authMiddleware.isAuthentified, proposalController.getLicitationProposalByUserAndProduct)
 
 router.put('/condition/:id', authMiddleware.isAuthentified, proposalMiddleware.updateCondition, proposalController.updateCondition)
+router.delete('/condition/remove-delivery/:id', authMiddleware.isAuthentified, proposalController.deleteDelivery)
+router.delete('/condition/remove-param/:id', authMiddleware.isAuthentified, proposalController.deleteParam)
+router.put('/condition/delivery/:id', authMiddleware.isAuthentified, proposalController.updateDelivery)
+router.put('/condition/param/:id', authMiddleware.isAuthentified, proposalController.updateParam)

@@ -13,4 +13,6 @@ router.get('/me/:id', authMiddleware.isAuthentified, licitationController.getLic
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)
 router.get('/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 
+router.put('/set-closed/:id', authMiddleware.isAuthentified, licitationController.closeLicitation)
+
 router.delete('/:id', authMiddleware.isAuthentified, licitationController.deleteLicitation)

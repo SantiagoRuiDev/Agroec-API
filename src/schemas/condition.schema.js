@@ -18,6 +18,7 @@ export const conditionSchema = Joi.object({
 });
 
 export const deliverySchema = Joi.object({
+  id: Joi.string().min(0),
   punto: pointsDeliverySchema,
   cantidad: Joi.number().min(1).required(),
   cantidad_unidad: Joi.string().min(2).max(2).required(),
