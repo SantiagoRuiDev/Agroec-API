@@ -17,6 +17,7 @@ import { router as ordersRoutes } from "./routes/order.routes.js";
 import { router as chatRoutes } from "./routes/chat.routes.js";
 import { router as walletRoutes } from "./routes/wallet.routes.js";
 import { router as warrantyRoutes } from "./routes/warranty.routes.js";
+import { router as advertisingRoutes } from "./routes/advertising.routes.js";
 import { connect } from './database/index.js';
 import { createServer } from 'node:http'
 import { Server } from "socket.io";
@@ -68,6 +69,7 @@ app.use("/api/v1/qualification", qualificationRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use('/api/v1/wallet', walletRoutes)
 app.use('/api/v1/warranty', warrantyRoutes)
+app.use('/api/v1/advertising', advertisingRoutes)
 
 
 
