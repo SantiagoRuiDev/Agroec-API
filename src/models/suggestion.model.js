@@ -11,3 +11,15 @@ export const createSuggestion = async (uuid, producto, cantidad) => {
       throw new Error(error.message);
     }
   };
+
+  export const getSuggestions = async () => {
+    try {
+      const [statement] = await connection.query(
+        `SELECT * FROM sugerir_producto`);
+  
+      return statement;
+      
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
