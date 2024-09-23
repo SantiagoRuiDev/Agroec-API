@@ -77,7 +77,7 @@ export const getSaleProposalByLicitation = async (user_id) => {
     const [statement] = await connection.query(
       `SELECT pv.* FROM propuesta_venta pv 
       INNER JOIN producto_licitar pl ON pv.id_licitacion = pl.id 
-      WHERE pl.id_usuario = ?`,
+      WHERE pl.id_usuario = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada");`,
       [user_id]
     );
 
@@ -110,7 +110,7 @@ export const getSaleProposalByUserAndProduct = async (
         LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_vendedor
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_vendedor
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
-    	WHERE id_comprador = ? AND pc.id_producto = ?`,
+    	WHERE id_comprador = ? AND pc.id_producto = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")`,
       [user_id, product_id]
     );
 
@@ -252,7 +252,7 @@ export const getLicitationProposalByUser = async (user_id) => {
       FROM propuesta_compra pc
       INNER JOIN usuarios u ON pc.id_comprador = u.id 
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta
-      WHERE u.id = ?`,
+      WHERE u.id = ? AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
       [user_id]
     );
 
@@ -308,7 +308,7 @@ export const getLicitationProposalByUserAndProduct = async (
         LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
-        WHERE u.id = ? AND pv.id_producto = ?;`,
+        WHERE u.id = ? AND pv.id_producto = ? AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
       [user_id, product_id]
     );
 
@@ -389,7 +389,7 @@ export const createLicitationCondition = async (
 export const getProposalByConditions = async (condition_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta
+      `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta, cc.modo_pago
       FROM condiciones_compra cc 
       LEFT JOIN propuesta_compra_contiene_condicion pccc ON pccc.id_condicion = cc.id
       LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
@@ -407,9 +407,17 @@ export const getProposalByConditions = async (condition_id) => {
       );
 
       if(sale[0]){
+        const [buyer] = await connection.query(
+          `SELECT pl.id_usuario
+          FROM producto_licitar pl 
+          WHERE pl.id = ?`,
+          [sale[0].id_licitacion]
+        )
+        sale[0].id_comprador = buyer[0].id_usuario;
         return {
           proposal: sale[0],
-          type: "Sale"
+          type: "Sale",
+          method: statement[0].modo_pago
         }
       }
 
@@ -421,9 +429,17 @@ export const getProposalByConditions = async (condition_id) => {
       );
 
       if(licitation[0]){
+        const [seller] = await connection.query(
+          `SELECT pv.id_usuario
+          FROM producto_vender pv 
+          WHERE pv.id = ?`,
+          [licitation[0].id_venta]
+        )
+        licitation[0].id_vendedor = seller[0].id_usuario;
         return {
           proposal: licitation[0],
-          type: "Licitation"
+          type: "Licitation",
+          method: statement[0].modo_pago
         }
       }
     }

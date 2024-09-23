@@ -404,12 +404,18 @@ export const acceptProposalByConditions = async (req, res) => {
 
       for (const order of delivery) {
         // Por cada entrega creo una orden.
+        const order_uuid = uuidv4();
         await orderModel.createOrder(
-          uuidv4(),
+          order_uuid,
           proposal.proposal.id_comprador,
           proposal.proposal.id_vendedor,
           order.id
         );
+
+        if(proposal.method != "Modo Garantía") {
+          await orderModel.updateOrderStatus(order_uuid, 'Pendiente de entrega');
+          await orderModel.createPendingStatus(uuidv4(), order_uuid);
+        }
       }
 
       return res.status(200).json({
