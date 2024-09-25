@@ -8,3 +8,7 @@ export const router = Router();
 
 router.get('/me', authMiddleware.isAuthentified, orderController.getOrdersByUser)
 router.get('/:id', authMiddleware.isAuthentified, orderController.getOrdersById)
+router.get('/me/unpaid', authMiddleware.isAuthentified, orderController.getUnpaidOrders)
+router.put('/set-received/:id', authMiddleware.isAuthentified, orderController.setOrderReceivedStatus);
+router.put('/set-rejected/:id', authMiddleware.isAuthentified, orderController.setOrderRejectedStatus);
+router.put('/set-delivered/:id', authMiddleware.isAuthentified, orderController.setOrderDeliveredStatus);

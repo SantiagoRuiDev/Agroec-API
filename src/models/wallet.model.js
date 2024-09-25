@@ -16,7 +16,7 @@ export const createWallet = async (uuid, uuid_user) => {
 export const createFee = async (uuid, id_delivery, id_wallet, schema) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO fee (id, id_entrega, monto_fee) VALUES (?, ?, ?, ?) `,
+      `INSERT INTO fee (id, id_entrega, id_billetera, monto_fee) VALUES (?, ?, ?, ?) `,
       [uuid, id_delivery, id_wallet, schema.monto_fee]
     );
 
@@ -42,9 +42,18 @@ export const getWalletByUser = async (uuid_user) => {
 
     const [fee] = await connection.query(
       `
-          SELECT f.id, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps FROM fee f 
+          SELECT f.id, cc.id_producto, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps,
+          COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre,
+          COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS vendedor_apellido
+          FROM fee f 
           INNER JOIN entregas e ON f.id_entrega = e.id 
+          INNER JOIN ordenes o ON o.id_entrega = e.id
+          INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
           INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+          LEFT JOIN perfil_agricultor pa ON pa.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_comerciante pca ON pca.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = o.id_vendedor
           WHERE id_billetera = ?
           `,
       [wallet[0].id]

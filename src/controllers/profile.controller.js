@@ -236,10 +236,11 @@ export const getProfileStats = async (req, res) => {
 
     if(profileChecker.isBuyerProfile(req.user_id)){
       const profile = await profileModel.getBuyerProfileByUser(req.user_id);
-      const receivedOrders = await orderModel.getOrdersByBuyerDelivered(req.user_id);
+      const receivedOrders = await orderModel.getOrdersByBuyerDeliveredAndPaid(req.user_id);
       const activeLicitations = await licitationsModel.getLicitationsByUser(req.user_id);
       const proposals = await proposalModel.getSaleProposalByLicitation(req.user_id);
       const buyProposals = await proposalModel.getLicitationProposalByUser(req.user_id);
+      const unpaidOrders = await orderModel.getUnpaidOrders(req.user_id);
       const walletAmount = await walletModel.getBalance(req.user_id);
 
       return res.status(200).json({
@@ -248,6 +249,7 @@ export const getProfileStats = async (req, res) => {
         licitations: activeLicitations.length,
         proposals: proposals.length,
         buyProposals: buyProposals.length,
+        unpaidOrders: unpaidOrders.length,
         wallet: walletAmount
       });
     }

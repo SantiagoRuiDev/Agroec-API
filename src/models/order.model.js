@@ -40,7 +40,6 @@ export const getOrdersByUser = async (user_id) => {
   }
 };
 
-
 export const updateOrderStatus = async (order_id, status) => {
   try {
     const [statement] = await connection.query(
@@ -54,7 +53,6 @@ export const updateOrderStatus = async (order_id, status) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getOrdersByBuyerDelivered = async (user_id) => {
   try {
@@ -78,11 +76,33 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
 };
 
 
+export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad
+		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion
+	   FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+       INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       LEFT JOIN fee f ON f.id_entrega = e.id
+       WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getOrdersById = async (order_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.creado,p.id as producto, p.imagen, cc.modo_pago, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
-		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
+      `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.cantidad_recibida, o.creado,p.id as producto, p.imagen, cc.modo_pago, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
+		,e.id as id_entrega, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
 		pr.nombre, pr.ubicacion_google_maps, pr.direccion,
        COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre,
        COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS vendedor_apellido
@@ -104,28 +124,41 @@ export const getOrdersById = async (order_id) => {
     const [warranty] = await connection.query(
       `SELECT * FROM pago_garantia WHERE id_condicion = ?
       `,
-      [statement[0].id_negociacion])
+      [statement[0].id_negociacion]
+    );
 
     const [statuses] = await connection.query(
       `SELECT * FROM estado_ordenes WHERE id_orden = ?
       `,
-      [order_id])
+      [order_id]
+    );
 
-    return {order: statement[0], statuses: statuses, warranty: (warranty[0] != undefined) ?  warranty[0] : null };
+    const [fee] = await connection.query(
+      `SELECT * FROM fee WHERE id_entrega = ?
+        `,
+      [statement[0].id_entrega]
+    );
+
+    return {
+      order: statement[0],
+      statuses: statuses,
+      warranty: warranty[0] != undefined ? warranty[0] : null,
+      fee: fee[0] != undefined ? fee[0] : null,
+    };
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-
-export const createPendingStatus = async (uuid, order_id) => {
+export const updateOrderReceivedQuantity = async (quantity, order_id) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO estado_ordenes (id, id_orden) VALUES (?,?)
+      `UPDATE ordenes SET cantidad_recibida = ? WHERE id = ?
       `,
-      [uuid, order_id])
-    
-    if(statement.affectedRows > 0){
+      [quantity, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
       return true;
     }
 
@@ -133,7 +166,133 @@ export const createPendingStatus = async (uuid, order_id) => {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
+
+export const createDeliveryStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'En camino')
+      `,
+      [uuid, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createWaitingStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'En espera')
+      `,
+      [uuid, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createReceivedStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'Aceptado')
+      `,
+      [uuid, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createRejectedStatus = async (uuid, order_id, reason) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado, motivo) VALUES (?,?, 'Rechazado', ?)
+      `,
+      [uuid, order_id, reason]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createPendingStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden) VALUES (?,?)
+      `,
+      [uuid, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const checkDeliveryStatus = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM estado_ordenes WHERE id_orden = ? AND estado = 'En camino'
+      `,
+      [order_id]
+    );
+
+    if (statement.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const checkPendingStatus = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM estado_ordenes WHERE id_orden = ? AND estado = 'Pendiente de entrega'
+      `,
+      [order_id]
+    );
+
+    if (statement.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 export const deleteOrder = async (delivery_id) => {
   try {
@@ -143,11 +302,11 @@ export const deleteOrder = async (delivery_id) => {
       [delivery_id]
     );
 
-    return (statement.affectedRows > 0) ? true : false;
+    return statement.affectedRows > 0 ? true : false;
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 export const deleteDelivery = async (delivery_id) => {
   try {
@@ -157,8 +316,28 @@ export const deleteDelivery = async (delivery_id) => {
       [delivery_id]
     );
 
-    return (statement.affectedRows > 0) ? true : false;
+    return statement.affectedRows > 0 ? true : false;
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
+
+export const getUnpaidOrders = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, e.fecha_entrega, e.cantidad, e.cantidad_unidad, e.hora_entrega, cc.precio, cc.precio_unidad, cc.id_producto, p.imagen  FROM estado_ordenes eo
+      INNER JOIN ordenes o ON o.id = eo.id_orden
+      INNER JOIN entregas e ON e.id = o.id_entrega
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+      INNER JOIN productos p ON p.id = cc.id_producto
+      LEFT JOIN fee ON fee.id_entrega = o.id_entrega
+      WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NULL AND o.id_comprador = ?
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

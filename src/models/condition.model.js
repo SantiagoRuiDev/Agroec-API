@@ -113,9 +113,10 @@ export const getDeliveriesByCondition = async (condition_id) => {
 export const getConditionByChat = async (chat_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT cc.*
+      `SELECT cc.*, p.imagen
       FROM condiciones_compra cc 
       INNER JOIN chat ch ON cc.id = ch.id_condiciones 
+      INNER JOIN productos p ON p.id = cc.id_producto
       WHERE ch.id = ?`,
       [chat_id]
     );
