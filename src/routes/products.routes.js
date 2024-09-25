@@ -1,9 +1,12 @@
 import { Router } from "express";
 import * as productController from '../controllers/products.controller.js'
+import * as authMiddleware from '../middlewares/auth.middleware.js'
 
 export const router = Router();
 
 router.get('/', productController.getAllProducts)
+router.post('/', authMiddleware.isAuthentified, productController.createProduct)
+router.delete('/:id', authMiddleware.isAuthentified, productController.deleteProductById)
 
 // ENDPOINT CREAR PRODUCTO
 // ENDPOINT ELIMINAR PRODUCTO

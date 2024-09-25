@@ -19,3 +19,21 @@ export const createSuggestion = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 }
+
+export const getSuggestions = async (req, res) => {
+    try {
+
+     
+        const suggestions = await suggestionModel.getSuggestions();
+
+        if(!suggestions){
+            res.status(404).send({message: 'No hay sugerencias para mostrar'});
+        }
+
+        return res.status(200).json(suggestions);
+
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
