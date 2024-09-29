@@ -62,7 +62,7 @@ export const getInputById = async (input_id) => {
             [input_id]
         );
 
-        return statement;
+        return statement[0];
     } catch (error) {
         throw new Error(error.message);
     }
@@ -81,10 +81,23 @@ export const getInputByCreatorId = async (user_id) => {
     }
 };
 
-export const getAllInputs = async () => {
+export const getAllInputsByCategory = async (category_id) => {
     try {
         const [statement] = await connection.query(
-            `SELECT * FROM insumos`,
+            `SELECT * FROM insumos WHERE categoria_insumo = ?`,
+            [category_id]
+        );
+
+        return statement;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+export const getInputCategories = async () => {
+    try {
+        const [statement] = await connection.query(
+            `SELECT * FROM categoria_insumos`,
         );
 
         return statement;

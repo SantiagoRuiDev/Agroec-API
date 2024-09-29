@@ -1,10 +1,10 @@
 import { connection } from "../index.js";
 
-export const createQualification = async (uuid, uuid_calificante, uuid_calificado, schema) => {
+export const createQualification = async (uuid, uuid_calificante, uuid_calificado, uuid_orden, schema) => {
   try {
       const [statement] = await connection.query(
-          `INSERT INTO calificacion (id, id_calificante, id_calificado, puntaje) VALUES (?, ?, ?, ?)`,
-          [uuid, uuid_calificante, uuid_calificado, schema.puntaje]
+          `INSERT INTO calificacion (id, id_calificante, id_calificado, id_orden, puntaje) VALUES (?, ?, ?, ?, ?)`,
+          [uuid, uuid_calificante, uuid_calificado, uuid_orden, schema.puntaje]
       );
 
       return statement; 
@@ -14,26 +14,26 @@ export const createQualification = async (uuid, uuid_calificante, uuid_calificad
   }
 };
 
-export const getQualificationUserSession = async (uuid_calificante) => {
+export const getQualificationUserSession = async (uuid_usuario) => {
   try {
       const [statement] = await connection.query(
-          `SELECT * FROM calificacion WHERE id_calificante = ?`,
-          [uuid_calificante]
+          `SELECT AVG(c.puntaje) AS promedio_calificacion, COUNT(*) AS total_calificaciones FROM calificacion c WHERE c.id_calificado = ?`,
+          [uuid_usuario]
       );
 
-      return statement; 
+      return statement[0]; 
     
   } catch (error) {
       throw new Error(error.message); 
   }
 };
 
-export const getQualificationByUserId = async (id_calificante) => {
+export const getQualificationByUserId = async (id_calificado) => {
   try {
 
       const [statement] = await connection.query(
-          `SELECT * FROM calificacion WHERE id_calificante = ?`,
-          [id_calificante]
+          `SELECT * FROM calificacion WHERE id_calificado = ?`,
+          [id_calificado]
       );
 
       return statement;  

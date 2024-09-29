@@ -28,14 +28,16 @@ export const createSale = async (sale_id, product_id, user_id, schema) => {
 export const getSalesByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
+      COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion
       FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
       LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_usuario
-        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
-        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
-        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
+      LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
       WHERE pv.id_producto = ?`,
       [product_id]
     );

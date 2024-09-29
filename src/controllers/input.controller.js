@@ -116,16 +116,31 @@ export const getInputByCreatorId = async (req, res) => {
 
 };
 
+export const getInputCategories = async (req, res) => {
+  try{
+    const categories = await inputModel.getInputCategories();
+  
+    if (!categories) {
+      return res.status(404).send({ message: 'Error al obtener las categorias' });
+    }
+  
+   return res.status(200).send(categories);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+};
+
 export const getAllInputs = async (req, res) => {
   try{
 
-    const getAllInputs = await inputModel.getAllInputs();
+    const getAllInputs = await inputModel.getAllInputs(req.params.category);
   
     if (!getAllInputs) {
       return res.status(404).send({ message: 'Error al obtener los insumos' });
     }
   
-   return res.status(200).send({ message: 'Insumos obtenidos correctamente', getAllInputs });
+   return res.status(200).send(getAllInputs);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

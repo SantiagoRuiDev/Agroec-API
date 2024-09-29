@@ -5,6 +5,7 @@ import * as orderModel from "../models/order.model.js";
 import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as walletModel from "../models/wallet.model.js";
+import * as qualificationModel from "../models/qualification.models.js";
 import * as licitationsModel from "../models/licitations.model.js";
 import * as pointsModel from "../models/points.model.js";
 //importar esquemas
@@ -174,35 +175,45 @@ export const getProfile = async (req, res) => {
 
     let sellerProfile;
     let sellerSales;
+    let sellerQualifications;
 
     if (await profileChecker.isAssociationAgricultural(findUser.id)) {
       sellerProfile =
         await profileModel.getAssociationAgriculturalProfileByUser(findUser.id);
-      sellerSales = 
-        await salesModel.getSalesByUser(findUser.id);
+      sellerSales = await salesModel.getSalesByUser(findUser.id);
+      sellerQualifications = await qualificationModel.getQualificationByUserId(
+        findUser.id
+      );
       return res.status(200).json({
         ...sellerProfile,
         sales: sellerSales,
+        qualifications: sellerQualifications,
         type: "Asociación Agricola",
       });
     }
     if (await profileChecker.isFarmerProfile(findUser.id)) {
       sellerProfile = await profileModel.getFarmerProfileByUser(findUser.id);
-      sellerSales = 
-        await salesModel.getSalesByUser(findUser.id);
+      sellerSales = await salesModel.getSalesByUser(findUser.id);
+      sellerQualifications = await qualificationModel.getQualificationByUserId(
+        findUser.id
+      );
       return res.status(200).json({
         ...sellerProfile,
         sales: sellerSales,
+        qualifications: sellerQualifications,
         type: "Agricultor",
       });
     }
     if (await profileChecker.isMerchant(findUser.id)) {
       sellerProfile = await profileModel.getMerchantProfileByUser(findUser.id);
-      sellerSales = 
-        await salesModel.getSalesByUser(findUser.id);
+      sellerSales = await salesModel.getSalesByUser(findUser.id);
+      sellerQualifications = await qualificationModel.getQualificationByUserId(
+        findUser.id
+      );
       return res.status(200).json({
         ...sellerProfile,
         sales: sellerSales,
+        qualifications: sellerQualifications,
         type: "Comerciante",
       });
     }
@@ -210,11 +221,14 @@ export const getProfile = async (req, res) => {
       sellerProfile = await profileModel.getMerchantAgrochemicalProfileByUser(
         findUser.id
       );
-      sellerSales = 
-        await salesModel.getSalesByUser(findUser.id);
+      sellerSales = await salesModel.getSalesByUser(findUser.id);
+      sellerQualifications = await qualificationModel.getQualificationByUserId(
+        findUser.id
+      );
       return res.status(200).json({
         ...sellerProfile,
         sales: sellerSales,
+        qualifications: sellerQualifications,
         type: "Comerciante Agroquimicos",
       });
     }
@@ -225,7 +239,6 @@ export const getProfile = async (req, res) => {
   }
 };
 
-
 export const getProfileStats = async (req, res) => {
   try {
     const findUser = await authModel.getAccountById(req.user_id);
@@ -234,14 +247,23 @@ export const getProfileStats = async (req, res) => {
       throw new Error("Usuario no encontrado");
     }
 
-    if(profileChecker.isBuyerProfile(req.user_id)){
+    if (profileChecker.isBuyerProfile(req.user_id)) {
       const profile = await profileModel.getBuyerProfileByUser(req.user_id);
-      const receivedOrders = await orderModel.getOrdersByBuyerDeliveredAndPaid(req.user_id);
-      const activeLicitations = await licitationsModel.getLicitationsByUser(req.user_id);
-      const proposals = await proposalModel.getSaleProposalByLicitation(req.user_id);
-      const buyProposals = await proposalModel.getLicitationProposalByUser(req.user_id);
+      const receivedOrders = await orderModel.getOrdersByBuyerDeliveredAndPaid(
+        req.user_id
+      );
+      const activeLicitations = await licitationsModel.getLicitationsByUser(
+        req.user_id
+      );
+      const proposals = await proposalModel.getSaleProposalByLicitation(
+        req.user_id
+      );
+      const buyProposals = await proposalModel.getLicitationProposalByUser(
+        req.user_id
+      );
       const unpaidOrders = await orderModel.getUnpaidOrders(req.user_id);
       const walletAmount = await walletModel.getBalance(req.user_id);
+      const qualifications = await qualificationModel.getQualificationUserSession(req.user_id);
 
       return res.status(200).json({
         profile: profile,
@@ -250,7 +272,8 @@ export const getProfileStats = async (req, res) => {
         proposals: proposals.length,
         buyProposals: buyProposals.length,
         unpaidOrders: unpaidOrders.length,
-        wallet: walletAmount
+        wallet: walletAmount,
+        qualifications: qualifications
       });
     }
 
@@ -260,10 +283,9 @@ export const getProfileStats = async (req, res) => {
   }
 };
 
-
 export const getProfilePoints = async (req, res) => {
   try {
-    if(profileChecker.isBuyerProfile(req.user_id)){
+    if (profileChecker.isBuyerProfile(req.user_id)) {
       const reception_points = await pointsModel.getPoints(req.user_id);
 
       return res.status(200).json(reception_points);
