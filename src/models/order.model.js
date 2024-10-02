@@ -40,6 +40,25 @@ export const getOrdersByUser = async (user_id) => {
   }
 };
 
+
+export const getOrderUsers = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o
+      INNER JOIN entregas e ON e.id = o.id_entrega
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+       WHERE id = ?
+      `,
+      [order_id]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const updateOrderStatus = async (order_id, status) => {
   try {
     const [statement] = await connection.query(
@@ -261,7 +280,8 @@ export const createPendingStatus = async (uuid, order_id) => {
 export const checkDeliveryStatus = async (order_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM estado_ordenes WHERE id_orden = ? AND estado = 'En camino'
+      `SELECT * FROM estado_ordenes
+      WHERE id_orden = ? AND estado = 'En camino'
       `,
       [order_id]
     );

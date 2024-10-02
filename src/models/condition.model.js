@@ -113,10 +113,12 @@ export const getDeliveriesByCondition = async (condition_id) => {
 export const getConditionByChat = async (chat_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT cc.*, p.imagen
+      `SELECT cc.*, p.imagen, COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta
       FROM condiciones_compra cc 
       INNER JOIN chat ch ON cc.id = ch.id_condiciones 
       INNER JOIN productos p ON p.id = cc.id_producto
+      LEFT JOIN propuesta_compra_contiene_condicion pccc ON pccc.id_condicion = cc.id
+      LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
       WHERE ch.id = ?`,
       [chat_id]
     );

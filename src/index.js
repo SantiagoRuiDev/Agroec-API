@@ -18,10 +18,11 @@ import { router as chatRoutes } from "./routes/chat.routes.js";
 import { router as walletRoutes } from "./routes/wallet.routes.js";
 import { router as warrantyRoutes } from "./routes/warranty.routes.js";
 import { router as advertisingRoutes } from "./routes/advertising.routes.js";
-import { connect } from './database/index.js';
-import { createServer } from 'node:http'
+import { router as notificationRoutes } from "./routes/notification.routes.js";
+import { connect } from "./database/index.js";
+import { createServer } from "node:http";
 import { Server } from "socket.io";
-import './socket/socket.js'
+import "./socket/socket.js";
 import { initializeSocket } from "./socket/socket.js";
 // ---
 
@@ -33,7 +34,7 @@ const server = createServer(app);
 export const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
-    credentials: true // Permitir credenciales en las conexiones de socket
+    credentials: true, // Permitir credenciales en las conexiones de socket
   },
 });
 
@@ -51,7 +52,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 initializeSocket(io); // Inicia el socket, y lo envia a otra función para que controle los eventos.
 // RUTAS
 
@@ -67,16 +67,15 @@ app.use("/api/v1/input", inputRoutes);
 app.use("/api/v1/orders", ordersRoutes);
 app.use("/api/v1/qualification", qualificationRoutes);
 app.use("/api/v1/chat", chatRoutes);
-app.use('/api/v1/wallet', walletRoutes)
-app.use('/api/v1/warranty', warrantyRoutes)
-app.use('/api/v1/advertising', advertisingRoutes)
-
-
+app.use("/api/v1/wallet", walletRoutes);
+app.use("/api/v1/warranty", warrantyRoutes);
+app.use("/api/v1/advertising", advertisingRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));
 app.use("/public/images/sales", express.static("public/images/sales"));
 
-server.listen(APP_SETTINGS.port, () =>
-  console.log("API RUNNING ON PORT: " + APP_SETTINGS.port)
-);
+server.listen(APP_SETTINGS.port, async () => {
+  console.log("API RUNNING ON PORT: " + APP_SETTINGS.port);
+});

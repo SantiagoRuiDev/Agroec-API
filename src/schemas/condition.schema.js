@@ -14,6 +14,8 @@ export const conditionSchema = Joi.object({
   modo_pago_final: Joi.string().min(0).required(),
   porcentaje_final: Joi.number().min(0).max(100).required(),
   notas: Joi.string().min(0),
+  imagen: Joi.string().min(0), // OPCIONALES
+  id_propuesta: Joi.string().min(0), // OPCIONALES
   precio_puesto_domicilio: Joi.boolean().required(),
 });
 

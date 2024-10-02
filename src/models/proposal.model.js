@@ -248,38 +248,28 @@ export const getLicitationProposalByUser = async (user_id) => {
   try {
     // Obtener todas las propuestas del usuario
     const [proposals] = await connection.query(
-      `SELECT pc.*, u.*, pv.id_producto 
-      FROM propuesta_compra pc
-      INNER JOIN usuarios u ON pc.id_comprador = u.id 
-      INNER JOIN producto_vender pv ON pv.id = pc.id_venta
-      WHERE u.id = ? AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
+      `SELECT 
+    pc.*, 
+    u.*, 
+    pv.id_producto,
+    (SELECT m.id_remitente
+     FROM condiciones_compra cc
+     INNER JOIN propuesta_compra_contiene_condicion pccc ON cc.id = pccc.id_condicion
+     INNER JOIN chat c ON c.id_condiciones = cc.id
+     INNER JOIN mensajes m ON m.id_chat = c.id
+     WHERE pccc.id_propuesta = pc.id
+     ORDER BY m.fecha DESC
+     LIMIT 1
+    ) AS lastMessage
+    FROM propuesta_compra pc
+    INNER JOIN usuarios u ON pc.id_comprador = u.id 
+    INNER JOIN producto_vender pv ON pv.id = pc.id_venta
+    WHERE u.id = ?
+    AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
       [user_id]
     );
 
-    // Iterar sobre las propuestas para obtener el último mensaje de cada una
-    const proposalsWithMessages = await Promise.all(
-      proposals.map(async (proposal) => {
-        // Obtener el último mensaje del chat correspondiente a la propuesta actual
-        const [lastMessage] = await connection.query(
-          `SELECT m.* FROM condiciones_compra cc
-            INNER JOIN propuesta_compra_contiene_condicion pccc ON cc.id = pccc.id_condicion 
-            INNER JOIN chat c ON c.id_condiciones = cc.id
-            INNER JOIN mensajes m ON m.id_chat = c.id
-            WHERE pccc.id_propuesta = ?
-            ORDER BY m.fecha DESC
-            LIMIT 1`,
-          [proposal.id]
-        );
-
-        // Retornar la propuesta con su último mensaje
-        return {
-          ...proposal,
-          lastMessage: lastMessage[0] || null, // Si no hay mensaje, poner null
-        };
-      })
-    );
-
-    return proposalsWithMessages;
+    return proposals;
   } catch (error) {
     throw new Error(error.message);
   }

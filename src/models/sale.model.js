@@ -70,6 +70,8 @@ export const getSaleByIdentifier = async (identifer, product) => {
       `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
+      INNER JOIN venta_contiene_calidad vcc ON vcc.id_venta = pv.id
+      INNER JOIN parametros_calidad pc ON pc.id = vcc.id_parametros
       WHERE pv.id = ? AND pv.id_producto = ?`,
       [identifer, product]
     );
@@ -77,10 +79,15 @@ export const getSaleByIdentifier = async (identifer, product) => {
       `SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = ?`,
       [identifer]
     );
+    const [quality_params] = await connection.query(
+      `SELECT * FROM parametros_calidad pc INNER JOIN venta_contiene_calidad vcc ON vcc.id_parametros = pc.id WHERE vcc.id_venta = ?`,
+      [identifer]
+    );
 
     return {
       ...statement[0],
       images,
+      quality_params
     };
   } catch (error) {
     throw new Error(error.message);
@@ -90,7 +97,7 @@ export const getSaleByIdentifier = async (identifer, product) => {
 export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, p.nombre, p.imagen, p.id_producto FROM producto_vender pv 
+      `SELECT pv.*, p.nombre, p.imagen, p.id as id_producto FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
       [sale_id]
     );

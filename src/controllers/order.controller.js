@@ -1,3 +1,4 @@
+import * as notificationService from '../services/notification.service.js';
 import * as orderModel from "../models/order.model.js";
 import * as profileChecker from "../libs/checker.js";
 import { v4 as uuidv4 } from "uuid";
@@ -111,8 +112,19 @@ export const setOrderRejectedStatus = async (req, res) => {
         );
       }
 
+      const orderDetails = await orderModel.getOrderUsers(order_id);
+
       if (order) {
         await orderModel.updateOrderStatus(order_id, "Rechazado");
+
+        const notification = await notificationService.createNotification(orderDetails.id_vendedor, orderDetails.id_producto);
+
+        if(notification){
+          await notificationService.createOrderNotification(order_id, notification.id);
+          const user = await authModel.getAccountById(orderDetails.id_vendedor);
+          await notificationService.sendPushNotification("La orden fue rechazada", "El comprador ha rechazado la orden " + String(order_id).slice(0,8), user.id_subscripcion)
+        }
+
         return res
           .status(200)
           .json({ message: "La orden se ha marcado como rechazada" });

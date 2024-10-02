@@ -5,6 +5,7 @@ import * as orderModel from "../models/order.model.js";
 import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as walletModel from "../models/wallet.model.js";
+import * as notificationService from '../services/notification.service.js';
 import * as qualificationModel from "../models/qualification.models.js";
 import * as licitationsModel from "../models/licitations.model.js";
 import * as pointsModel from "../models/points.model.js";
@@ -264,16 +265,18 @@ export const getProfileStats = async (req, res) => {
       const unpaidOrders = await orderModel.getUnpaidOrders(req.user_id);
       const walletAmount = await walletModel.getBalance(req.user_id);
       const qualifications = await qualificationModel.getQualificationUserSession(req.user_id);
+      const notifications = await notificationService.getNotificationsUnreadedByUser(req.user_id);
 
       return res.status(200).json({
         profile: profile,
         orders: receivedOrders.length,
         licitations: activeLicitations.length,
         proposals: proposals.length,
-        buyProposals: buyProposals.length,
+        buyProposals: buyProposals,
         unpaidOrders: unpaidOrders.length,
         wallet: walletAmount,
-        qualifications: qualifications
+        qualifications: qualifications,
+        notifications: notifications.length
       });
     }
 

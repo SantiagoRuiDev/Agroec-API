@@ -3,10 +3,12 @@ import * as proposalModel from "../models/proposal.model.js";
 import * as licitationModel from "../models/licitations.model.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import * as conditionModel from "../models/condition.model.js";
+import * as authModel from "../models/auth.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as orderModel from "../models/order.model.js";
 import * as chatModel from "../models/chat.model.js";
+import * as notificationService from '../services/notification.service.js';
 import { v4 as uuidv4 } from "uuid";
 
 export const createSaleProposal = async (req, res) => {
@@ -50,6 +52,14 @@ export const createSaleProposal = async (req, res) => {
           proposal_id,
           contidion_id
         );
+
+        const notification = await notificationService.createNotification(fetchLicitation.id_usuario, fetchLicitation.id_producto);
+
+        if(notification){
+          await notificationService.createSaleProposalNotification(proposal_id, notification.id);
+          const user = await authModel.getAccountById(fetchLicitation.id_usuario);
+          await notificationService.sendPushNotification("Nueva propuesta de venta", "Te han enviado una propuesta de " + fetchLicitation.id_producto, user.id_subscripcion)
+        }
 
         await chatModel.createChat(
           uuidv4(),
@@ -162,6 +172,15 @@ export const createLicitationProposal = async (req, res) => {
           proposal_id,
           contidion_id
         );
+
+        const notification = await notificationService.createNotification(fetchSale.id_usuario, fetchSale.id_producto);
+
+        if(notification){
+          await notificationService.createSaleProposalNotification(proposal_id, notification.id);
+          const user = await authModel.getAccountById(fetchSale.id_usuario);
+          await notificationService.sendPushNotification("Nueva propuesta de compra", "Te han enviado una propuesta de " + fetchSale.id_producto, user.id_subscripcion)
+        }
+
 
         await chatModel.createChat(
           uuidv4(),
@@ -369,7 +388,21 @@ export const acceptProposalByConditions = async (req, res) => {
         proposal.proposal.id,
         "Aceptada"
       );
+      const notification = await notificationService.createNotification(proposal.proposal.id_vendedor, conditions.id_producto);
+
+      if(notification){
+        await notificationService.createSaleProposalNotification(proposal.proposal.id, notification.id);
+        const user = await authModel.getAccountById(proposal.proposal.id_vendedor);
+        await notificationService.sendPushNotification("Una propuesta de venta fue aceptada", "El comprador ha aceptado la propuesta " + conditions.id_producto, user.id_subscripcion)
+      }
     } else {
+      const notification = await notificationService.createNotification(proposal.proposal.id_comprador, conditions.id_producto);
+
+      if(notification){
+        await notificationService.createSaleProposalNotification(proposal.proposal.id, notification.id);
+        const user = await authModel.getAccountById(proposal.proposal.id_comprador);
+        await notificationService.sendPushNotification("Una propuesta de venta fue aceptada", "El vendedor ha aceptado la propuesta " + conditions.id_producto, user.id_subscripcion)
+      }
       await proposalModel.updateSaleProposalStateBySeller(
         proposal.proposal.id,
         "Aceptada"
@@ -384,7 +417,23 @@ export const acceptProposalByConditions = async (req, res) => {
         proposal.proposal.id,
         "Aceptada"
       );
+
+      const notification = await notificationService.createNotification(proposal.proposal.id_vendedor, conditions.id_producto);
+
+      if(notification){
+        await notificationService.createLicitationProposalNotification(proposal.proposal.id, notification.id);
+        const user = await authModel.getAccountById(proposal.proposal.id_vendedor);
+        await notificationService.sendPushNotification("Una propuesta de compra fue aceptada", "El comprador ha aceptado la propuesta " + conditions.id_producto, user.id_subscripcion)
+      }
     } else {
+      const notification = await notificationService.createNotification(proposal.proposal.id_vendedor, conditions.id_producto);
+
+      if(notification){
+        await notificationService.createLicitationProposalNotification(proposal.proposal.id, notification.id);
+        const user = await authModel.getAccountById(proposal.proposal.id_comprador);
+        await notificationService.sendPushNotification("Una propuesta de compra fue aceptada", "El vendedor ha aceptado la propuesta " + conditions.id_producto, user.id_subscripcion)
+      }
+
       await proposalModel.updateLicitationProposalStateBySeller(
         proposal.proposal.id,
         "Aceptada"

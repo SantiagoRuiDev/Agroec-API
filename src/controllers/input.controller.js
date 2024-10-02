@@ -91,7 +91,7 @@ export const getInputById = async (req, res) => {
       return res.status(404).send({ message: 'Error al obtener el insumo por id' });
     }
   
-    res.status(200).send({ message: 'Insumo obtenido correctamente:', input });
+    return res.status(200).send(input);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -134,7 +134,7 @@ export const getInputCategories = async (req, res) => {
 export const getAllInputs = async (req, res) => {
   try{
 
-    const getAllInputs = await inputModel.getAllInputs(req.params.category);
+    const getAllInputs = await inputModel.getAllInputsByCategory(req.params.category);
   
     if (!getAllInputs) {
       return res.status(404).send({ message: 'Error al obtener los insumos' });
