@@ -10,7 +10,7 @@ import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
-import { encodeToken } from "../libs/token.js";
+import { encodeMultiuserToken, encodeToken } from "../libs/token.js";
 import Twilio from "twilio";
 import { APP_SETTINGS } from "../libs/config.js";
 
@@ -167,7 +167,27 @@ export const loginAccount = async (req, res) => {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
     if (!fetchUser) {
-      throw new Error("Esta cuenta no existe");
+      const fetchMultiuser = await authModel.getMultiuserByEmail(req.body.correo);
+      if(!fetchMultiuser){
+        throw new Error("No hemos podido encontrar una cuenta con ese correo.");
+      }
+
+      if(!await comparePassword(req.body.clave, fetchMultiuser.clave)){
+        throw new Error("Clave Incorrecta");
+      }
+
+      const multi_token = encodeMultiuserToken(fetchMultiuser.id_usuario, fetchMultiuser.id, "3h");
+      const token = encodeToken(fetchMultiuser.id_usuario, "3h");
+      
+      res.cookie("multiuser-token", multi_token, {
+        expires: new Date(Date.now() + 18000000),
+        httpOnly: true,
+      });
+      res.cookie("auth-token", token, {
+        expires: new Date(Date.now() + 18000000),
+        httpOnly: true,
+      });
+      return res.status(200).json({ message: "Sesion iniciada correctamente" });
     }
 
     if (fetchUser.estado == 0) {
@@ -178,7 +198,7 @@ export const loginAccount = async (req, res) => {
       throw new Error("Clave Incorrecta");
     }
 
-    const token = encodeToken(fetchUser.id, "1h");
+    const token = encodeToken(fetchUser.id, "3h");
 
     res.cookie("auth-token", token, {
       expires: new Date(Date.now() + 18000000),
@@ -221,6 +241,12 @@ export const isAuthentified = async (req, res) => {
 
 export const logoutAccount = async (req, res) => {
   try {
+    res.clearCookie("multiuser-token", {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
     res.clearCookie("auth-token", {
       path: "/",
       httpOnly: true,

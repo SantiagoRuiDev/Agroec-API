@@ -63,7 +63,16 @@ export const setOrderReceivedStatus = async (req, res) => {
         order = await orderModel.createReceivedStatus(uuidv4(), order_id);
       }
 
+      const orderDetails = await orderModel.getOrderUsers(order_id);
+
       if (order) {
+        const notification = await notificationService.createNotification(orderDetails.id_vendedor, orderDetails.id_producto);
+
+        if(notification){
+          await notificationService.createOrderNotification(order_id, notification.id);
+          const user = await authModel.getAccountById(orderDetails.id_vendedor);
+          await notificationService.sendPushNotification("La orden fue recibida", "El comprador ha recibido la orden " + String(order_id).slice(0,8), user.id_subscripcion)
+        }
         await orderModel.updateOrderStatus(order_id, "Aceptado");
         await orderModel.updateOrderReceivedQuantity(
           req.body.cantidad,

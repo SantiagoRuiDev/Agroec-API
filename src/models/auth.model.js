@@ -42,6 +42,19 @@ export const getAccountByEmail = async (correo) => {
     }
 }
 
+export const getMultiuserByEmail = async (correo) => {
+  try {
+      const [statement] = await connection.query(
+        `SELECT * FROM multiusuarios WHERE correo = ?`,
+        [correo]
+      );
+
+      return statement[0];
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
+
 export const setState = async (uuid, state) => {
     try {
         const [statement] = await connection.query(

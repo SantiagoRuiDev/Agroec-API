@@ -6,13 +6,13 @@ import * as licitationMiddleware from '../middlewares/licitation.middleware.js'
 export const router = Router();
 
 
-router.post('/:id', authMiddleware.isAuthentified, licitationMiddleware.createLicitation, licitationController.createLicitation)
+router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationMiddleware.createLicitation, licitationController.createLicitation)
 
-router.get('/me', authMiddleware.isAuthentified, licitationController.getLicitationsByUser)
-router.get('/me/:id', authMiddleware.isAuthentified, licitationController.getLicitationsByUserAndProduct)
+router.get('/me', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUser)
+router.get('/me/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUserAndProduct)
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)
 router.get('/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 
-router.put('/set-closed/:id', authMiddleware.isAuthentified, licitationController.closeLicitation)
+router.put('/set-closed/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.closeLicitation)
 
-router.delete('/:id', authMiddleware.isAuthentified, licitationController.deleteLicitation)
+router.delete('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.deleteLicitation)

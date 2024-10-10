@@ -6,6 +6,10 @@ export const encodeToken = (uuid, expire) => {
     return jwt.sign({user: uuid}, APP_SETTINGS.secret_key, {expiresIn: expire})
 }
 
+export const encodeMultiuserToken = (uuid, uuid_multi, expire) => {
+    return jwt.sign({user: uuid, multiuser: uuid_multi}, APP_SETTINGS.secret_key, {expiresIn: expire})
+}
+
 export const decodeToken = (token) => {
     try {
         return jwt.verify(token, APP_SETTINGS.secret_key);

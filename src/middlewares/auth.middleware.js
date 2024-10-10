@@ -12,6 +12,7 @@ import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 import { pointsSchemaArray } from "../schemas/points.schema.js";
 import { associationSchema } from "../schemas/association.schema.js";
+import * as multiuserModel from '../models/multiusers.model.js';
 
 export const createAccount = async (req, res, next) => {
   try {
@@ -21,40 +22,40 @@ export const createAccount = async (req, res, next) => {
 
     // El campo req.body.profile.type, desde el frontend va a enviar el tipo "Comprador", "Agroquimicos", "Comerciante"
 
-    switch(req.body.profile.type){
-      case 'Comprador': 
+    switch (req.body.profile.type) {
+      case "Comprador":
         validateSchemas(req.body.profile, buyerSchema);
         break;
-        case 'Comerciante': 
+      case "Comerciante":
         validateSchemas(req.body.profile, merchantSchema);
         break;
-        case 'Agricultor': 
+      case "Agricultor":
         validateSchemas(req.body.profile, farmerSchema);
         break;
-        case 'Asociacion Agricola': 
+      case "Asociacion Agricola":
         validateSchemas(req.body.profile, assocAgriculturalSchema);
         break;
-        case 'Comerciante Agroquimico': 
+      case "Comerciante Agroquimico":
         validateSchemas(req.body.profile, merchantAgrochemicalSchema);
         break;
 
       default:
-        throw new Error('Ingresa un tipo de Perfil Valido');
+        throw new Error("Ingresa un tipo de Perfil Valido");
     }
 
-    if(req.body.contact){
+    if (req.body.contact) {
       validateSchemas(req.body.contact, contactSchemaArray);
     }
 
-    if(req.body.points){
+    if (req.body.points) {
       validateSchemas(req.body.points, pointsSchemaArray);
     }
 
-    if(req.body.bank_account){
+    if (req.body.bank_account) {
       validateSchemas(req.body.bank_account, bankAccount);
     }
 
-    if(req.body.association){
+    if (req.body.association) {
       validateSchemas(req.body.association, associationSchema);
     }
 
@@ -86,6 +87,29 @@ export const finishAccount = async (req, res, next) => {
 
 export const isAuthentified = async (req, res, next) => {
   try {
+    const multiuser_token = req.cookies["multiuser-token"];
+
+    if (
+      multiuser_token != undefined ||
+      (multiuser_token != null && typeof multiuser_token == "string")
+    ) {
+      if (typeof multiuser_token === "string") {
+        const decoded = decodeToken(multiuser_token);
+  
+        if (decoded instanceof Object) {
+          req.user_id = decoded.user;
+          req.multiuser_id = decoded.multiuser;
+        }
+        req.permissions = await multiuserModel.getMultiuserRoleByUser(decoded.multiuser);
+        next();
+        return;
+      } else {
+        throw new Error("Please insert a valid token");
+      }
+    }
+
+    // Si el usuario se ingreso como multi-usuario, este flujo de abajo no seguira, entonces creamos middleware para cada permiso.
+
     const token = req.cookies["auth-token"];
 
     if (typeof token === "string") {
@@ -100,7 +124,195 @@ export const isAuthentified = async (req, res, next) => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiserDashboardAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_dashboard > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+export const isMultiserTalksAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_negociaciones > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiserLicitationsAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_licitaciones > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiserAcceptOrdersAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_aceptar_pedido > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiserReceiveOrdersAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_recibir_pedido > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+
+export const isMultiserRejectOrdersAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_rechazar_pedido > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+
+export const isMultiserPaymentAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+
+    if(req.permissions.permiso_pagar > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+
+export const isMultiserWalletAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+
+    if(req.permissions.permiso_billetera > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+export const isMultiserManagmentAllowed = async (req, res, next) => {
+  try {
+    if(req.permissions == undefined || req.permissions == null){
+      next();
+      return;
+    }
+    
+    if(req.permissions.permiso_usuarios > 0){
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para realizar esta acción");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
     }
   }
 };
