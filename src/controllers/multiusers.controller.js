@@ -1,3 +1,4 @@
+import * as authModel from "../models/auth.model.js";
 import * as multiusersModel from "../models/multiusers.model.js";
 import { v4 as uuidv4 } from "uuid";
 import * as profileChecker from "../libs/checker.js";
@@ -94,6 +95,15 @@ export const createMultiuser = async (req, res) => {
     if (!(await profileChecker.isBuyerProfile(uuid_user))) {
       throw new Error("Tu perfil no es de tipo comprador");
     }
+
+    if(await authModel.getAccountByEmail(schema.correo)){
+      throw new Error("Ya existe una cuenta con este correo");
+    }
+
+    if(await multiusersModel.getMultiuserByEmail(schema.correo)){
+      throw new Error("Ya existe una cuenta con este correo");
+    }
+
 
     req.body.clave = await hashPassword(req.body.clave);
     const schema = req.body;

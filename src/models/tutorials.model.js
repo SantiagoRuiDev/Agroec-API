@@ -26,4 +26,16 @@ export const getTutorialsByCategories = async (category) => {
   }
 };
 
+export const createTutorial = async (uuid, category_uuid, schema) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO tutoriales (id, titulo, url_video, id_categoria) VALUES (?,?,?,?)`,
+      [uuid, schema.titulo, schema.url_video, category_uuid]
+    );
 
+    return statement.affectedRows;
+    
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

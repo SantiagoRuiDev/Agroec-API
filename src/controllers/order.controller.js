@@ -1,7 +1,42 @@
-import * as notificationService from '../services/notification.service.js';
+import * as notificationService from "../services/notification.service.js";
 import * as orderModel from "../models/order.model.js";
+import * as authModel from "../models/auth.model.js";
 import * as profileChecker from "../libs/checker.js";
+import PDF from "html-pdf";
 import { v4 as uuidv4 } from "uuid";
+import { getOrderTemplate } from "../pdf_template/order.js";
+
+export const getOrderPDF = async (req, res) => {
+  try {
+    const order_id = req.params.id;
+
+    const order = await orderModel.getOrdersById(order_id);
+
+    // Opciones de configuración del PDF (puedes ajustar según tus necesidades)
+    const options = {
+      format: "A4",
+      orientation: "portrait",
+    };
+
+    // Generar el PDF
+    PDF.create(getOrderTemplate(order), options).toBuffer((err, buffer) => {
+      if (err) {
+        res.status(500).send("Error al generar el PDF");
+        return;
+      }
+
+      // Enviar el PDF como una respuesta para su descarga
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="documento.pdf"'
+      );
+      return res.status(200).send(buffer);
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 
 export const getOrdersByUser = async (req, res) => {
   try {
@@ -32,6 +67,27 @@ export const setOrderDeliveredStatus = async (req, res) => {
     const order_id = req.params.id;
 
     const order = await orderModel.createDeliveryStatus(uuidv4(), order_id);
+
+    const orderDetails = await orderModel.getOrderUsers(order_id);
+    const notification = await notificationService.createNotification(
+      orderDetails.id_comprador,
+      orderDetails.id_producto
+    );
+
+    if (notification) {
+      await notificationService.createOrderNotification(
+        order_id,
+        notification.id,
+        "El vendedor marco la orden como entregada"
+      );
+      const user = await authModel.getAccountById(orderDetails.id_comprador);
+      await notificationService.sendPushNotification(
+        "La orden fue entregada",
+        "El vendedor marco la orden como entregada " +
+          String(order_id).slice(0, 8),
+        user.id_subscripcion
+      );
+    }
 
     if (order) {
       return res
@@ -66,12 +122,23 @@ export const setOrderReceivedStatus = async (req, res) => {
       const orderDetails = await orderModel.getOrderUsers(order_id);
 
       if (order) {
-        const notification = await notificationService.createNotification(orderDetails.id_vendedor, orderDetails.id_producto);
+        const notification = await notificationService.createNotification(
+          orderDetails.id_vendedor,
+          orderDetails.id_producto
+        );
 
-        if(notification){
-          await notificationService.createOrderNotification(order_id, notification.id);
+        if (notification) {
+          await notificationService.createOrderNotification(
+            order_id,
+            notification.id,
+            "El comprador marco la orden como recibida"
+          );
           const user = await authModel.getAccountById(orderDetails.id_vendedor);
-          await notificationService.sendPushNotification("La orden fue recibida", "El comprador ha recibido la orden " + String(order_id).slice(0,8), user.id_subscripcion)
+          await notificationService.sendPushNotification(
+            "La orden fue recibida",
+            "El comprador ha recibido la orden " + String(order_id).slice(0, 8),
+            user.id_subscripcion
+          );
         }
         await orderModel.updateOrderStatus(order_id, "Aceptado");
         await orderModel.updateOrderReceivedQuantity(
@@ -126,12 +193,24 @@ export const setOrderRejectedStatus = async (req, res) => {
       if (order) {
         await orderModel.updateOrderStatus(order_id, "Rechazado");
 
-        const notification = await notificationService.createNotification(orderDetails.id_vendedor, orderDetails.id_producto);
+        const notification = await notificationService.createNotification(
+          orderDetails.id_vendedor,
+          orderDetails.id_producto
+        );
 
-        if(notification){
-          await notificationService.createOrderNotification(order_id, notification.id);
+        if (notification) {
+          await notificationService.createOrderNotification(
+            order_id,
+            notification.id,
+            "El comprador marco la orden como rechazada"
+          );
           const user = await authModel.getAccountById(orderDetails.id_vendedor);
-          await notificationService.sendPushNotification("La orden fue rechazada", "El comprador ha rechazado la orden " + String(order_id).slice(0,8), user.id_subscripcion)
+          await notificationService.sendPushNotification(
+            "La orden fue rechazada",
+            "El comprador ha rechazado la orden " +
+              String(order_id).slice(0, 8),
+            user.id_subscripcion
+          );
         }
 
         return res
@@ -145,7 +224,6 @@ export const setOrderRejectedStatus = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 export const getUnpaidOrders = async (req, res) => {
   try {

@@ -5,7 +5,7 @@ import * as proposalMiddleware from '../middlewares/proposal.middleware.js'
 
 export const router = Router();
 
-router.post('/accept/:id', authMiddleware.isAuthentified, proposalController.acceptProposalByConditions)
+router.post('/accept/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
 
 // Propuestas de Ventas a Licitaciones
 router.post('/sale/:id', authMiddleware.isAuthentified, proposalMiddleware.createSaleProposal, proposalController.createSaleProposal)

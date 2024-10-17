@@ -57,6 +57,7 @@ initializeSocket(io); // Inicia el socket, y lo envia a otra función para que c
 // RUTAS
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/tutorials", tutorialRoutes);
 app.use("/api/v1/category", tutorialRoutes);
 app.use("/api/v1/suggestion", suggestionRoutes);
 app.use("/api/v1/products", productsRoutes);

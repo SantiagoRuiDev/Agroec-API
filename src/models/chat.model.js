@@ -16,8 +16,9 @@ export const createChat = async (uuid, buyer_id, seller_id, condition_id) => {
 export const getChatById = async (uuid) => {
   try {
     const [statement] = await connection.query(
-      `SELECT c.*, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+      `SELECT c.*, cc.id_producto, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
         FROM chat c
+        INNER JOIN condiciones_compra cc ON cc.id = c.id_condiciones
         LEFT JOIN perfil_agricultor pa ON pa.id_usuario = c.id_vendedor
         LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = c.id_vendedor
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = c.id_vendedor

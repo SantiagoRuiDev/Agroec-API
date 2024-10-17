@@ -9,7 +9,7 @@ export const getNotificationsAndRead = async (uuid_user) => {
         
         return notifications;
     } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
+        throw new Error("Error al leer la notificación: " + error.message);
     }
 }
 
@@ -19,7 +19,7 @@ export const getNotificationsUnreadedByUser = async (uuid_user) => {
         
         return notifications;
     } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
+        throw new Error("Error al leer las notificaciónes: " + error.message);
     }
 }
 
@@ -34,10 +34,9 @@ export const createNotification = async (uuid_user, uuid_product) => {
 }
 
 
-export const createOrderNotification = async (uuid_status, uuid_notification) => {
+export const createOrderNotification = async (uuid_order, uuid_notification, message) => {
     try {
-        const message = ``;
-        const notification = await  notificationModel.createOrderNotification(uuidv4(), uuid_notification, uuid_status, message);
+        const notification = await  notificationModel.createOrderNotification(uuidv4(), uuid_notification, uuid_order, message);
         
         return notification;
     } catch (error) {
@@ -45,10 +44,19 @@ export const createOrderNotification = async (uuid_status, uuid_notification) =>
     }
 }
 
+export const createChatNotification = async (uuid_chat, uuid_notification, message) => {
+    try {
+        const notification = await  notificationModel.createChatNotification(uuidv4(), uuid_notification, uuid_chat, message);
+        
+        return notification;
+    } catch (error) {
+        throw new Error("Error al crear la notificación: " + error.message);
+    }
+}
 
 export const createWarrantyNotification = async (uuid_warranty, uuid_notification) => {
     try {
-        const message = `El usuario ha completado el pago de garantía`;
+        const message = `El comprador ha completado el pago de garantía`;
         const notification = await  notificationModel.createWarrantyNotification(uuidv4(), uuid_notification, uuid_warranty, message);
         
         return notification;
@@ -57,9 +65,8 @@ export const createWarrantyNotification = async (uuid_warranty, uuid_notificatio
     }
 }
 
-export const createSaleProposalNotification = async (uuid_proposal, uuid_notification) => {
+export const createSaleProposalNotification = async (uuid_proposal, uuid_notification, message) => {
     try {        
-        const message = `Has recibido una nueva propuesta de venta`;
         const notification = await  notificationModel.createSaleProposalNotification(uuidv4(), uuid_notification, uuid_proposal, message);
         
         return notification;
@@ -68,9 +75,8 @@ export const createSaleProposalNotification = async (uuid_proposal, uuid_notific
     }
 }
 
-export const createLicitationProposalNotification = async (uuid_proposal, uuid_notification) => {
+export const createLicitationProposalNotification = async (uuid_proposal, uuid_notification, message) => {
     try {
-        const message = `Has recibido una nueva propuesta de compra`;
         const notification = await  notificationModel.createLicitationProposalNotification(uuidv4(), uuid_notification, uuid_proposal, message);
         
         return notification;
@@ -114,7 +120,7 @@ export const sendPushNotification = async (title, message, player_id, url) => {
     }
 };
 
-export const sendPushNotificationToAll = async (title, message) => {
+export const sendPushNotificationToAll = async (title, message, url) => {
     const appId = 'aac4070e-a56e-47fb-b3c6-7a197cccb349'; // Reemplaza con tu App ID
     const apiKey = 'Mjk3ZWUzMTEtNTViYy00ZTk5LTk5NTEtN2JhMGU1NWFmN2E5'; // Reemplaza con tu REST API Key
 
@@ -123,6 +129,7 @@ export const sendPushNotificationToAll = async (title, message) => {
         included_segments: ['All'], // Esto enviará a todos los usuarios
         headings: { en: title },
         contents: { en: message },
+        url: url
     };
 
     try {

@@ -11,7 +11,7 @@ router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLici
 router.get('/me', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUser)
 router.get('/me/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUserAndProduct)
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)
-router.get('/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
+router.get('/:id', authMiddleware.isAuthentified, licitationController.getLicitationById)
 
 router.put('/set-closed/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.closeLicitation)
 

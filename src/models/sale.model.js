@@ -29,7 +29,28 @@ export const getSalesByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
-      COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion
+      COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion,
+      (
+        SELECT pamc.nombre
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS nombre_parametro_calidad,
+      (
+        SELECT pamc.min_calidad
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS min_parametro_calidad,
+      (
+        SELECT pamc.max_calidad
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS max_parametro_calidad
       FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario

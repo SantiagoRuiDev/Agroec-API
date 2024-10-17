@@ -64,8 +64,15 @@ export const getLicitationById = async (licitation_id) => {
       `SELECT pl.*, p.nombre, p.imagen, p.id as id_producto FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE pl.id = ?`,
       [licitation_id]
     );
+    const [quality_params] = await connection.query(
+      `SELECT * FROM parametros_calidad pc INNER JOIN licitacion_contiene_calidad lcc ON lcc.id_parametros = pc.id WHERE lcc.id_licitacion = ?`,
+      [licitation_id]
+    );
 
-    return statement[0];
+    return {
+      ...statement[0],
+      quality_params
+    };
   } catch (error) {
     throw new Error(error.message);
   }

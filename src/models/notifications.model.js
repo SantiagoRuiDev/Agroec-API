@@ -1,4 +1,3 @@
-import { uuid } from "uuidv4";
 import { connection } from "../index.js";
 
 export const createNotification = async (
@@ -31,15 +30,15 @@ export const createNotification = async (
 export const createOrderNotification = async (
   uuid,
   uuid_notification,
-  uuid_state,
+  uuid_order,
   message
 ) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO notificaciones_ordenes
-        (id, id_notificacion, id_estado, mensaje) 
+        (id, id_notificacion, id_orden, mensaje) 
         VALUES(?,?,?,?)`,
-      [uuid, uuid_notification, uuid_state, message]
+      [uuid, uuid_notification, uuid_order, message]
     );
 
     return statement.affectedRows;
@@ -47,6 +46,28 @@ export const createOrderNotification = async (
     throw new Error(error.message);
   }
 };
+
+
+export const createChatNotification = async (
+  uuid,
+  uuid_notification,
+  uuid_chat,
+  message
+) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO notificaciones_chat
+        (id, id_notificacion, id_chat, mensaje) 
+        VALUES(?,?,?,?)`,
+      [uuid, uuid_notification, uuid_chat, message]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 export const createWarrantyNotification = async (
   uuid,
@@ -125,20 +146,23 @@ export const getNotifications = async (uuid_user) => {
   try {
     const [statement] = await connection.query(
       `
-      SELECT n.*, COALESCE(no.mensaje, npv.mensaje, npc.mensaje, ng.mensaje) AS mensaje,
+      SELECT n.*, COALESCE(nc.mensaje, no.mensaje, npv.mensaje, npc.mensaje, ng.mensaje) AS mensaje,
       CASE 
+          WHEN nc.mensaje IS NOT NULL THEN 'Chat'
           WHEN no.mensaje IS NOT NULL THEN 'Orden'
           WHEN npv.mensaje IS NOT NULL THEN 'Propuesta Venta'
           WHEN npc.mensaje IS NOT NULL THEN 'Propuesta Compra'
           WHEN ng.mensaje IS NOT NULL THEN 'Garantía'
       END AS tipo_notificacion,
       CASE 
-          WHEN no.mensaje IS NOT NULL THEN no.id_estado
+          WHEN nc.mensaje IS NOT NULL THEN nc.id_chat
+          WHEN no.mensaje IS NOT NULL THEN no.id_orden
           WHEN npv.mensaje IS NOT NULL THEN npv.id_propuesta
           WHEN npc.mensaje IS NOT NULL THEN npc.id_propuesta
           WHEN ng.mensaje IS NOT NULL THEN ng.id_garantia
       END AS id_redireccion
       FROM notificaciones n
+      LEFT JOIN notificaciones_chat nc ON nc.id_notificacion = n.id
       LEFT JOIN notificaciones_ordenes no ON no.id_notificacion = n.id
       LEFT JOIN notificaciones_propuesta_venta npv ON npv.id_notificacion = n.id
       LEFT JOIN notificaciones_propuesta_compra npc ON npc.id_notificacion = n.id

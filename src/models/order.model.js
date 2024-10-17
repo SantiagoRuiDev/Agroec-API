@@ -120,7 +120,7 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
 export const getOrdersById = async (order_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.cantidad_recibida, o.creado,p.id as producto, p.imagen, cc.notas, cc.precio_puesto_domicilio, cc.modo_pago, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
+      `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.cantidad_recibida, o.creado,p.id as producto, p.imagen, cc.notas, cc.precio_puesto_domicilio, cc.modo_pago, cc.modo_pago_final, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
 		,e.id as id_entrega, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
 		pr.nombre, pr.ubicacion_google_maps, pr.direccion,
        COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre,

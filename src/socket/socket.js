@@ -1,6 +1,8 @@
 import cookie from 'cookie'
 import { decodeToken } from '../libs/token.js';
 import * as chatModel from '../models/chat.model.js';
+import * as authModel from "../models/auth.model.js";
+import * as notificationService from "../services/notification.service.js";
 import { v4 as uuid4v } from 'uuid';
 
 export function initializeSocket(io){
@@ -56,6 +58,25 @@ export function initializeSocket(io){
 
           await chatModel.sendMessage(uuid4v(), userData.user, room, data.texto)
           chat = await chatModel.getChatById(room)
+          const notifiedUser = (userData.user == chat.chat.id_vendedor) ? chat.chat.id_comprador : chat.chat.id_vendedor;
+          const notification = await notificationService.createNotification(
+            notifiedUser,
+            chat.chat.id_producto
+          );
+    
+          if (notification) {
+            await notificationService.createChatNotification(
+              room,
+              notification.id,
+              `Has recibido un mensaje del chat #` + String(room).slice(0,8)
+            );
+            const user = await authModel.getAccountById(notifiedUser);
+            await notificationService.sendPushNotification(
+              "Nuevo mensaje",
+              "Has recibido un nuevo mensaje en una negociación",
+              user.id_subscripcion
+            );
+          }
         }
       }
 

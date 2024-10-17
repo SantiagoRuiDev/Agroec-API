@@ -13,6 +13,20 @@ export const getMultiuserById = async (uuid) => {
   }
 };
 
+
+export const getMultiuserByEmail = async (correo) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT m.nombre, m.correo, m.id_rol FROM multiusuarios m WHERE m.correo = ?`,
+      [correo]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getMultiuserRoleByUser = async (uuid) => {
   try {
     const [statement] = await connection.query(

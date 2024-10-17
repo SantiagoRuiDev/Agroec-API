@@ -1,6 +1,8 @@
 import * as warrantyModel from "../models/warranty.model.js";
 import * as walletModel from "../models/wallet.model.js";
 import * as profileChecker from "../libs/checker.js";
+import * as authModel from "../models/auth.model.js";
+import * as notificationService from "../services/notification.service.js";
 import * as orderModel from "../models/order.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -49,12 +51,9 @@ export const createWarranty = async (req, res) => {
     const paymentCondition = await warrantyModel.getCondition(idCondition);
 
     if (!paymentCondition) {
-      res
-        .status(404)
-        .send({
-          message:
-            "La condicion de pago no existe o el modo de pago es invalido",
-        });
+      res.status(404).send({
+        message: "La condicion de pago no existe o el modo de pago es invalido",
+      });
       return;
     }
 
@@ -62,7 +61,7 @@ export const createWarranty = async (req, res) => {
     const quantity = paymentCondition.cantidad;
     const percentage = paymentCondition.porcentaje_inicial;
 
-    const total = (price * quantity) * (percentage / 100);
+    const total = price * quantity * (percentage / 100);
 
     const createWarranty = await warrantyModel.createWarranty(
       uuid,
@@ -73,11 +72,33 @@ export const createWarranty = async (req, res) => {
     );
 
     if (!createWarranty) {
-      return res.status(404).send({ message: "Hubo un error al pagar la garantia" });
+      return res
+        .status(404)
+        .send({ message: "Hubo un error al pagar la garantia" });
     }
 
     if (createWarranty > 0) {
-      await orderModel.updateOrderStatus(order_id, 'Pendiente de entrega');
+      const orderData = await orderModel.getOrdersById(order_id);
+      const notification = await notificationService.createNotification(
+        orderData.order.id_vendedor,
+        orderData.order.producto
+      );
+
+      if (notification) {
+        await notificationService.createOrderNotification(
+          order_id,
+          notification.id,
+          `El comprador ha completado el pago de garantía de ${total}`
+        );
+        const user = await authModel.getAccountById(orderData.order.id_vendedor);
+        await notificationService.sendPushNotification(
+          "Pago en garantía",
+          "El comprador ha realizado el pago de $" + total,
+          user.id_subscripcion
+        );
+      }
+
+      await orderModel.updateOrderStatus(order_id, "Pendiente de entrega");
       await orderModel.createPendingStatus(uuidv4(), order_id);
       return res.status(200).send({ message: "Garantia pagada exitosamente" });
     }

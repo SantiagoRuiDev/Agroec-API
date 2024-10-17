@@ -165,6 +165,25 @@ export const updateProfile = async (req, res) => {
 
 // GET PROFILE
 
+export const getBuyerProfile = async (req, res) => {
+  try {
+    const user_id = req.user_id;
+    const findUser = await authModel.getAccountById(user_id);
+    
+    if (!findUser) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    if(await profileChecker.isBuyerProfile(user_id)){
+      return res.status(200).json({ user: {...findUser}, profile: await profileModel.getBuyerProfileByUser(user_id) });
+    }
+    
+    throw new Error("Perfil no encontrado");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
 export const getProfile = async (req, res) => {
   try {
     const user_id = req.params.id;

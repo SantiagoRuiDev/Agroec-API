@@ -71,6 +71,19 @@ export const getAllLicitations = async (req, res) => {
     }
 }
 
+export const getLicitationById = async (req, res) => {
+    try {
+        const licitation = await licitationModel.getLicitationById(req.params.id);
+
+        if(licitation) {
+            return res.status(200).json(licitation);
+        }
+
+        throw new Error("La obtención de las licitaciones ha fallado")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
 
 export const getAllLicitationsByProduct = async (req, res) => {
     try {

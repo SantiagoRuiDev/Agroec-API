@@ -492,6 +492,12 @@ export const getBuyerProfileByUser = async (id) => {
     u.canton,
     u.parroquia,
     p.razon_social,
+    p.presupuesto_mes,
+    p.consumo_anual,
+    p.consumo_mes_tm,
+    p.politicas_recepcion,
+    p.actividad_economica,
+    p.tipo_negocio,
     p.id AS id_perfil_comprador,
     u.id AS id_perfil_usuario
 FROM 

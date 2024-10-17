@@ -26,6 +26,21 @@ export const createDelivery = async (
   }
 };
 
+export const getDeliveryById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.*, cc.id_producto FROM entregas e 
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+      INNER JOIN ordenes o ON e.id = o.id_entrega WHERE e.id = ?`,
+      [uuid]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getDelivery = async (condition_id) => {
   try {
     const [statement] = await connection.query(
