@@ -95,6 +95,49 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
 };
 
 
+export const getOrdersBySellerUndelivered = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad
+		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion
+	   FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+       INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       LEFT JOIN fee f ON f.id_entrega = e.id
+       WHERE o.id_vendedor = ? AND o.estado != "Aceptado" OR o.estado !="Rechazado"
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad
+		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion
+	   FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+       INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       LEFT JOIN fee f ON f.id_entrega = e.id
+       WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
   try {
     const [statement] = await connection.query(

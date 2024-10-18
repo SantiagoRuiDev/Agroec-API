@@ -61,7 +61,10 @@ export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
 export const getLicitationById = async (licitation_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pl.*, p.nombre, p.imagen, p.id as id_producto FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE pl.id = ?`,
+      `SELECT pl.*, pf.razon_social, u.provincia, u.canton FROM producto_licitar pl
+      INNER JOIN usuarios u ON u.id = pl.id_usuario
+      INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
+      WHERE pl.id = ?`,
       [licitation_id]
     );
     const [quality_params] = await connection.query(
@@ -93,7 +96,10 @@ export const getAllLicitations = async () => {
 export const getAllLicitationsByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM producto_licitar LIMIT 30 WHERE id_producto = ? AND estado != "Eliminada"`,
+      `SELECT pl.*, pf.razon_social, u.provincia, u.canton FROM producto_licitar pl
+      INNER JOIN usuarios u ON u.id = pl.id_usuario
+      INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
+      WHERE pl.id_producto = ? AND pl.estado != "Eliminada"`,
       [product_id]
     );
 

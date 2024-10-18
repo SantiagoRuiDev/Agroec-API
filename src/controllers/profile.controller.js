@@ -267,7 +267,7 @@ export const getProfileStats = async (req, res) => {
       throw new Error("Usuario no encontrado");
     }
 
-    if (profileChecker.isBuyerProfile(req.user_id)) {
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
       const profile = await profileModel.getBuyerProfileByUser(req.user_id);
       const receivedOrders = await orderModel.getOrdersByBuyerDeliveredAndPaid(
         req.user_id
@@ -294,6 +294,29 @@ export const getProfileStats = async (req, res) => {
         buyProposals: buyProposals,
         unpaidOrders: unpaidOrders.length,
         wallet: walletAmount,
+        qualifications: qualifications,
+        notifications: notifications.length
+      });
+    } else {
+      const sendProposals = await proposalModel.getSaleProposalByUser(req.user_id);
+      const receivedProposals = await proposalModel.getLicitationProposalBySale(
+        req.user_id
+      );
+      const undeliveredOrders = await orderModel.getOrdersBySellerUndelivered(
+        req.user_id
+      );
+      const deliveredOrders = await orderModel.getOrdersBySellerDeliveredAndPaid(
+        req.user_id
+      );
+      const qualifications = await qualificationModel.getQualificationUserSession(req.user_id);
+      const notifications = await notificationService.getNotificationsUnreadedByUser(req.user_id);
+
+      return res.status(200).json({
+        profile: req.user_id,
+        sendProposals: sendProposals,
+        receivedProposals: receivedProposals,
+        undeliveredOrders: undeliveredOrders.length,
+        deliveredOrders: deliveredOrders.length,
         qualifications: qualifications,
         notifications: notifications.length
       });

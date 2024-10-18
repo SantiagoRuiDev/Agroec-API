@@ -62,7 +62,19 @@ export const getSaleDeliveryWithConditionsById = async (proposal_id) => {
 export const getSaleProposalByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, u.* FROM propuesta_venta pv INNER JOIN usuarios u ON pv.id_vendedor = u.id WHERE u.id = ?`,
+      `SELECT pv.*, u.*,
+      (SELECT m.id_remitente
+      FROM condiciones_compra cc
+      INNER JOIN propuesta_venta_contiene_condicion pvcc ON cc.id = pvcc.id_condicion
+      INNER JOIN chat c ON c.id_condiciones = cc.id
+      INNER JOIN mensajes m ON m.id_chat = c.id
+      WHERE pvcc.id_propuesta = pv.id
+      ORDER BY m.fecha DESC
+      LIMIT 1
+      ) AS lastMessage
+      FROM propuesta_venta pv 
+      INNER JOIN usuarios u ON pv.id_vendedor = u.id 
+      WHERE u.id = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada");`,
       [user_id]
     );
 
@@ -87,10 +99,7 @@ export const getSaleProposalByLicitation = async (user_id) => {
   }
 };
 
-export const getSaleProposalByUserAndProduct = async (
-  user_id,
-  product_id
-) => {
+export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
   try {
     // Obtener todas las propuestas del usuario
     const [proposals] = await connection.query(
@@ -325,6 +334,24 @@ export const getLicitationProposalByUserAndProduct = async (
   }
 };
 
+export const getLicitationProposalBySale = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pv.id_producto, COUNT(pc.id) AS num_propuestas
+      FROM propuesta_compra pc
+      INNER JOIN producto_vender pv ON pv.id = pc.id_venta
+      WHERE pv.id_usuario = ? 
+        AND NOT (pc.estado_vendedor = 'Aceptada' AND pc.estado_comprador = 'Aceptada')
+      GROUP BY pv.id_producto;`,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const updateLicitationProposalStateBySeller = async (
   proposal_id,
   state
@@ -374,8 +401,6 @@ export const createLicitationCondition = async (
   }
 };
 
-
-
 export const getProposalByConditions = async (condition_id) => {
   try {
     const [statement] = await connection.query(
@@ -386,9 +411,8 @@ export const getProposalByConditions = async (condition_id) => {
       WHERE cc.id = ?`,
       [condition_id]
     );
-    
 
-    if(statement[0]){
+    if (statement[0]) {
       const [sale] = await connection.query(
         `SELECT *
         FROM propuesta_venta pv 
@@ -396,19 +420,19 @@ export const getProposalByConditions = async (condition_id) => {
         [statement[0].id_propuesta]
       );
 
-      if(sale[0]){
+      if (sale[0]) {
         const [buyer] = await connection.query(
           `SELECT pl.id_usuario
           FROM producto_licitar pl 
           WHERE pl.id = ?`,
           [sale[0].id_licitacion]
-        )
+        );
         sale[0].id_comprador = buyer[0].id_usuario;
         return {
           proposal: sale[0],
           type: "Sale",
-          method: statement[0].modo_pago
-        }
+          method: statement[0].modo_pago,
+        };
       }
 
       const [licitation] = await connection.query(
@@ -418,19 +442,19 @@ export const getProposalByConditions = async (condition_id) => {
         [statement[0].id_propuesta]
       );
 
-      if(licitation[0]){
+      if (licitation[0]) {
         const [seller] = await connection.query(
           `SELECT pv.id_usuario
           FROM producto_vender pv 
           WHERE pv.id = ?`,
           [licitation[0].id_venta]
-        )
+        );
         licitation[0].id_vendedor = seller[0].id_usuario;
         return {
           proposal: licitation[0],
           type: "Licitation",
-          method: statement[0].modo_pago
-        }
+          method: statement[0].modo_pago,
+        };
       }
     }
   } catch (error) {

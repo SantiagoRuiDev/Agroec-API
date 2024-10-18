@@ -12,6 +12,7 @@ import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeMultiuserToken, encodeToken } from "../libs/token.js";
 import Twilio from "twilio";
+import * as profileChecker from "../libs/checker.js";
 import { APP_SETTINGS } from "../libs/config.js";
 
 export const createAccount = async (req, res) => {
@@ -167,6 +168,10 @@ export const loginAccount = async (req, res) => {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
     if (!fetchUser) {
+      if(!await profileChecker.isBuyerProfile(fetchUser.id)){
+        throw new Error("No puedes ingresar con una cuenta de vendedor");
+      }
+      
       const fetchMultiuser = await authModel.getMultiuserByEmail(req.body.correo);
       if(!fetchMultiuser){
         throw new Error("No hemos podido encontrar una cuenta con ese correo.");
@@ -188,6 +193,38 @@ export const loginAccount = async (req, res) => {
         httpOnly: true,
       });
       return res.status(200).json({ message: "Sesion iniciada correctamente" });
+    }
+
+    if(!await profileChecker.isBuyerProfile(fetchUser.id)){
+      throw new Error("No puedes ingresar con una cuenta de vendedor");
+    }
+    
+    if (fetchUser.estado == 0) {
+      throw new Error("Tu cuenta no finalizo el registro");
+    }
+
+    if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
+      throw new Error("Clave Incorrecta");
+    }
+
+    const token = encodeToken(fetchUser.id, "3h");
+
+    res.cookie("auth-token", token, {
+      expires: new Date(Date.now() + 18000000),
+      httpOnly: true,
+    });
+    return res.status(200).json({ message: "Sesion iniciada correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const loginSellerAccount = async (req, res) => {
+  try {
+    const fetchUser = await authModel.getAccountByEmail(req.body.correo);
+
+    if(await profileChecker.isBuyerProfile(fetchUser.id)){
+      throw new Error("No puedes ingresar con una cuenta de comprador");
     }
 
     if (fetchUser.estado == 0) {
