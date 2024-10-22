@@ -241,13 +241,26 @@ export const getLicitationProposalById = async (req, res) => {
 
 export const getLicitationProposalByUserAndProduct = async (req, res) => {
   try {
-    const proposals = await proposalModel.getLicitationProposalByUserAndProduct(
-      req.user_id,
-      req.params.id
-    );
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
+      const proposals =
+        await proposalModel.getLicitationProposalByUserAndProduct(
+          req.user_id,
+          req.params.id
+        );
 
-    if (proposals) {
-      return res.status(200).json(proposals);
+      if (proposals) {
+        return res.status(200).json(proposals);
+      }
+    } else {
+      const proposals =
+        await proposalModel.getLicitationProposalBySellerAndProduct(
+          req.user_id,
+          req.params.id
+        );
+
+      if (proposals) {
+        return res.status(200).json(proposals);
+      }
     }
 
     throw new Error("La obtención de las ofertas de compra ha fallado");
@@ -258,14 +271,23 @@ export const getLicitationProposalByUserAndProduct = async (req, res) => {
 
 export const getLicitationProposalByUser = async (req, res) => {
   try {
-    const userProposals = await proposalModel.getLicitationProposalByUser(
-      req.user_id
-    );
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
+      const userProposals = await proposalModel.getLicitationProposalByUser(
+        req.user_id
+      );
 
-    if (userProposals) {
-      return res.status(200).json(userProposals);
+      if (userProposals) {
+        return res.status(200).json(userProposals);
+      }
+    } else {
+      const sellerProposals = await proposalModel.getLicitationProposalBySeller(
+        req.user_id
+      );
+
+      if (sellerProposals) {
+        return res.status(200).json(sellerProposals);
+      }
     }
-
     throw new Error("La obtención de las ofertas de compra ha fallado");
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -457,19 +479,17 @@ export const acceptProposalByConditions = async (req, res) => {
       }
     } else {
       // PROPUESTA DE COMPRA Y COMPRADOR
-      if (
-        (await profileChecker.isBuyerProfile(req.user_id))
-      ) {
+      if (await profileChecker.isBuyerProfile(req.user_id)) {
         await proposalModel.updateLicitationProposalStateByBuyer(
           proposal.proposal.id,
           "Aceptada"
         );
-  
+
         const notification = await notificationService.createNotification(
           proposal.proposal.id_vendedor,
           conditions.id_producto
         );
-  
+
         if (notification) {
           await notificationService.createLicitationProposalNotification(
             proposal.proposal.id,
@@ -491,7 +511,7 @@ export const acceptProposalByConditions = async (req, res) => {
           proposal.proposal.id_vendedor,
           conditions.id_producto
         );
-  
+
         if (notification) {
           await notificationService.createLicitationProposalNotification(
             proposal.proposal.id,
@@ -507,7 +527,7 @@ export const acceptProposalByConditions = async (req, res) => {
             user.id_subscripcion
           );
         }
-  
+
         await proposalModel.updateLicitationProposalStateBySeller(
           proposal.proposal.id,
           "Aceptada"

@@ -253,6 +253,18 @@ export const getProfile = async (req, res) => {
       });
     }
 
+    const buyerProfile = await profileModel.getBuyerProfileByUser(findUser.id);
+    if(buyerProfile){
+      const licitations = await licitationsModel.getLicitationsByUser(findUser.id);
+      const qualifications = await qualificationModel.getQualificationByUserId(findUser.id);
+      return res.status(200).json({
+        ...buyerProfile,
+        licitations: licitations,
+        qualifications: qualifications,
+        type: "Comprador",
+      })
+    }
+
     throw new Error("Perfil no encontrado");
   } catch (error) {
     return res.status(400).json({ error: error.message });

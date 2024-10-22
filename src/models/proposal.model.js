@@ -62,7 +62,7 @@ export const getSaleDeliveryWithConditionsById = async (proposal_id) => {
 export const getSaleProposalByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.*, u.*,
+      `SELECT pv.*, u.*, pl.id_producto,
       (SELECT m.id_remitente
       FROM condiciones_compra cc
       INNER JOIN propuesta_venta_contiene_condicion pvcc ON cc.id = pvcc.id_condicion
@@ -73,6 +73,7 @@ export const getSaleProposalByUser = async (user_id) => {
       LIMIT 1
       ) AS lastMessage
       FROM propuesta_venta pv 
+      INNER JOIN producto_licitar pl ON pl.id = pv.id_licitacion
       INNER JOIN usuarios u ON pv.id_vendedor = u.id 
       WHERE u.id = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada");`,
       [user_id]
@@ -119,7 +120,7 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
         LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_vendedor
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_vendedor
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
-    	WHERE id_comprador = ? AND pc.id_producto = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")`,
+    	WHERE pv.id_vendedor = ? AND pc.id_producto = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")`,
       [user_id, product_id]
     );
 
@@ -253,6 +254,39 @@ export const getLicitationDeliveryWithConditionsById = async (proposal_id) => {
   }
 };
 
+
+export const getLicitationProposalBySeller = async (user_id) => {
+  try {
+    // Obtener todas las propuestas del usuario
+    const [proposals] = await connection.query(
+      `SELECT 
+    pc.*, 
+    u.*, 
+    pv.id_producto,
+    (SELECT m.id_remitente
+     FROM condiciones_compra cc
+     INNER JOIN propuesta_compra_contiene_condicion pccc ON cc.id = pccc.id_condicion
+     INNER JOIN chat c ON c.id_condiciones = cc.id
+     INNER JOIN mensajes m ON m.id_chat = c.id
+     WHERE pccc.id_propuesta = pc.id
+     ORDER BY m.fecha DESC
+     LIMIT 1
+    ) AS lastMessage
+    FROM propuesta_compra pc
+    INNER JOIN usuarios u ON pc.id_comprador = u.id 
+    INNER JOIN producto_vender pv ON pv.id = pc.id_venta
+    WHERE pv.id_usuario = ?
+    AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
+      [user_id]
+    );
+
+    return proposals;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const getLicitationProposalByUser = async (user_id) => {
   try {
     // Obtener todas las propuestas del usuario
@@ -334,14 +368,64 @@ export const getLicitationProposalByUserAndProduct = async (
   }
 };
 
+
+export const getLicitationProposalBySellerAndProduct = async (
+  user_id,
+  product_id
+) => {
+  try {
+    // Obtener todas las propuestas del usuario
+    const [proposals] = await connection.query(
+      `SELECT pc.*, 
+       pv.id_producto, 
+       uv.provincia, uv.canton, uv.id as id_vendedor,
+       ch.id AS chat_id,
+       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+        FROM propuesta_compra pc
+        INNER JOIN propuesta_compra_contiene_condicion pccc ON pc.id = pccc.id_propuesta
+        INNER JOIN condiciones_compra cc ON cc.id = pccc.id_condicion 
+        INNER JOIN chat ch ON ch.id_condiciones = cc.id
+        INNER JOIN usuarios u ON pc.id_comprador = u.id 
+        INNER JOIN producto_vender pv ON pv.id = pc.id_venta
+        INNER JOIN usuarios uv ON pv.id_usuario = uv.id 
+        LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
+        WHERE pv.id_usuario = ? AND pv.id_producto = ? AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada");`,
+      [user_id, product_id]
+    );
+
+    // Iterar sobre las propuestas para obtener el último mensaje de cada una
+    const proposalsWithMessages = await Promise.all(
+      proposals.map(async (proposal) => {
+        // Obtener el último mensaje del chat correspondiente a la propuesta actual
+        const [lastMessage] = await connection.query(
+          `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
+          [proposal.chat_id]
+        );
+
+        // Retornar la propuesta con su último mensaje
+        return {
+          ...proposal,
+          lastMessage: lastMessage[0] || null, // Si no hay mensaje, poner null
+        };
+      })
+    );
+
+    return proposalsWithMessages;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getLicitationProposalBySale = async (user_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.id_producto, COUNT(pc.id) AS num_propuestas
       FROM propuesta_compra pc
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta
-      WHERE pv.id_usuario = ? 
-        AND NOT (pc.estado_vendedor = 'Aceptada' AND pc.estado_comprador = 'Aceptada')
+      WHERE (pc.estado_vendedor != "Aceptada" AND pc.estado_comprador != "Aceptada") AND pv.id_usuario = ?
       GROUP BY pv.id_producto;`,
       [user_id]
     );

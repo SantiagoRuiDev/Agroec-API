@@ -34,7 +34,7 @@ const app = express();
 const server = createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true, // Permitir credenciales en las conexiones de socket
   },
 });
@@ -42,7 +42,11 @@ export const io = new Server(server, {
 app.use(
   "*",
   cors({
-    origin: APP_SETTINGS.domain, // Cambiar por el Dominio.
+    origin: [
+      "http://localhost:5173", // Dominio para puerto 5173
+      "http://localhost:5174", // Dominio para puerto 5174
+      APP_SETTINGS.domain,     // Otros dominios que quieras permitir
+    ],
     credentials: true, // Permite el envío de cookies
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],

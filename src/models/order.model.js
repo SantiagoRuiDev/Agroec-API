@@ -98,15 +98,16 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
 export const getOrdersBySellerUndelivered = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad, o.estado
 		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
-		pr.nombre, pr.ubicacion_google_maps, pr.direccion
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion, p.id as id_producto, p.imagen 
 	   FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       INNER JOIN productos p ON p.id = cc.id_producto
        LEFT JOIN fee f ON f.id_entrega = e.id
-       WHERE o.id_vendedor = ? AND o.estado != "Aceptado" OR o.estado !="Rechazado"
+       WHERE o.id_vendedor = ? AND (o.estado = "Pendiente de entrega")
       `,
       [user_id]
     );
@@ -393,8 +394,52 @@ export const getUnpaidOrders = async (user_id) => {
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
       INNER JOIN productos p ON p.id = cc.id_producto
-      LEFT JOIN fee ON fee.id_entrega = o.id_entrega
+      INNER JOIN billetera b ON b.id_usuario = o.id_comprador
+      LEFT JOIN fee ON fee.id_billetera = b.id
       WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NULL AND o.id_comprador = ?
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getUnpaidOrdersBySeller = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, e.fecha_entrega, e.cantidad, e.cantidad_unidad, e.hora_entrega, cc.precio, cc.precio_unidad, cc.id_producto, p.imagen  FROM estado_ordenes eo
+      INNER JOIN ordenes o ON o.id = eo.id_orden
+      INNER JOIN entregas e ON e.id = o.id_entrega
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+      INNER JOIN productos p ON p.id = cc.id_producto
+      INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
+      LEFT JOIN fee ON fee.id_billetera = b.id
+      WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NULL AND o.id_vendedor = ?
+      `,
+      [user_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getPaidOrdersBySeller = async (user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, e.fecha_entrega, e.cantidad, e.cantidad_unidad, e.hora_entrega, cc.precio, cc.precio_unidad, cc.id_producto, p.imagen  FROM estado_ordenes eo
+      INNER JOIN ordenes o ON o.id = eo.id_orden
+      INNER JOIN entregas e ON e.id = o.id_entrega
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+      INNER JOIN productos p ON p.id = cc.id_producto
+      INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
+      LEFT JOIN fee ON fee.id_billetera = b.id
+      WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NOT NULL AND o.id_vendedor = ?
       `,
       [user_id]
     );

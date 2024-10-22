@@ -229,9 +229,29 @@ export const getUnpaidOrders = async (req, res) => {
   try {
     const user_id = req.user_id;
 
-    const orders = await orderModel.getUnpaidOrders(user_id);
+    if(await profileChecker.isBuyerProfile(user_id)){
+      const orders = await orderModel.getUnpaidOrders(user_id);
+      return res.status(200).json(orders)
+    } else {
+      const orders = await orderModel.getUnpaidOrdersBySeller(user_id);
+      return res.status(200).json(orders)
+    }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 
-    return res.status(200).json(orders);
+export const getUndeliveredOrders = async (req, res) => {
+  try {
+    const user_id = req.user_id;
+
+    if(await profileChecker.isBuyerProfile(user_id)){
+      const orders = await orderModel.getUnpaidOrders(user_id);
+      return res.status(200).json(orders)
+    } else {
+      const undeliveredOrders = await orderModel.getOrdersBySellerUndelivered(user_id);
+      return res.status(200).json(undeliveredOrders)
+    }
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
