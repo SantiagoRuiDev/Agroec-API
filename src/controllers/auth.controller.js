@@ -8,6 +8,7 @@ import * as associationModel from "../models/association.model.js";
 import * as walletModel from "../models/wallet.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
+import { formatMailSeller } from "../email/seller.js";
 import { comparePassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeMultiuserToken, encodeToken } from "../libs/token.js";
@@ -51,7 +52,7 @@ export const createAccount = async (req, res) => {
             ); // Se crea el Perfil
             // Envia Email al comprador
             await sendMail(
-              formatMailBuyer(req.body.profile),
+              formatMailBuyer(bodyProfile),
               req.body.user.correo
             );
             await walletModel.createWallet(wallet_id, uuid);
@@ -66,6 +67,10 @@ export const createAccount = async (req, res) => {
               uuid,
               bankAccount_uuid,
               bodyProfile
+            );
+            await sendMail(
+              formatMailSeller(bodyProfile),
+              req.body.user.correo
             );
             await walletModel.createWallet(wallet_id, uuid);
             break;
@@ -85,6 +90,10 @@ export const createAccount = async (req, res) => {
               bankAccount_uuid,
               bodyProfile
             );
+            await sendMail(
+              formatMailSeller(bodyProfile),
+              req.body.user.correo
+            );
             await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Asociacion Agricola":
@@ -97,6 +106,10 @@ export const createAccount = async (req, res) => {
               uuid,
               bankAccount_uuid,
               bodyProfile
+            );
+            await sendMail(
+              formatMailSeller(bodyProfile),
+              req.body.user.correo
             );
             await walletModel.createWallet(wallet_id, uuid);
             break;
@@ -115,6 +128,10 @@ export const createAccount = async (req, res) => {
               idAssociation,
               bankAccount_uuid,
               bodyProfile
+            );
+            await sendMail(
+              formatMailSeller(bodyProfile),
+              req.body.user.correo
             );
 
             await walletModel.createWallet(wallet_id, uuid);
