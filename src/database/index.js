@@ -5,16 +5,18 @@ import fs from 'fs/promises';
 // Funcion asincrona para conectarse a la db
 export async function connect() {
     try {
-        const connection = await mysql.createConnection({
+        const pool = mysql.createPool({
             host: (!APP_SETTINGS.production) ? APP_SETTINGS.database_host : APP_SETTINGS.prod_database_host,
             user: (!APP_SETTINGS.production) ? APP_SETTINGS.database_user : APP_SETTINGS.prod_database_user,
             password: (!APP_SETTINGS.production) ? APP_SETTINGS.database_password : APP_SETTINGS.prod_database_password,
             database: (!APP_SETTINGS.production) ? APP_SETTINGS.database_name : APP_SETTINGS.prod_database_name,
             port: (!APP_SETTINGS.production) ? 3306 : APP_SETTINGS.prod_dabatase_port,
             ssl: false,
-            connectTimeout: 60000
-        });        
-        return connection;
+            connectionLimit: 5, // Ajusta según tus necesidades
+            waitForConnections: true,
+            queueLimit: 0
+        });
+        return pool;
     } catch(error){
         throw error; // Si falla muestra el error en consola.
     }
