@@ -33,7 +33,7 @@ const app = express();
 const server = createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "capacitor://localhost"],
     credentials: true, // Permitir credenciales en las conexiones de socket
   },
 });
@@ -44,7 +44,7 @@ app.use(
     origin: [
       "http://localhost:5173", // Dominio para puerto 5173
       "http://localhost:5174", // Dominio para puerto 5174
-      "*",
+      "capacitor://localhost",
       APP_SETTINGS.domain,     // Otros dominios que quieras permitir
     ],
     credentials: true, // Permite el envío de cookies

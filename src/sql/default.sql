@@ -7,21 +7,6 @@
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `agroec`
---
-CREATE DATABASE IF NOT EXISTS `agroec` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `agroec`;
 
 -- --------------------------------------------------------
 
@@ -196,7 +181,7 @@ CREATE TABLE `condiciones_compra` (
   `porcentaje_inicial` decimal(10,0) NOT NULL DEFAULT 0,
   `modo_pago_final` enum('Pago en sitio','Pago a crédito') NOT NULL DEFAULT 'Pago en sitio',
   `porcentaje_final` decimal(10,0) NOT NULL DEFAULT 0,
-  `notas` text NOT NULL DEFAULT '\'\'',
+  `notas` text,
   `precio_puesto_domicilio` tinyint(1) NOT NULL DEFAULT 0,
   `politicas_recepcion` varchar(500) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
