@@ -1,4 +1,3 @@
-import cookie from 'cookie'
 import { decodeToken } from '../libs/token.js';
 import * as chatModel from '../models/chat.model.js';
 import * as authModel from "../models/auth.model.js";
@@ -7,10 +6,11 @@ import { v4 as uuid4v } from 'uuid';
 
 export function initializeSocket(io){
   io.on("connection", (socket) => {
-    const cookies = cookie.parse(socket.handshake.headers.cookie || '');
+    const authHeader = socket.handshake.headers["authorization"];
+    const token = authHeader ? authHeader.split(" ")[1] : null;
 
     // Acceder a una cookie específica, por ejemplo, 'auth-token'
-    const userData = (cookies['auth-token']) ? decodeToken(cookies['auth-token']) : null;
+    const userData = token ? decodeToken(token) : null;
 
     socket.on("connect-room", async (data) => {
       const room = data.room; // El usuario indica a qué sala conectarse

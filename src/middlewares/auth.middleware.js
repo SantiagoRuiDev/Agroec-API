@@ -87,11 +87,10 @@ export const finishAccount = async (req, res, next) => {
 
 export const isAuthentified = async (req, res, next) => {
   try {
-    const multiuser_token = req.cookies["multiuser-token"];
+    const multiuser_token = req.headers["x-multiuser-token"]; // Formato esperado: "Bearer <multiuser-token>"
 
     if (
-      multiuser_token != undefined ||
-      (multiuser_token != null && typeof multiuser_token == "string")
+      multiuser_token != undefined && multiuser_token != null
     ) {
       if (typeof multiuser_token === "string") {
         const decoded = decodeToken(multiuser_token);
@@ -110,7 +109,7 @@ export const isAuthentified = async (req, res, next) => {
 
     // Si el usuario se ingreso como multi-usuario, este flujo de abajo no seguira, entonces creamos middleware para cada permiso.
 
-    const token = req.cookies["auth-token"];
+    const token = req.headers["authorization"]?.split(" ")[1];
 
     if (typeof token === "string") {
       const decoded = decodeToken(token);

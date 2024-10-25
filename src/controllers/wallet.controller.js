@@ -69,7 +69,9 @@ export const rechargeWallet = async (req, res) => {
         }
 
         const user = await authModel.getAccountById(req.user_id);
-        await sendMail(formatTransactionMail({operacion: "Recarga de $" + rechargeAmount + " saldo en billetera"}), user.correo);
+        await sendMail(
+          "Agroec - Recarga exitosa ✔",
+          formatTransactionMail({operacion: "Recarga de $" + rechargeAmount + " saldo en billetera"}), user.correo);
 
         await walletModel.updateBalance(idWallet, rechargeMoreBalance);
       }
@@ -146,11 +148,15 @@ export const createFee = async (req, res) => {
           String(orderDetails.id).slice(0, 8),
         user.id_subscripcion
       );
-      await sendMail(formatTransactionMail({operacion: "El usuario ha pagado la fee de $" + feeBalance + " de la orden #" + orderDetails.id}), user.correo);
+      await sendMail(
+        "Agroec - Pago de fee ✔",
+        formatTransactionMail({operacion: "El usuario ha pagado la fee de $" + feeBalance + " de la orden #" + orderDetails.id}), user.correo);
     }
 
     const emailedUser = await authModel.getAccountById(req.user_id);
-    await sendMail(formatTransactionMail({operacion: "Pagaste la fee de $" + feeBalance + " con saldo de la billetera"}), emailedUser.correo);
+    await sendMail(
+      "Agroec - Pagaste una fee de manera exitosa ✔",
+      formatTransactionMail({operacion: "Pagaste la fee de $" + feeBalance + " con saldo de la billetera"}), emailedUser.correo);
 
     await walletModel.updateBalance(idWallet, balanceLessFee);
 

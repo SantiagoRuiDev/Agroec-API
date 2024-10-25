@@ -52,6 +52,7 @@ export const createAccount = async (req, res) => {
             ); // Se crea el Perfil
             // Envia Email al comprador
             await sendMail(
+              "Agroec - Nuevo Registro ✔",
               formatMailBuyer(bodyProfile),
               req.body.user.correo
             );
@@ -69,6 +70,7 @@ export const createAccount = async (req, res) => {
               bodyProfile
             );
             await sendMail(
+              "Agroec - Nuevo Registro ✔",
               formatMailSeller(bodyProfile),
               req.body.user.correo
             );
@@ -91,6 +93,7 @@ export const createAccount = async (req, res) => {
               bodyProfile
             );
             await sendMail(
+              "Agroec - Nuevo Registro ✔",
               formatMailSeller(bodyProfile),
               req.body.user.correo
             );
@@ -108,6 +111,7 @@ export const createAccount = async (req, res) => {
               bodyProfile
             );
             await sendMail(
+              "Agroec - Nuevo Registro ✔",
               formatMailSeller(bodyProfile),
               req.body.user.correo
             );
@@ -130,6 +134,7 @@ export const createAccount = async (req, res) => {
               bodyProfile
             );
             await sendMail(
+              "Agroec - Nuevo Registro ✔",
               formatMailSeller(bodyProfile),
               req.body.user.correo
             );
@@ -153,7 +158,6 @@ export const createAccount = async (req, res) => {
           });
         }
 
-        /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
@@ -167,7 +171,7 @@ export const createAccount = async (req, res) => {
           .then()
           .catch((error) => console.error("Error:", error));
 
-          */
+          
         return res
           .status(200)
           .json({ message: "Codigo enviado a tu telefono revisalo porfavor" });
@@ -185,10 +189,6 @@ export const loginAccount = async (req, res) => {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
     if (!fetchUser) {
-      if(!await profileChecker.isBuyerProfile(fetchUser.id)){
-        throw new Error("No puedes ingresar con una cuenta de vendedor");
-      }
-      
       const fetchMultiuser = await authModel.getMultiuserByEmail(req.body.correo);
       if(!fetchMultiuser){
         throw new Error("No hemos podido encontrar una cuenta con ese correo.");
@@ -201,19 +201,7 @@ export const loginAccount = async (req, res) => {
       const multi_token = encodeMultiuserToken(fetchMultiuser.id_usuario, fetchMultiuser.id, "3h");
       const token = encodeToken(fetchMultiuser.id_usuario, "3h");
       
-      res.cookie("multiuser-token", multi_token, {
-        expires: new Date(Date.now() + 18000000),
-        secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
-        sameSite: "none",
-        httpOnly: true,
-      });
-      res.cookie("auth-token", token, {
-        expires: new Date(Date.now() + 18000000),
-        secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
-        sameSite: "none",
-        httpOnly: true,
-      });
-      return res.status(200).json({ message: "Sesion iniciada correctamente" });
+      return res.status(200).json({ message: "Sesion iniciada correctamente", token: token, multi_token: multi_token });
     }
 
     if(!await profileChecker.isBuyerProfile(fetchUser.id)){
@@ -230,13 +218,7 @@ export const loginAccount = async (req, res) => {
 
     const token = encodeToken(fetchUser.id, "3h");
 
-    res.cookie("auth-token", token, {
-      expires: new Date(Date.now() + 18000000),
-      secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
-      sameSite: "none",
-      httpOnly: true,
-    });
-    return res.status(200).json({ message: "Sesion iniciada correctamente" });
+    return res.status(200).json({ message: "Sesion iniciada correctamente", token: token });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -260,13 +242,7 @@ export const loginSellerAccount = async (req, res) => {
 
     const token = encodeToken(fetchUser.id, "3h");
 
-    res.cookie("auth-token", token, {
-      expires: new Date(Date.now() + 18000000),
-      secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
-      sameSite: "none",
-      httpOnly: true,
-    });
-    return res.status(200).json({ message: "Sesion iniciada correctamente" });
+    return res.status(200).json({ message: "Sesion iniciada correctamente", token: token });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { APP_SETTINGS } from "./config.js";
 
-export const sendMail = async (format, email) => {
+export const sendMail = async (title, format, email) => {
   let transporter = nodemailer.createTransport({
     host: APP_SETTINGS.smtp_host,
     port: APP_SETTINGS.smtp_port,
@@ -19,7 +19,7 @@ export const sendMail = async (format, email) => {
     sender: 'contact@santiagorui.shop',
     from: 'Santiago <contact@santiagorui.shop>',
     to: email, // list of receivers
-    subject: "Agroec - Nuevo Registro ✔", // Subject line
+    subject: title, // Subject line
     html: htmlContent,
   });
 };

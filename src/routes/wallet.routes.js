@@ -5,10 +5,10 @@ import * as walletMiddleware from '../middlewares/wallet.middleware.js'
 
 export const router = Router();
 
-router.get('/cards', authMiddleware.isAuthentified, walletController.getCardsByUser);
-router.post('/cards', authMiddleware.isAuthentified, walletController.createCardTokenization);
-router.delete('/cards/:id', authMiddleware.isAuthentified, walletController.deleteCard);
-router.post('/cards/charge', authMiddleware.isAuthentified, walletController.chargeCard);
+router.get('/cards', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.getCardsByUser);
+router.post('/cards', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.createCardTokenization);
+router.delete('/cards/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.deleteCard);
+router.post('/cards/charge', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.chargeCard);
 router.get('/', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.getWalletByUser);
 router.post('/recharge', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletMiddleware.createRecharge, walletController.rechargeWallet);
 router.post('/fee/:id_entrega', authMiddleware.isAuthentified, authMiddleware.isMultiserPaymentAllowed, walletMiddleware.createFee, walletController.createFee);
