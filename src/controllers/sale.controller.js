@@ -21,10 +21,36 @@ export const createSale = async (req, res) => {
                 }
             }
 
-            return res.status(200).send({message: `Venta publicada con exito`});
+            return res.status(200).send({message: `Venta publicada con exito`, uuid: sale_id});
         }
 
         throw new Error("La creacion de la venta ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+
+export const updateSale = async (req, res) => {
+    try {
+        const sale_id = req.params.id;
+        const user_id = req.user_id;
+
+        const insertSale = await salesModel.updateSale(sale_id, req.body.sale);
+
+        if(insertSale > 0){
+            if(req.body.quality_params){
+                for(const param of req.body.quality_params){
+                    const newParamRowId = uuidv4();
+                    await qualityParamsModel.createQualityParam(newParamRowId, user_id, param);
+                    await qualityParamsModel.createQualityParamForSale(newParamRowId, sale_id);
+                }
+            }
+
+            return res.status(200).send({message: `Venta actualizada con exito`, uuid: sale_id});
+        }
+
+        throw new Error("La actualización de la venta ha fallado, intenta nuevamente")
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
@@ -80,7 +106,16 @@ export const getSalesByUser = async (req, res) => {
 
 export const getSaleByIdentifier = async (req, res) => {
     try {
-        const sale = await salesModel.getSaleByIdentifier(req.params.sale, req.params.id);
+        const sale = await salesModel.getSaleByIdentifier(req.params.id);
+        return res.status(200).json(sale);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const getSaleByIdentifierAndProduct = async (req, res) => {
+    try {
+        const sale = await salesModel.getSaleByIdentifierAndProduct(req.params.sale, req.params.id);
 
         let sellerProfile;
 
@@ -148,6 +183,39 @@ export const deleteSale = async (req, res) => {
         }
 
         throw new Error("La eliminación de la venta ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const deleteParam = async (req, res) => {
+    try {
+        const deletedRow = await qualityParamsModel.deleteQualityParamForSale(req.params.id, req.params.sale, req.user_id);
+
+        if(deletedRow > 0) {
+            return res.status(200).json({message: "Parametros eliminados correctamente"});
+        }
+
+        throw new Error("La eliminación del parametro ha fallado, intenta nuevamente")
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+export const deleteImage = async (req, res) => {
+    try {
+        const sale = await salesModel.getSaleByIdentifier(req.params.sale);
+
+        if(sale.images.length == 1){
+            throw new Error("Debes tener al menos dos imagenes para eliminar una");
+        }
+
+        const deletedRow = await salesModel.deleteImage(req.params.id);
+
+        if(deletedRow > 0) {
+            return res.status(200).json({message: "Imagen eliminada correctamente"});
+        }
+
+        throw new Error("La eliminación de la imagen ha fallado, intenta nuevamente")
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }

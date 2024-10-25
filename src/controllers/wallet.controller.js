@@ -3,6 +3,8 @@ import * as deliveryModel from "../models/delivery.model.js";
 import * as notificationService from "../services/notification.service.js";
 import * as paymentCore from "../payments/index.js";
 import * as authModel from "../models/auth.model.js";
+import { formatTransactionMail } from '../email/transaction.js';
+import { sendMail } from "../libs/emailer.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createWallet = async (req, res) => {
@@ -13,7 +15,7 @@ export const createWallet = async (req, res) => {
     const createWallet = await walletModel.createWallet(table_id, user_id);
 
     if (!createWallet) {
-      res.status(404).send({ message: "Hubo un error al crear la billetera" });
+      res.status(404).send({ error: "Hubo un error al crear la billetera" });
     }
 
     res.status(200).send({ message: "Billetera creada exitosamente" });
@@ -66,6 +68,9 @@ export const rechargeWallet = async (req, res) => {
             .send({ message: "Hubo un error al recargar la billetera" });
         }
 
+        const user = await authModel.getAccountById(req.user_id);
+        await sendMail(formatTransactionMail({operacion: "Recarga de $" + rechargeAmount + " saldo en billetera"}), user.correo);
+
         await walletModel.updateBalance(idWallet, rechargeMoreBalance);
       }
     }
@@ -92,7 +97,7 @@ export const createFee = async (req, res) => {
     if (!idWallet) {
       return res
         .status(404)
-        .send({ message: `La billetera con id: ${idWallet} no existe` });
+        .send({ error: `La billetera con id: ${idWallet} no existe` });
     }
 
     const balanceNow = wallet?.saldo;
@@ -102,7 +107,7 @@ export const createFee = async (req, res) => {
     if (balanceNow < feeBalance) {
       return res
         .status(404)
-        .send({ message: "El saldo debe ser mayor al monto para cobrar" });
+        .send({ error: "El saldo debe ser mayor al monto para cobrar" });
     }
 
     const balanceLessFee = balanceNow - feeBalance;
@@ -115,7 +120,7 @@ export const createFee = async (req, res) => {
     );
 
     if (!createFee) {
-      return res.status(404).send({ message: "Error al procesar el cobro" });
+      return res.status(404).send({ error: "Error al procesar el cobro" });
     }
 
     const orderDetails = await deliveryModel.getDeliveryById(id_delivery);
@@ -141,7 +146,11 @@ export const createFee = async (req, res) => {
           String(orderDetails.id).slice(0, 8),
         user.id_subscripcion
       );
+      await sendMail(formatTransactionMail({operacion: "El usuario ha pagado la fee de $" + feeBalance + " de la orden #" + orderDetails.id}), user.correo);
     }
+
+    const emailedUser = await authModel.getAccountById(req.user_id);
+    await sendMail(formatTransactionMail({operacion: "Pagaste la fee de $" + feeBalance + " con saldo de la billetera"}), emailedUser.correo);
 
     await walletModel.updateBalance(idWallet, balanceLessFee);
 

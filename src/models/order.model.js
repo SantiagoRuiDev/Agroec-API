@@ -127,7 +127,8 @@ export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
        INNER JOIN entregas e ON o.id_entrega = e.id
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
-       LEFT JOIN fee f ON f.id_entrega = e.id
+      INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
+      LEFT JOIN fee f ON f.id_billetera = b.id
        WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
       `,
       [user_id]
@@ -149,7 +150,8 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
        INNER JOIN entregas e ON o.id_entrega = e.id
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
-       LEFT JOIN fee f ON f.id_entrega = e.id
+      INNER JOIN billetera b ON b.id_usuario = o.id_comprador
+      LEFT JOIN fee f ON f.id_billetera = b.id
        WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
       `,
       [user_id]
@@ -161,7 +163,7 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
   }
 };
 
-export const getOrdersById = async (order_id) => {
+export const getOrdersById = async (order_id, user_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.cantidad_recibida, o.creado,p.id as producto, p.imagen, cc.notas, cc.precio_puesto_domicilio, cc.modo_pago, cc.modo_pago_final, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
@@ -197,9 +199,9 @@ export const getOrdersById = async (order_id) => {
     );
 
     const [fee] = await connection.query(
-      `SELECT * FROM fee WHERE id_entrega = ?
+      `SELECT f.* FROM fee f INNER JOIN billetera b ON f.id_billetera = b.id WHERE b.id_usuario = ?
         `,
-      [statement[0].id_entrega]
+      [user_id]
     );
 
     return {
@@ -395,8 +397,8 @@ export const getUnpaidOrders = async (user_id) => {
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
       INNER JOIN productos p ON p.id = cc.id_producto
       INNER JOIN billetera b ON b.id_usuario = o.id_comprador
-      LEFT JOIN fee ON fee.id_billetera = b.id
-      WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NULL AND o.id_comprador = ?
+      LEFT JOIN fee f ON f.id_billetera = b.id
+      WHERE eo.estado = "Aceptado" AND f.monto_fee IS NULL AND o.id_comprador = ?
       `,
       [user_id]
     );

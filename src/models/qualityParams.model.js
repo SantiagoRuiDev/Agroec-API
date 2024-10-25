@@ -139,6 +139,24 @@ export const deleteQualityParam = async (param_id, user_id) => {
 };
 
 
+export const deleteQualityParamForSale = async (param_id, sale_id, user_id) => {
+  try {
+    await connection.query(
+      `DELETE FROM venta_contiene_calidad WHERE id_venta = ? AND id_parametros = ?`,
+      [sale_id, param_id]
+    );
+    const [statement] = await connection.query(
+      `DELETE FROM parametros_calidad WHERE id = ? AND id_usuario = ?`,
+      [param_id, user_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const deleteQualityParamForCondition = async (param_id) => {
   try {
     const [statement] = await connection.query(

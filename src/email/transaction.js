@@ -1,6 +1,6 @@
-export const formatMailBuyer = (data) => {
+export const formatTransactionMail = (data) => {
   return `
-  <!DOCTYPE html>
+      <!DOCTYPE html>
 <html>
 
 <head>
@@ -11,11 +11,9 @@ export const formatMailBuyer = (data) => {
 
     <div style="position: relative; width: 80%; margin: 0 auto; background-color: #F5F5F5; border-radius: 16px; display: grid; margin-top: 20px; padding: 178px 8px 8px 8px;">
         <img src="https://i.imgur.com/NDDmRCB.png" alt="Agroec" style="max-height: 250px; position: absolute; top: 72px; left: 50%; transform: translate(-50%, -50%); margin: 0 auto;">
-        
         <p style="font-size: 16px; line-height: 24px; color: #333;">
-            Hola <b>${data.razon_social}</b>,<br><br>
-            Recibimos la notificación de que te has registrado en nuestros servicios recientemente.<br><br>
-            Queremos agradecerte y esperamos que tengas una cálida experiencia en la Aplicación.
+            Agradecemos tu confianza en Agroec, la operación de <strong>${data.operacion}</strong> ha resultado de manera exitosa.<br><br>
+            Si necesitas ayuda con tu transacción, no dudes en contactar al soporte.
         </p>
 
         <h3 style="font-size: 20px; color: #333;">Soporte via Email</h3>
@@ -38,6 +36,5 @@ export const formatMailBuyer = (data) => {
 </body>
 
 </html>
-
-  `;
+`;
 };

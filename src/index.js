@@ -26,7 +26,6 @@ import { Server } from "socket.io";
 import "./socket/socket.js";
 import { initializeSocket } from "./socket/socket.js";
 // ---
-
 // Abro la conexión aca para evitar realizar muchas conexiones en modelo.
 export const connection = await connect();
 
@@ -45,6 +44,7 @@ app.use(
     origin: [
       "http://localhost:5173", // Dominio para puerto 5173
       "http://localhost:5174", // Dominio para puerto 5174
+      "*",
       APP_SETTINGS.domain,     // Otros dominios que quieras permitir
     ],
     credentials: true, // Permite el envío de cookies

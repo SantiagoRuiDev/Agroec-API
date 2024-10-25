@@ -25,6 +25,28 @@ export const createSale = async (sale_id, product_id, user_id, schema) => {
   }
 };
 
+
+export const updateSale = async (sale_id, schema) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_vender SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, presentacion_entrega = ?, fecha_entrega = ? WHERE id = ?`,
+      [
+        schema.precio,
+        schema.precio_unidad,
+        schema.cantidad,
+        schema.cantidad_unidad,
+        schema.presentacion_entrega,
+        schema.fecha_entrega,
+        sale_id
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getSalesByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
@@ -85,14 +107,44 @@ export const getSalesByUser = async (user_id) => {
   }
 };
 
-export const getSaleByIdentifier = async (identifer, product) => {
+export const getSaleByIdentifier = async (identifer) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
-      INNER JOIN venta_contiene_calidad vcc ON vcc.id_venta = pv.id
-      INNER JOIN parametros_calidad pc ON pc.id = vcc.id_parametros
+      LEFT JOIN venta_contiene_calidad vcc ON vcc.id_venta = pv.id
+      LEFT JOIN parametros_calidad pc ON pc.id = vcc.id_parametros
+      WHERE pv.id = ?`,
+      [identifer]
+    );
+    const [images] = await connection.query(
+      `SELECT url_imagen, id FROM productos_vender_imagenes WHERE id_venta = ?`,
+      [identifer]
+    );
+    const [quality_params] = await connection.query(
+      `SELECT * FROM parametros_calidad pc INNER JOIN venta_contiene_calidad vcc ON vcc.id_parametros = pc.id WHERE vcc.id_venta = ?`,
+      [identifer]
+    );
+
+    return {
+      ...statement[0],
+      images,
+      quality_params
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getSaleByIdentifierAndProduct = async (identifer, product) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto 
+      INNER JOIN usuarios u ON u.id = pv.id_usuario
+      LEFT JOIN venta_contiene_calidad vcc ON vcc.id_venta = pv.id
+      LEFT JOIN parametros_calidad pc ON pc.id = vcc.id_parametros
       WHERE pv.id = ? AND pv.id_producto = ?`,
       [identifer, product]
     );
@@ -159,6 +211,19 @@ export const deleteSale = async (user_id, sale_id) => {
     const [statement] = await connection.query(
       `DELETE FROM product_vender WHERE id_usuario = ? AND id = ?`,
       [user_id, sale_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const deleteImage = async (image_id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM productos_vender_imagenes WHERE id = ?`,
+      [image_id]
     );
 
     return statement.affectedRows;

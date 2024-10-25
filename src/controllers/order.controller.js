@@ -54,7 +54,7 @@ export const getOrdersById = async (req, res) => {
   try {
     const order_id = req.params.id;
 
-    const order = await orderModel.getOrdersById(order_id);
+    const order = await orderModel.getOrdersById(order_id, req.user_id);
 
     return res.status(200).json(order);
   } catch (error) {

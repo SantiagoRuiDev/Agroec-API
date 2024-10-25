@@ -203,10 +203,14 @@ export const loginAccount = async (req, res) => {
       
       res.cookie("multiuser-token", multi_token, {
         expires: new Date(Date.now() + 18000000),
+        secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
+        sameSite: "none",
         httpOnly: true,
       });
       res.cookie("auth-token", token, {
         expires: new Date(Date.now() + 18000000),
+        secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
+        sameSite: "none",
         httpOnly: true,
       });
       return res.status(200).json({ message: "Sesion iniciada correctamente" });
@@ -228,6 +232,8 @@ export const loginAccount = async (req, res) => {
 
     res.cookie("auth-token", token, {
       expires: new Date(Date.now() + 18000000),
+      secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
+      sameSite: "none",
       httpOnly: true,
     });
     return res.status(200).json({ message: "Sesion iniciada correctamente" });
@@ -256,6 +262,8 @@ export const loginSellerAccount = async (req, res) => {
 
     res.cookie("auth-token", token, {
       expires: new Date(Date.now() + 18000000),
+      secure: APP_SETTINGS.secure, // Cambia a true si usas HTTPS
+      sameSite: "none",
       httpOnly: true,
     });
     return res.status(200).json({ message: "Sesion iniciada correctamente" });
@@ -298,14 +306,14 @@ export const logoutAccount = async (req, res) => {
     res.clearCookie("multiuser-token", {
       path: "/",
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
+      secure: APP_SETTINGS.secure,
+      sameSite: "none",
     });
     res.clearCookie("auth-token", {
       path: "/",
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
+      secure: APP_SETTINGS.secure,
+      sameSite: "none",
     });
     res.status(200).json({ message: "Logout successful, token removed" });
   } catch (error) {
