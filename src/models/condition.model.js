@@ -113,18 +113,28 @@ export const getDeliveriesByCondition = async (condition_id) => {
 export const getConditionByChat = async (chat_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT cc.*, p.imagen, COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta
+      `SELECT cc.*, p.imagen, COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta,
+      COALESCE (pc.estado_comprador, pv.estado_comprador) AS estado_comprador,
+      COALESCE (pc.estado_vendedor, pv.estado_vendedor) AS estado_vendedor,
+      COALESCE (pc.precio, pv.precio) AS precio_propuesta,
+      COALESCE (pc.precio_unidad, pv.precio_unidad) AS precio_unidad_propuesta,
+      COALESCE (pc.cantidad, pv.cantidad) AS cantidad_propuesta,
+      COALESCE (pc.cantidad_unidad, pv.cantidad_unidad) AS cantidad_unidad_propuesta,
+      COALESCE (pc.valida_hasta, pv.fecha_entrega) AS fecha_limite,
+      COALESCE (pc.presentacion_entrega, pv.presentacion_entrega) AS presentacion_propuesta
       FROM condiciones_compra cc 
       INNER JOIN chat ch ON cc.id = ch.id_condiciones 
       INNER JOIN productos p ON p.id = cc.id_producto
       LEFT JOIN propuesta_compra_contiene_condicion pccc ON pccc.id_condicion = cc.id
       LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
+      LEFT JOIN propuesta_compra pc ON pc.id = pccc.id_propuesta
+      LEFT JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta
       WHERE ch.id = ?`,
       [chat_id]
     );
 
     const [deliveries] = await connection.query(
-      `SELECT e.*, o.estado, pr.nombre, pr.ubicacion_google_maps, pr.id as id_punto, pr.direccion
+      `SELECT e.*, o.id as id_orden, o.estado, pr.nombre, pr.ubicacion_google_maps, pr.id as id_punto, pr.direccion
       FROM entregas e 
       INNER JOIN puntos_recepcion pr ON pr.id = e.id_punto
       LEFT JOIN ordenes o ON o.id_entrega = e.id

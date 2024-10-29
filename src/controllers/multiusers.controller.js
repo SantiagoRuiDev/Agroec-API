@@ -91,6 +91,7 @@ export const createMultiuser = async (req, res) => {
   try {
     const uuid = uuidv4();
     const uuid_user = req.user_id;
+    const schema = req.body;
 
     if (!(await profileChecker.isBuyerProfile(uuid_user))) {
       throw new Error("Tu perfil no es de tipo comprador");
@@ -105,8 +106,7 @@ export const createMultiuser = async (req, res) => {
     }
 
 
-    req.body.clave = await hashPassword(req.body.clave);
-    const schema = req.body;
+    req.body.clave = await hashPassword(schema.clave);
 
     const insertUser = await multiusersModel.createMultiuser(
       uuid,

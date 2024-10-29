@@ -147,6 +147,54 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
   }
 };
 
+
+export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
+  try {
+    // Obtener todas las propuestas del usuario
+    const [proposals] = await connection.query(
+      `SELECT pv.*,
+       pc.id_producto, 
+       uv.provincia, uv.canton, u.id as id_comprador,
+       ch.id AS chat_id,
+       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
+        FROM propuesta_venta pv
+        INNER JOIN propuesta_venta_contiene_condicion pvcc ON pv.id = pvcc.id_propuesta
+        INNER JOIN condiciones_compra cc ON cc.id = pvcc.id_condicion 
+        INNER JOIN chat ch ON ch.id_condiciones = cc.id
+        INNER JOIN producto_licitar pc ON pc.id = pv.id_licitacion
+        INNER JOIN usuarios uv ON pv.id_vendedor = uv.id 
+        INNER JOIN usuarios u ON pc.id_usuario = u.id 
+        LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
+    	WHERE u.id = ? AND pc.id_producto = ?`,
+      [user_id, product_id]
+    );
+
+    // Iterar sobre las propuestas para obtener el último mensaje de cada una
+    const proposalsWithMessages = await Promise.all(
+      proposals.map(async (proposal) => {
+        // Obtener el último mensaje del chat correspondiente a la propuesta actual
+        const [lastMessage] = await connection.query(
+          `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
+          [proposal.chat_id]
+        );
+
+        // Retornar la propuesta con su último mensaje
+        return {
+          ...proposal,
+          lastMessage: lastMessage[0] || null, // Si no hay mensaje, poner null
+        };
+      })
+    );
+
+    return proposalsWithMessages;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const updateSaleProposalStateBySeller = async (sale_id, state) => {
   try {
     const [statement] = await connection.query(
@@ -422,9 +470,10 @@ export const getLicitationProposalBySellerAndProduct = async (
 export const getLicitationProposalBySale = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pv.id_producto, COUNT(pc.id) AS num_propuestas
+      `SELECT pv.id_producto, p.imagen, COUNT(pc.id) AS num_propuestas
       FROM propuesta_compra pc
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta
+      INNER JOIN productos p ON p.id = pv.id_producto
       WHERE (pc.estado_vendedor != "Aceptada" AND pc.estado_comprador != "Aceptada") AND pv.id_usuario = ?
       GROUP BY pv.id_producto;`,
       [user_id]

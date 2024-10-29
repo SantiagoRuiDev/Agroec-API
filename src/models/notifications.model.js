@@ -167,7 +167,7 @@ export const getNotifications = async (uuid_user) => {
       LEFT JOIN notificaciones_propuesta_venta npv ON npv.id_notificacion = n.id
       LEFT JOIN notificaciones_propuesta_compra npc ON npc.id_notificacion = n.id
       LEFT JOIN notificaciones_garantias ng ON ng.id_notificacion = n.id
-      WHERE id_notificado = ? ORDER BY fecha ASC`,
+      WHERE id_notificado = ? ORDER BY fecha DESC`,
       [uuid_user]
     );
 

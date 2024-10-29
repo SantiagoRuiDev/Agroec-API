@@ -73,17 +73,18 @@ export const createSaleProposal = async (req, res) => {
           );
         }
 
+        const chat_uuid = uuidv4();
         await chatModel.createChat(
-          uuidv4(),
+          chat_uuid,
           fetchLicitation.id_usuario,
           user_id,
           contidion_id
         );
-      }
 
-      return res
-        .status(200)
-        .send({ message: `Oferta de venta realizada con exito` });
+        return res
+          .status(200)
+          .send({ message: `Oferta de venta realizada con exito`, chat: chat_uuid });
+      }
     }
 
     throw new Error(
@@ -126,10 +127,18 @@ export const getSaleProposalByUser = async (req, res) => {
 
 export const getSaleProposalByUserAndProduct = async (req, res) => {
   try {
-    const proposals = await proposalModel.getSaleProposalByUserAndProduct(
-      req.user_id,
-      req.params.id
-    );
+    let proposals = [];
+    if(await profileChecker.isBuyerProfile(req.user_id)){
+      proposals = await proposalModel.getSaleProposalByBuyerAndProduct(
+        req.user_id,
+        req.params.id
+      );
+    } else {
+      proposals = await proposalModel.getSaleProposalByUserAndProduct(
+        req.user_id,
+        req.params.id
+      );
+    }
 
     if (proposals) {
       return res.status(200).json(proposals);
@@ -203,16 +212,17 @@ export const createLicitationProposal = async (req, res) => {
           );
         }
 
+        const chat_uuid = uuidv4();
         await chatModel.createChat(
-          uuidv4(),
+          chat_uuid,
           user_id,
           fetchSale.id_usuario,
           contidion_id
         );
+        return res
+          .status(200)
+          .send({ message: `Oferta de compra realizada con exito`, chat: chat_uuid });
       }
-      return res
-        .status(200)
-        .send({ message: `Oferta de compra realizada con exito` });
     }
 
     throw new Error(

@@ -165,7 +165,7 @@ export const createAccount = async (req, res) => {
         client.messages
           .create({
             body: "[AGROEC] Código de confirmación de Registro: " + code,
-            from: "+17089494566",
+            from: "+15624576355",
             to: req.body.user.telefono,
           })
           .then()
