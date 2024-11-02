@@ -21,7 +21,7 @@ export const createOrder = async (
 export const getOrdersByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.estado, o.id_comprador, o.id_vendedor,p.id as producto, p.imagen, cc.precio, cc.precio_unidad
+      `SELECT o.id, o.estado, o.creado, o.id_comprador, o.id_vendedor,p.id as producto, p.imagen, cc.precio, cc.precio_unidad
 		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
 		pr.nombre, pr.ubicacion_google_maps, pr.direccion
 	   FROM ordenes o 
@@ -30,6 +30,7 @@ export const getOrdersByUser = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
        INNER JOIN productos p ON p.id = cc.id_producto
        WHERE o.id_comprador = ? OR o.id_vendedor = ?
+       ORDER BY o.creado ASC
       `,
       [user_id, user_id]
     );
@@ -47,7 +48,7 @@ export const getOrderUsers = async (order_id) => {
       `SELECT o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
-       WHERE id = ?
+       WHERE id = ? ORDER BY o.creado DESC
       `,
       [order_id]
     );
@@ -83,7 +84,7 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
        INNER JOIN entregas e ON o.id_entrega = e.id
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
-       WHERE o.id_comprador = ? AND o.estado = "Aceptado"
+       WHERE o.id_comprador = ? AND o.estado = "Aceptado" ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -98,7 +99,7 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
 export const getOrdersBySellerUndelivered = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad, o.estado
+      `SELECT o.id, o.creado, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad, o.estado
 		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
 		pr.nombre, pr.ubicacion_google_maps, pr.direccion, p.id as id_producto, p.imagen 
 	   FROM ordenes o 
@@ -107,7 +108,8 @@ export const getOrdersBySellerUndelivered = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
        INNER JOIN productos p ON p.id = cc.id_producto
        LEFT JOIN fee f ON f.id_entrega = e.id
-       WHERE o.id_vendedor = ? AND (o.estado = "Pendiente de entrega")
+       WHERE o.id_vendedor = ? AND (o.estado = "Pendiente de entrega") 
+       ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -129,7 +131,7 @@ export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
       INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
       LEFT JOIN fee f ON f.id_billetera = b.id
-       WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
+       WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -152,7 +154,7 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
       INNER JOIN billetera b ON b.id_usuario = o.id_comprador
       LEFT JOIN fee f ON f.id_billetera = b.id
-       WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
+       WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -162,6 +164,23 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
     throw new Error(error.message);
   }
 };
+
+export const getOrdersByConditions = async (condition_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o 
+      INNER JOIN entregas e ON e.id = o.id_entrega
+      INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+      WHERE cc.id = ?
+      `,
+      [condition_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 export const getOrdersById = async (order_id, user_id) => {
   try {
@@ -199,9 +218,13 @@ export const getOrdersById = async (order_id, user_id) => {
     );
 
     const [fee] = await connection.query(
-      `SELECT f.* FROM fee f INNER JOIN billetera b ON f.id_billetera = b.id WHERE b.id_usuario = ?
+      `SELECT f.* FROM fee f 
+      INNER JOIN entregas e ON e.id = f.id_entrega
+      INNER JOIN ordenes o ON o.id_entrega = e.id
+      INNER JOIN billetera b ON f.id_billetera = b.id 
+      WHERE b.id_usuario = ? AND o.id = ?
         `,
-      [user_id]
+      [user_id, order_id]
     );
 
     return {

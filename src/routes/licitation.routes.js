@@ -7,6 +7,7 @@ export const router = Router();
 
 
 router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationMiddleware.createLicitation, licitationController.createLicitation)
+router.put('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationMiddleware.createLicitation, licitationController.updateLicitation)
 
 router.get('/filter/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 router.get('/me', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUser)
@@ -15,5 +16,6 @@ router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicita
 router.get('/:id', authMiddleware.isAuthentified, licitationController.getLicitationById)
 
 router.put('/set-closed/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.closeLicitation)
+router.put('/param/:id', authMiddleware.isAuthentified, licitationController.updateParam)
 
 router.delete('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.deleteLicitation)

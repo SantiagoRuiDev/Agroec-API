@@ -31,7 +31,6 @@ export function initializeSocket(io){
       }
       // El usuario se une a la sala especificada
       socket.join(room);
-      console.log(`Usuario ${socket.id} se ha unido a la sala: ${room}`);
 
       // Emitir un mensaje solo a los usuarios en esa sala, excepto al que se acaba de unir
       io.to(room).emit("room-messages", {chat, user: userData.user});

@@ -36,7 +36,7 @@ export const getWalletByUser = async (uuid_user) => {
     wallet;
 
     const [recharge] = await connection.query(
-      `SELECT * FROM recargas WHERE id_billetera = ?`,
+      `SELECT * FROM recargas WHERE id_billetera = ? ORDER BY fecha ASC`,
       [wallet[0].id]
     );
 
@@ -54,7 +54,7 @@ export const getWalletByUser = async (uuid_user) => {
           LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = o.id_vendedor
           LEFT JOIN perfil_comerciante pca ON pca.id_usuario = o.id_vendedor
           LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = o.id_vendedor
-          WHERE id_billetera = ?
+          WHERE id_billetera = ? ORDER BY f.fecha ASC
           `,
       [wallet[0].id]
     );
@@ -62,7 +62,7 @@ export const getWalletByUser = async (uuid_user) => {
     const [chargeback] = await connection.query(
       `
           SELECT * FROM devoluciones
-          WHERE id_billetera = ?
+          WHERE id_billetera = ? ORDER BY fecha ASC
           `,
       [wallet[0].id]
     );

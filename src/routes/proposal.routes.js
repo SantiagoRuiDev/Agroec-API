@@ -5,6 +5,7 @@ import * as proposalMiddleware from '../middlewares/proposal.middleware.js'
 
 export const router = Router();
 
+router.get('/:id', authMiddleware.isAuthentified, proposalController.getProposalInformation)
 router.post('/accept/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
 
 // Propuestas de Ventas a Licitaciones

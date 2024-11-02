@@ -85,6 +85,70 @@ export const getSaleProposalByUser = async (user_id) => {
   }
 };
 
+export const getProposalInformation = async (proposal_id) => {
+  try {
+    const [sale] = await connection.query(
+      `SELECT * FROM propuesta_venta pv WHERE pv.id = ?`,
+      [proposal_id]
+    );
+    const [licitation] = await connection.query(
+      `SELECT * FROM propuesta_compra pc WHERE pc.id = ?`,
+      [proposal_id]
+    );
+
+    let statement = null;
+    if (sale[0]) {
+      [statement] = await connection.query(
+        `SELECT pl.*, pv.id_vendedor, pv.fecha_entrega,
+        COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
+        COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
+        COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS apellido,
+        u.provincia, u.canton
+        FROM producto_licitar pl
+        INNER JOIN propuesta_venta pv ON pv.id_licitacion = pl.id
+        INNER JOIN usuarios u ON u.id = pl.id_usuario
+        LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_vendedor
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
+        WHERE pv.id = ?`,
+        [proposal_id]
+      );
+    } else if (licitation[0]) {
+      [statement] = await connection.query(
+        `SELECT pv.*, pv.id_usuario as id_vendedor, pc.valida_hasta as fecha_entrega,
+        COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
+        COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
+        COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS apellido,
+        u.provincia, u.canton
+        FROM producto_vender pv
+        INNER JOIN propuesta_compra pc ON pc.id_venta = pv.id
+        INNER JOIN usuarios u ON u.id = pc.id_comprador
+        LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
+        LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
+        WHERE pc.id = ?`,
+        [proposal_id]
+      );
+    }
+
+    const [quality_params] = await connection.query(
+      `SELECT 
+      pc.*
+      FROM parametros_calidad pc
+      LEFT JOIN licitacion_contiene_calidad lcc ON lcc.id_parametros = pc.id
+      LEFT JOIN venta_contiene_calidad vcc ON vcc.id_parametros = pc.id
+      WHERE lcc.id_licitacion = ? OR vcc.id_venta = ?`,
+      [statement[0].id, statement[0].id]
+    );
+
+    return {...statement[0], quality_params};
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getSaleProposalByLicitation = async (user_id) => {
   try {
     const [statement] = await connection.query(
@@ -146,7 +210,6 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
   try {
@@ -302,7 +365,6 @@ export const getLicitationDeliveryWithConditionsById = async (proposal_id) => {
   }
 };
 
-
 export const getLicitationProposalBySeller = async (user_id) => {
   try {
     // Obtener todas las propuestas del usuario
@@ -333,7 +395,6 @@ export const getLicitationProposalBySeller = async (user_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getLicitationProposalByUser = async (user_id) => {
   try {
@@ -415,7 +476,6 @@ export const getLicitationProposalByUserAndProduct = async (
     throw new Error(error.message);
   }
 };
-
 
 export const getLicitationProposalBySellerAndProduct = async (
   user_id,

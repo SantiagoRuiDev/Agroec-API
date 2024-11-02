@@ -78,10 +78,10 @@ export const createWarranty = async (req, res) => {
     }
 
     if (createWarranty > 0) {
-      const orderData = await orderModel.getOrdersById(order_id);
+      const orderData = await orderModel.getOrdersByConditions(idCondition);
       const notification = await notificationService.createNotification(
-        orderData.order.id_vendedor,
-        orderData.order.producto
+        orderData[0].id_vendedor,
+        orderData[0].id_producto
       );
 
       if (notification) {
@@ -90,16 +90,18 @@ export const createWarranty = async (req, res) => {
           notification.id,
           `El comprador ha completado el pago de garantía de ${total}`
         );
-        const user = await authModel.getAccountById(orderData.order.id_vendedor);
+        const user = await authModel.getAccountById(orderData[0].id_vendedor);
         await notificationService.sendPushNotification(
-          "Pago en garantía",
+          "Pago de garantía",
           "El comprador ha realizado el pago de $" + total,
           user.id_subscripcion
         );
       }
 
-      await orderModel.updateOrderStatus(order_id, "Pendiente de entrega");
-      await orderModel.createPendingStatus(uuidv4(), order_id);
+      orderData.forEach(async (order) => {
+        await orderModel.updateOrderStatus(order.id, "Pendiente de entrega");
+        await orderModel.createPendingStatus(uuidv4(), order.id);
+      });
       return res.status(200).send({ message: "Garantia pagada exitosamente" });
     }
   } catch (error) {

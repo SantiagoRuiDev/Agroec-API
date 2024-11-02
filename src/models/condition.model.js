@@ -121,7 +121,10 @@ export const getConditionByChat = async (chat_id) => {
       COALESCE (pc.cantidad, pv.cantidad) AS cantidad_propuesta,
       COALESCE (pc.cantidad_unidad, pv.cantidad_unidad) AS cantidad_unidad_propuesta,
       COALESCE (pc.valida_hasta, pv.fecha_entrega) AS fecha_limite,
-      COALESCE (pc.presentacion_entrega, pv.presentacion_entrega) AS presentacion_propuesta
+      COALESCE (pc.presentacion_entrega, pv.presentacion_entrega) AS presentacion_propuesta,
+      COALESCE (pc.informacion_adicional, pv.informacion_adicional) AS informacion_adicional,
+      COALESCE (pc.ubicacion_google_maps) AS ubicacion,
+      COALESCE (pc.horarios) AS horarios
       FROM condiciones_compra cc 
       INNER JOIN chat ch ON cc.id = ch.id_condiciones 
       INNER JOIN productos p ON p.id = cc.id_producto

@@ -109,6 +109,32 @@ export const getSaleProposalById = async (req, res) => {
   }
 };
 
+export const getProposalInformation = async (req, res) => {
+  try {
+    if(await profileChecker.isBuyerProfile(req.user_id)){
+      const proposal = await proposalModel.getProposalInformation(
+        req.params.id
+      );
+  
+      if (proposal) {
+        return res.status(200).json(proposal);
+      }
+    } else {
+      const proposal = await proposalModel.getProposalInformation(
+        req.params.id
+      );
+  
+      if (proposal) {
+        return res.status(200).json(proposal);
+      }
+    }
+
+    throw new Error("No se encontro o hubo un error interno al cargar la propuesta");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const getSaleProposalByUser = async (req, res) => {
   try {
     const userProposals = await proposalModel.getSaleProposalByUser(

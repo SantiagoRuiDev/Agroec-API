@@ -9,7 +9,7 @@ export const getWarrantyPayments = async (uuid_user) => {
       INNER JOIN ordenes o ON o.id_entrega = e.id 
       INNER JOIN pago_garantia pg ON pg.id_condicion = e.id_condicion 
       WHERE o.id_comprador = ? 
-      GROUP BY pg.id_condicion`,
+      GROUP BY pg.id_condicion ORDER BY pg.fecha DESC`,
       [uuid_user]
     );
 

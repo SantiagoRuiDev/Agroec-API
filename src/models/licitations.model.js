@@ -31,6 +31,35 @@ export const createLicitation = async (
   }
 };
 
+
+export const updateLicitation = async (
+  licitation_id,
+  user_id,
+  schema
+) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_licitar SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, presentacion_entrega = ?, valida_hasta = ?, informacion_adicional = ?
+      WHERE id = ? AND id_usuario = ?`,
+      [
+        schema.precio,
+        schema.precio_unidad,
+        schema.cantidad,
+        schema.cantidad_unidad,
+        schema.presentacion_entrega,
+        schema.valida_hasta,
+        schema.informacion_adicional,
+        licitation_id,
+        user_id
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getLicitationsByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
@@ -84,7 +113,7 @@ export const getLicitationById = async (licitation_id) => {
 export const getAllLicitations = async () => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" LIMIT 30`
+      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND pl.estado != "Cerrada" LIMIT 30`
     );
 
     return statement;
@@ -96,10 +125,35 @@ export const getAllLicitations = async () => {
 export const getAllLicitationsByProduct = async (product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pl.*, pf.razon_social, u.provincia, u.canton FROM producto_licitar pl
+      `SELECT pl.*, pf.razon_social, u.provincia, u.canton, COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion,
+      (
+        SELECT pamc.nombre
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS nombre_parametro_calidad,
+      (
+        SELECT pamc.min_calidad
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS min_parametro_calidad,
+      (
+        SELECT pamc.max_calidad
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS max_parametro_calidad
+      FROM producto_licitar pl
       INNER JOIN usuarios u ON u.id = pl.id_usuario
       INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
-      WHERE pl.id_producto = ? AND pl.estado != "Eliminada"`,
+      LEFT JOIN calificacion c ON c.id_calificado = pl.id_usuario
+      WHERE pl.id_producto = ? AND pl.estado NOT IN ("Eliminada", "Cerrada")
+      GROUP BY pl.id
+      HAVING COUNT(pl.id) > 0`,
       [product_id]
     );
 
