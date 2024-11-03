@@ -81,7 +81,7 @@ export const getSalesByProduct = async (product_id) => {
       LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
-      WHERE pv.id_producto = ?`,
+      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada")`,
       [product_id]
     );
 
@@ -206,11 +206,11 @@ export const insertSaleImage = async (image_id, sale_id, url_imagen) => {
   }
 };
 
-export const deleteSale = async (user_id, sale_id) => {
+export const deleteImage = async (image_id) => {
   try {
     const [statement] = await connection.query(
-      `DELETE FROM product_vender WHERE id_usuario = ? AND id = ?`,
-      [user_id, sale_id]
+      `DELETE FROM productos_vender_imagenes WHERE id = ?`,
+      [image_id]
     );
 
     return statement.affectedRows;
@@ -219,11 +219,24 @@ export const deleteSale = async (user_id, sale_id) => {
   }
 };
 
-export const deleteImage = async (image_id) => {
+export const closeSale = async (sale_id) => {
   try {
     const [statement] = await connection.query(
-      `DELETE FROM productos_vender_imagenes WHERE id = ?`,
-      [image_id]
+      `UPDATE producto_vender SET estado = "Cerrada" WHERE id = ?`,
+      [sale_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const deleteSale = async (user_id, sale_id) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_vender SET estado = "Eliminada" WHERE id = ? AND id_usuario = ?`,
+      [sale_id, user_id]
     );
 
     return statement.affectedRows;

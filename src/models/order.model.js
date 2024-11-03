@@ -48,7 +48,7 @@ export const getOrderUsers = async (order_id) => {
       `SELECT o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
-       WHERE id = ? ORDER BY o.creado DESC
+       WHERE o.id = ? ORDER BY o.creado DESC
       `,
       [order_id]
     );

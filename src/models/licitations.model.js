@@ -188,3 +188,17 @@ export const closeLicitation = async (user_id, licitation_id) => {
     throw new Error(error.message);
   }
 };
+
+export const setQuantity = async (licitation_id, quantity) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_licitar SET cantidad = cantidad - ? WHERE id = ?`,
+      [quantity, licitation_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+

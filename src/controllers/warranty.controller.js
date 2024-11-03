@@ -3,6 +3,7 @@ import * as walletModel from "../models/wallet.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as authModel from "../models/auth.model.js";
 import * as notificationService from "../services/notification.service.js";
+import * as paymentCore from "../payments/index.js";
 import * as orderModel from "../models/order.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -62,6 +63,12 @@ export const createWarranty = async (req, res) => {
     const percentage = paymentCondition.porcentaje_inicial;
 
     const total = price * quantity * (percentage / 100);
+
+    const payment = await paymentCore.chargeCard(total, "Pago de Garantia Agroec", req.body.identificador, String(req.body.documento), "GARANTIA-" + Math.floor(Math.random() * 99999))
+
+    if(!payment){
+      throw new Error("Error al realizar el cobro de la tarjeta.");
+    }
 
     const createWarranty = await warrantyModel.createWarranty(
       uuid,

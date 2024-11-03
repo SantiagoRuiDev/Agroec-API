@@ -66,6 +66,10 @@ export const setOrderDeliveredStatus = async (req, res) => {
   try {
     const order_id = req.params.id;
 
+    if(!await orderModel.checkPendingStatus(order_id)){
+      throw new Error("La orden aun no se puede marcar como enviada");
+    }
+
     const order = await orderModel.createDeliveryStatus(uuidv4(), order_id);
 
     const orderDetails = await orderModel.getOrderUsers(order_id);
@@ -75,6 +79,7 @@ export const setOrderDeliveredStatus = async (req, res) => {
     );
 
     if (notification) {
+      await orderModel.updateOrderStatus(order_id, "En camino");
       await notificationService.createOrderNotification(
         order_id,
         notification.id,

@@ -34,6 +34,10 @@ export const createSaleProposal = async (req, res) => {
       throw new Error("No puedes crear una oferta de venta a ti mismo");
     }
 
+    if (fetchLicitation.estado == "Cerrada" || fetchLicitation.estado == "Eliminada"){
+      throw new Error("Esta licitación esta cerrada o eliminada del mercado");
+    }
+
     const insertProposal = await proposalModel.createSaleProposal(
       proposal_id,
       licitation_id,
@@ -187,18 +191,22 @@ export const createLicitationProposal = async (req, res) => {
 
     const fetchSale = await salesModel.getSalesById(sale_id);
 
-    if (!(await profileChecker.isBuyerProfile(user_id))) {
-      throw new Error(
-        "Solo los compradores pueden hacer propuestas de compra."
-      );
+    if (fetchSale.estado == "Cerrada" || fetchSale.estado == "Eliminada"){
+      throw new Error("Esta venta esta cerrada o eliminada del mercado");
     }
-
+    
     if (!fetchSale) {
       throw new Error("Esta venta no existe");
     }
 
     if (fetchSale.id_usuario == user_id) {
       throw new Error("No puedes crear una oferta de compra a ti mismo");
+    }
+
+    if (!(await profileChecker.isBuyerProfile(user_id))) {
+      throw new Error(
+        "Solo los compradores pueden hacer propuestas de compra."
+      );
     }
 
     const insertProposal = await proposalModel.createLicitationProposal(
@@ -577,6 +585,12 @@ export const acceptProposalByConditions = async (req, res) => {
       proposal.proposal.estado_comprador == "Aceptada" &&
       proposal.proposal.estado_vendedor == "Aceptada"
     ) {
+      if(proposal.type == "Licitation"){
+        await salesModel.closeSale(proposal.proposal.id_venta);
+      }
+      if(proposal.type == "Sale"){
+        await licitationModel.setQuantity(proposal.proposal.id_licitacion, conditions.cantidad);
+      }
       // Si ambos estados son iguales
       const delivery = await conditionModel.getDeliveriesByCondition(
         req.params.id

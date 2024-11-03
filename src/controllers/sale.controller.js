@@ -178,7 +178,6 @@ export const deleteSale = async (req, res) => {
         const deletedRow = await salesModel.deleteSale(req.user_id, req.params.id);
 
         if(deletedRow > 0) {
-
             return res.status(200).json({message: "Venta eliminada correctamente"});
         }
 
