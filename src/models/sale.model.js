@@ -47,7 +47,7 @@ export const updateSale = async (sale_id, schema) => {
   }
 };
 
-export const getSalesByProduct = async (product_id) => {
+export const getSalesByProduct = async (product_id, user_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
@@ -72,7 +72,8 @@ export const getSalesByProduct = async (product_id) => {
         LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
         WHERE vcc.id_venta = pv.id
         LIMIT 1
-      ) AS max_parametro_calidad
+      ) AS max_parametro_calidad,
+       COALESCE(pc.estado_comprador) AS estado_comprador
       FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
@@ -81,8 +82,10 @@ export const getSalesByProduct = async (product_id) => {
       LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
-      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada")`,
-      [product_id]
+      LEFT JOIN propuesta_compra pc ON pc.id_venta = pv.id AND pc.id_comprador = ?
+      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") AND estado_comprador NOT IN ("Rechazada")
+      ORDER BY pv.fecha_publicacion DESC`,
+      [user_id, product_id]
     );
 
     return statement;
@@ -97,7 +100,7 @@ export const getSalesByUser = async (user_id) => {
       `SELECT pv.*, p.nombre, p.imagen, 
         (SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = pv.id LIMIT 1) AS producto_imagen
         FROM producto_vender pv 
-       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ?`,
+       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ? ORDER BY pv.fecha_publicacion DESC`,
       [user_id]
     );
 
@@ -171,7 +174,7 @@ export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, p.nombre, p.imagen, p.id as id_producto FROM producto_vender pv 
-      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
+      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ? ORDER BY pv.fecha_publicacion DESC`,
       [sale_id]
     );
 

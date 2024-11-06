@@ -234,9 +234,10 @@ export const createLicitationProposal = async (req, res) => {
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
+          await notificationService.createLicitationProposalNotification(
             proposal_id,
-            notification.id
+            notification.id,
+            "Nueva propuesta de compra de " + fetchSale.id_producto
           );
           const user = await authModel.getAccountById(fetchSale.id_usuario);
           await notificationService.sendPushNotification(
@@ -552,7 +553,7 @@ export const acceptProposalByConditions = async (req, res) => {
       } else {
         // PROPUESTA DE COMPRA Y VENDEDOR
         const notification = await notificationService.createNotification(
-          proposal.proposal.id_vendedor,
+          proposal.proposal.id_comprador,
           conditions.id_producto
         );
 
@@ -623,6 +624,153 @@ export const acceptProposalByConditions = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Propuesta aceptada correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+// Esta funcion acepta una propuesta por condiciones, es decir busca a partir de una condicion una propuesta, de venta o compra y la acepta
+export const rejectProposalByConditions = async (req, res) => {
+  try {
+    let proposal = await proposalModel.getProposalByConditions(req.params.id);
+
+    if (proposal == undefined) {
+      throw new Error("Propuesta inexistente");
+    }
+
+    if (
+      proposal.proposal.estado_comprador == "Aceptada" &&
+      proposal.proposal.estado_vendedor == "Aceptada"
+    ) {
+      throw new Error("Esta propuesta ya esta aceptada");
+    }
+
+    if (
+      proposal.proposal.estado_comprador == "Rechazada" ||
+      proposal.proposal.estado_vendedor == "Rechazada"
+    ) {
+      throw new Error("Esta propuesta ya esta rechazada");
+    }
+
+    const conditions = await conditionModel.getConditionById(req.params.id);
+
+    if (proposal.type == "Sale") {
+      // PROPUESTA DE VENTA Y COMPRADOR
+      if (await profileChecker.isBuyerProfile(req.user_id)) {
+        await proposalModel.updateSaleProposalStateByBuyer(
+          proposal.proposal.id,
+          "Rechazada"
+        );
+        const notification = await notificationService.createNotification(
+          proposal.proposal.id_vendedor,
+          conditions.id_producto
+        );
+
+        if (notification) {
+          await notificationService.createSaleProposalNotification(
+            proposal.proposal.id,
+            notification.id,
+            "El comprador ha rechazado la propuesta"
+          );
+          const user = await authModel.getAccountById(
+            proposal.proposal.id_vendedor
+          );
+          await notificationService.sendPushNotification(
+            "Una propuesta de venta fue rechazada",
+            "El comprador ha rechazado la propuesta " + conditions.id_producto,
+            user.id_subscripcion
+          );
+        }
+      } else {
+        // PROPUESTA DE VENTA Y VENDEDOR
+        const notification = await notificationService.createNotification(
+          proposal.proposal.id_comprador,
+          conditions.id_producto
+        );
+
+        if (notification) {
+          await notificationService.createLicitationProposalNotification(
+            proposal.proposal.id,
+            notification.id,
+            "El vendedor ha rechazado la propuesta"
+          );
+          const user = await authModel.getAccountById(
+            proposal.proposal.id_comprador
+          );
+          await notificationService.sendPushNotification(
+            "Una propuesta de venta fue rechazada",
+            "El vendedor ha rechazado la propuesta " + conditions.id_producto,
+            user.id_subscripcion
+          );
+        }
+        await proposalModel.updateSaleProposalStateBySeller(
+          proposal.proposal.id,
+          "Rechazada"
+        );
+      }
+    } else {
+      // PROPUESTA DE COMPRA Y COMPRADOR
+      if (await profileChecker.isBuyerProfile(req.user_id)) {
+        await proposalModel.updateLicitationProposalStateByBuyer(
+          proposal.proposal.id,
+          "Rechazada"
+        );
+
+        const notification = await notificationService.createNotification(
+          proposal.proposal.id_vendedor,
+          conditions.id_producto
+        );
+
+        if (notification) {
+          await notificationService.createLicitationProposalNotification(
+            proposal.proposal.id,
+            notification.id,
+            "El comprador ha rechazado la propuesta"
+          );
+          const user = await authModel.getAccountById(
+            proposal.proposal.id_vendedor
+          );
+          await notificationService.sendPushNotification(
+            "Una propuesta de rechazada fue rechazada",
+            "El comprador ha rechazada la propuesta " + conditions.id_producto,
+            user.id_subscripcion
+          );
+        }
+      } else {
+        // PROPUESTA DE COMPRA Y VENDEDOR
+        const notification = await notificationService.createNotification(
+          proposal.proposal.id_comprador,
+          conditions.id_producto
+        );
+
+        if (notification) {
+          await notificationService.createLicitationProposalNotification(
+            proposal.proposal.id,
+            notification.id,
+            "El vendedor ha rechazado la propuesta"
+          );
+          const user = await authModel.getAccountById(
+            proposal.proposal.id_comprador
+          );
+          await notificationService.sendPushNotification(
+            "Una propuesta de compra fue rechazada",
+            "El vendedor ha rechazado la propuesta " + conditions.id_producto,
+            user.id_subscripcion
+          );
+        }
+
+        await proposalModel.updateLicitationProposalStateBySeller(
+          proposal.proposal.id,
+          "Rechazada"
+        );
+      }
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Propuesta rechazada correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

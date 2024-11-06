@@ -18,7 +18,7 @@ export function initializeSocket(io){
       if(!room){
         return socket.emit('room-error', `Ingresa una sala valida`)
       }
-      const chat = await chatModel.getChatById(data.room);
+      const chat = await chatModel.getChatById(data.room, userData.user);
 
       if(!chat){
         return socket.emit('room-error', `Este chat no existe`);
@@ -67,12 +67,12 @@ export function initializeSocket(io){
             await notificationService.createChatNotification(
               room,
               notification.id,
-              `Has recibido un mensaje del chat #` + String(room).slice(0,8)
+              `Has recibido un mensaje en la negociación`
             );
             const user = await authModel.getAccountById(notifiedUser);
             await notificationService.sendPushNotification(
               "Nuevo mensaje",
-              "Has recibido un nuevo mensaje en una negociación",
+              "Has recibido un nuevo mensaje en la negociación",
               user.id_subscripcion
             );
           }

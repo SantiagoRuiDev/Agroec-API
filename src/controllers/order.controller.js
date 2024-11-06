@@ -1,5 +1,6 @@
 import * as notificationService from "../services/notification.service.js";
 import * as orderModel from "../models/order.model.js";
+import * as deliveryModel from "../models/delivery.model.js";
 import * as authModel from "../models/auth.model.js";
 import * as profileChecker from "../libs/checker.js";
 import PDF from "html-pdf";
@@ -62,7 +63,9 @@ export const getOrdersById = async (req, res) => {
   }
 };
 
-export const setOrderDeliveredStatus = async (req, res) => {
+
+
+export const setOrderShippedStatus = async (req, res) => {
   try {
     const order_id = req.params.id;
 
@@ -70,7 +73,7 @@ export const setOrderDeliveredStatus = async (req, res) => {
       throw new Error("La orden aun no se puede marcar como enviada");
     }
 
-    const order = await orderModel.createDeliveryStatus(uuidv4(), order_id);
+    const order = await orderModel.createShippingStatus(uuidv4(), order_id);
 
     const orderDetails = await orderModel.getOrderUsers(order_id);
     const notification = await notificationService.createNotification(
@@ -83,13 +86,12 @@ export const setOrderDeliveredStatus = async (req, res) => {
       await notificationService.createOrderNotification(
         order_id,
         notification.id,
-        "El vendedor marco la orden como entregada"
+        "El vendedor marco la orden como despachada"
       );
       const user = await authModel.getAccountById(orderDetails.id_comprador);
       await notificationService.sendPushNotification(
-        "La orden fue entregada",
-        "El vendedor marco la orden como entregada " +
-          String(order_id).slice(0, 8),
+        "Tu orden esta en camino",
+        "El vendedor marco la orden como despachada",
         user.id_subscripcion
       );
     }
@@ -106,6 +108,52 @@ export const setOrderDeliveredStatus = async (req, res) => {
   }
 };
 
+
+export const setOrderDeliveredStatus = async (req, res) => {
+  try {
+    const order_id = req.params.id;
+
+    if(!await orderModel.checkShippingStatus(order_id)){
+      throw new Error("La orden aun no se puede marcar como entregada");
+    }
+
+    const order = await orderModel.createDeliveredStatus(uuidv4(), order_id);
+
+    const orderDetails = await orderModel.getOrderUsers(order_id);
+    const notification = await notificationService.createNotification(
+      orderDetails.id_comprador,
+      orderDetails.id_producto
+    );
+
+    if (notification) {
+      await orderModel.updateOrderStatus(order_id, "Entregada");
+      await notificationService.createOrderNotification(
+        order_id,
+        notification.id,
+        "El vendedor indico que recibiste la orden"
+      );
+      const user = await authModel.getAccountById(orderDetails.id_comprador);
+      await notificationService.sendPushNotification(
+        "La orden fue entregada",
+        "El vendedor indico que recibiste la orden #" +
+          String(order_id).slice(0, 8),
+        user.id_subscripcion
+      );
+    }
+
+    if (order) {
+      return res
+        .status(200)
+        .json({ message: "La orden se ha marcado como entregada" });
+    }
+
+    throw new Error("Un error ha sucedido al intentar cambiar el estado.");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
 export const setOrderReceivedStatus = async (req, res) => {
   try {
     const order_id = req.params.id;
@@ -117,10 +165,10 @@ export const setOrderReceivedStatus = async (req, res) => {
 
       let order = false;
 
-      if (await orderModel.checkDeliveryStatus(order_id)) {
+      if (await orderModel.checkShippingStatus(order_id)) {
         order = await orderModel.createReceivedStatus(uuidv4(), order_id);
       } else {
-        await orderModel.createDeliveryStatus(uuidv4(), order_id);
+        await orderModel.createShippingStatus(uuidv4(), order_id);
         order = await orderModel.createReceivedStatus(uuidv4(), order_id);
       }
 
@@ -178,14 +226,14 @@ export const setOrderRejectedStatus = async (req, res) => {
     if (await profileChecker.isBuyerProfile(req.user_id)) {
       let order = false;
 
-      if (await orderModel.checkDeliveryStatus(order_id)) {
+      if (await orderModel.checkShippingStatus(order_id)) {
         order = await orderModel.createRejectedStatus(
           uuidv4(),
           order_id,
           req.body.razon
         );
       } else {
-        await orderModel.createDeliveryStatus(uuidv4(), order_id);
+        await orderModel.createShippingStatus(uuidv4(), order_id);
         order = await orderModel.createRejectedStatus(
           uuidv4(),
           order_id,
@@ -257,6 +305,54 @@ export const getUndeliveredOrders = async (req, res) => {
       const undeliveredOrders = await orderModel.getOrdersBySellerUndelivered(user_id);
       return res.status(200).json(undeliveredOrders)
     }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
+export const setOrderDeliveryDate = async (req, res) => {
+  try {
+    const order_id = req.params.id;
+
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
+      let order = true;
+
+      if (!await orderModel.checkShippingStatus(order_id)) {
+        throw new Error("La orden no ha sido marcada como despachada");
+      }
+
+      const orderDetails = await orderModel.getOrderUsers(order_id);
+
+      if (order) {
+        await deliveryModel.updateDeliveryDate(order_id, req.body.fecha);
+
+        const notification = await notificationService.createNotification(
+          orderDetails.id_vendedor,
+          orderDetails.id_producto
+        );
+
+        if (notification) {
+          await notificationService.createOrderNotification(
+            order_id,
+            notification.id,
+            "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " + req.body.fecha
+          );
+          const user = await authModel.getAccountById(orderDetails.id_vendedor);
+          await notificationService.sendPushNotification(
+            "La orden fue recibida",
+            "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " + req.body.fecha,
+            user.id_subscripcion
+          );
+        }
+
+        return res
+          .status(200)
+          .json({ message: "La orden se ha marcado en revisión" });
+      }
+    }
+
+    throw new Error("Un error ha sucedido al intentar cambiar el estado.");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

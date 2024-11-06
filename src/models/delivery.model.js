@@ -73,3 +73,19 @@ export const updateDelivery = async (delivery_id, schema) => {
     throw new Error(error.message);
   }
 };
+
+export const updateDeliveryDate = async (order_id, date) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE entregas e SET e.fecha_entrega = ? WHERE e.id = (SELECT o.id_entrega FROM ordenes o WHERE o.id = ?)`,
+      [
+        date,
+        order_id,
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

@@ -7,6 +7,7 @@ export const router = Router();
 
 router.get('/:id', authMiddleware.isAuthentified, proposalController.getProposalInformation)
 router.post('/accept/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
+router.post('/reject/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.rejectProposalByConditions)
 
 // Propuestas de Ventas a Licitaciones
 router.post('/sale/:id', authMiddleware.isAuthentified, proposalMiddleware.createSaleProposal, proposalController.createSaleProposal)

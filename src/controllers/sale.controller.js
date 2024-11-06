@@ -76,7 +76,7 @@ export const insertImageSale = async (req, res) => {
 
 export const getSalesByProduct = async (req, res) => {
     try {
-        const productSales = await salesModel.getSalesByProduct(req.params.id);
+        const productSales = await salesModel.getSalesByProduct(req.params.id, req.user_id);
 
         if(productSales) {
             return res.status(200).json(productSales);

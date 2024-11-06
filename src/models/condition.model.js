@@ -36,25 +36,23 @@ export const updateCondition = async (condition_id, schema) => {
   }
 };
 
-
 export const updateConditionWarranty = async (condition_id, schema) => {
-    try {
-      const [statement] = await connection.query(
-        `UPDATE condiciones_compra SET porcentaje_inicial = ?, modo_pago_final = ?, porcentaje_final = ? WHERE id = ?`,
-        [
-          schema.porcentaje_inicial,
-          schema.modo_pago_final,
-          schema.porcentaje_final,
-          condition_id
-        ]
-      );
-  
-      return statement.affectedRows;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
-  
+  try {
+    const [statement] = await connection.query(
+      `UPDATE condiciones_compra SET porcentaje_inicial = ?, modo_pago_final = ?, porcentaje_final = ? WHERE id = ?`,
+      [
+        schema.porcentaje_inicial,
+        schema.modo_pago_final,
+        schema.porcentaje_final,
+        condition_id,
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 export const getConditionBySaleProposal = async (proposal_id) => {
   try {
@@ -82,7 +80,6 @@ export const getConditionByBuyProposal = async (proposal_id) => {
   }
 };
 
-
 export const getConditionById = async (condition_id) => {
   try {
     const [statement] = await connection.query(
@@ -95,7 +92,6 @@ export const getConditionById = async (condition_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getDeliveriesByCondition = async (condition_id) => {
   try {
@@ -154,7 +150,11 @@ export const getConditionByChat = async (chat_id) => {
       [statement[0].id]
     );
 
-    return {condition: statement[0], deliveries: deliveries, quality_params: quality_params};
+    return {
+      condition: statement[0],
+      deliveries: deliveries,
+      quality_params: quality_params,
+    };
   } catch (error) {
     throw new Error(error.message);
   }

@@ -71,7 +71,16 @@ export const getSaleProposalByUser = async (user_id) => {
       WHERE pvcc.id_propuesta = pv.id
       ORDER BY m.fecha DESC
       LIMIT 1
-      ) AS lastMessage
+      ) AS lastMessage,
+      (SELECT m.leido
+      FROM condiciones_compra cc
+      INNER JOIN propuesta_venta_contiene_condicion pvcc ON cc.id = pvcc.id_condicion
+      INNER JOIN chat c ON c.id_condiciones = cc.id
+      INNER JOIN mensajes m ON m.id_chat = c.id
+      WHERE pvcc.id_propuesta = pv.id
+      ORDER BY m.fecha DESC
+      LIMIT 1
+      ) AS leido
       FROM propuesta_venta pv 
       INNER JOIN producto_licitar pl ON pl.id = pv.id_licitacion
       INNER JOIN usuarios u ON pv.id_vendedor = u.id 
@@ -143,7 +152,7 @@ export const getProposalInformation = async (proposal_id) => {
       [statement[0].id, statement[0].id]
     );
 
-    return {...statement[0], quality_params};
+    return { ...statement[0], quality_params };
   } catch (error) {
     throw new Error(error.message);
   }
@@ -412,7 +421,16 @@ export const getLicitationProposalByUser = async (user_id) => {
      WHERE pccc.id_propuesta = pc.id
      ORDER BY m.fecha DESC
      LIMIT 1
-    ) AS lastMessage
+    ) AS lastMessage,
+      (SELECT m.leido
+      FROM condiciones_compra cc
+      INNER JOIN propuesta_compra_contiene_condicion pccc ON cc.id = pccc.id_condicion
+      INNER JOIN chat c ON c.id_condiciones = cc.id
+      INNER JOIN mensajes m ON m.id_chat = c.id
+      WHERE pccc.id_propuesta = pc.id
+      ORDER BY m.fecha DESC
+      LIMIT 1
+      ) AS leido
     FROM propuesta_compra pc
     INNER JOIN usuarios u ON pc.id_comprador = u.id 
     INNER JOIN producto_vender pv ON pv.id = pc.id_venta

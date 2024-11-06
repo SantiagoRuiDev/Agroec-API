@@ -13,7 +13,7 @@ export const createChat = async (uuid, buyer_id, seller_id, condition_id) => {
   }
 };
 
-export const getChatById = async (uuid) => {
+export const getChatById = async (uuid, user) => {
   try {
     const [statement] = await connection.query(
       `SELECT c.*, cc.id_producto, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
@@ -31,6 +31,10 @@ export const getChatById = async (uuid) => {
       `SELECT * FROM mensajes m WHERE m.id_chat = ? ORDER BY m.fecha ASC`,
       [statement[0].id]
     );
+    const [read] = await connection.query(
+      `UPDATE mensajes m SET m.leido = 1 WHERE m.id_chat = ? AND m.id_remitente != ?`,
+      [statement[0].id, user]
+    )
 
     return {
       chat: statement[0],

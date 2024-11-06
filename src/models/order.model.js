@@ -30,7 +30,7 @@ export const getOrdersByUser = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
        INNER JOIN productos p ON p.id = cc.id_producto
        WHERE o.id_comprador = ? OR o.id_vendedor = ?
-       ORDER BY o.creado ASC
+       ORDER BY o.creado DESC
       `,
       [user_id, user_id]
     );
@@ -145,7 +145,7 @@ export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
 export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad
+      `SELECT o.id, o.id_comprador, o.id_vendedor, cc.precio, cc.precio_unidad, o.estado
 		, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega,
 		pr.nombre, pr.ubicacion_google_maps, pr.direccion
 	   FROM ordenes o 
@@ -256,7 +256,7 @@ export const updateOrderReceivedQuantity = async (quantity, order_id) => {
   }
 };
 
-export const createDeliveryStatus = async (uuid, order_id) => {
+export const createShippingStatus = async (uuid, order_id) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'En camino')
@@ -274,10 +274,10 @@ export const createDeliveryStatus = async (uuid, order_id) => {
   }
 };
 
-export const createWaitingStatus = async (uuid, order_id) => {
+export const createDeliveredStatus = async (uuid, order_id) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'En espera')
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'Entregada')
       `,
       [uuid, order_id]
     );
@@ -346,7 +346,7 @@ export const createPendingStatus = async (uuid, order_id) => {
   }
 };
 
-export const checkDeliveryStatus = async (order_id) => {
+export const checkShippingStatus = async (order_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT * FROM estado_ordenes
