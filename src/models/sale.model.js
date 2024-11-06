@@ -25,7 +25,6 @@ export const createSale = async (sale_id, product_id, user_id, schema) => {
   }
 };
 
-
 export const updateSale = async (sale_id, schema) => {
   try {
     const [statement] = await connection.query(
@@ -37,7 +36,7 @@ export const updateSale = async (sale_id, schema) => {
         schema.cantidad_unidad,
         schema.presentacion_entrega,
         schema.fecha_entrega,
-        sale_id
+        sale_id,
       ]
     );
 
@@ -73,7 +72,7 @@ export const getSalesByProduct = async (product_id, user_id) => {
         WHERE vcc.id_venta = pv.id
         LIMIT 1
       ) AS max_parametro_calidad,
-       COALESCE(pc.estado_comprador) AS estado_comprador
+       pc.estado_comprador
       FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
@@ -83,7 +82,9 @@ export const getSalesByProduct = async (product_id, user_id) => {
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
       LEFT JOIN propuesta_compra pc ON pc.id_venta = pv.id AND pc.id_comprador = ?
-      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") AND estado_comprador NOT IN ("Rechazada")
+      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") 
+            AND (pc.estado_comprador IS NULL OR pc.estado_comprador != "Rechazada")
+      GROUP BY pv.id
       ORDER BY pv.fecha_publicacion DESC`,
       [user_id, product_id]
     );
@@ -133,7 +134,7 @@ export const getSaleByIdentifier = async (identifer) => {
     return {
       ...statement[0],
       images,
-      quality_params
+      quality_params,
     };
   } catch (error) {
     throw new Error(error.message);
@@ -163,7 +164,7 @@ export const getSaleByIdentifierAndProduct = async (identifer, product) => {
     return {
       ...statement[0],
       images,
-      quality_params
+      quality_params,
     };
   } catch (error) {
     throw new Error(error.message);
