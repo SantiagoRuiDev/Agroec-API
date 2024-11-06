@@ -53,7 +53,7 @@ export const createAccount = async (req, res) => {
             // Envia Email al comprador
             await sendMail(
               "Agroec - Nuevo Registro ✔",
-              formatMailBuyer(bodyProfile),
+              formatMailBuyer(bodyProfile, code),
               req.body.user.correo
             );
             await walletModel.createWallet(wallet_id, uuid);

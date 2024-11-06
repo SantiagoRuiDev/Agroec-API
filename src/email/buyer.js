@@ -1,4 +1,4 @@
-export const formatMailBuyer = (data) => {
+export const formatMailBuyer = (data, code) => {
   return `
   <!DOCTYPE html>
 <html>
@@ -17,6 +17,8 @@ export const formatMailBuyer = (data) => {
             Recibimos la notificación de que te has registrado en nuestros servicios recientemente.<br><br>
             Queremos agradecerte y esperamos que tengas una cálida experiencia en la Aplicación.
         </p>
+
+        <h3 style="font-size: 20px; color: #333;">Codigo de Registro: ${code}</h3>
 
         <h3 style="font-size: 20px; color: #333;">Soporte via Email</h3>
         <ul style="list-style-type: none; padding: 0;">
