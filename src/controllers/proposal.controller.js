@@ -503,7 +503,7 @@ export const acceptProposalByConditions = async (req, res) => {
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
+          await notificationService.createSaleProposalNotification(
             proposal.proposal.id,
             notification.id,
             "El vendedor ha aceptado la propuesta"

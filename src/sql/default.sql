@@ -30,8 +30,8 @@ CREATE TABLE `billetera` (
 
 INSERT INTO `billetera` (`id`, `id_usuario`, `saldo`) VALUES
 ('ab0e93cb-9c34-433e-b76e-613ae6b38a38', '07d8d1a8-df06-4883-9372-412f3e2de2b8', 0),
-('b0572fcd-314b-406b-bcb8-e3710d91c312', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 63),
-('c0532fcd-314b-406b-bcb8-e3710d91c312', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 1562);
+('b0572fcd-314b-406b-bcb8-e3710d91c312', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 61),
+('c0532fcd-314b-406b-bcb8-e3710d91c312', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 1561);
 
 -- --------------------------------------------------------
 
@@ -53,6 +53,8 @@ CREATE TABLE `calificacion` (
 
 INSERT INTO `calificacion` (`id`, `puntaje`, `id_calificado`, `id_calificante`, `id_orden`) VALUES
 ('231awaweawk2id', 3, 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb'),
+('338013e1-906e-4a15-81ce-cf7921a269c4', 3, 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '38fb3c3d-8054-4b21-97a9-b565a1113016'),
+('ab4bf25b-d050-41ca-a017-f21df13cda22', 4, 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2'),
 ('da2c88c8-0c71-4d48-a314-4455ea21f891', 2, 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'cb38f5fd-e1d2-48b5-9920-a491cd78e666');
 
 -- --------------------------------------------------------
@@ -121,7 +123,8 @@ INSERT INTO `chat` (`id`, `id_comprador`, `id_vendedor`, `push_notificacion`, `i
 ('536d4c80-20f3-498f-8900-f997c616d912', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, '73751a53-ff26-496c-95df-f78062822468'),
 ('754bd3e1-358d-485b-9bc5-22b02b31ed29', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, 'db47147f-2b21-4b94-914b-de32238b1c2c'),
 ('ddd56dd0-b178-4d42-a21b-bca852185de3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, '02b4e9d0-8ecb-49b8-859c-d454aff20f6a'),
-('e579772f-49e0-4179-b8bb-a2865d24680c', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, 'fadf7488-6951-4376-8c81-77606f4c60d2');
+('e579772f-49e0-4179-b8bb-a2865d24680c', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, 'fadf7488-6951-4376-8c81-77606f4c60d2'),
+('e5f75eeb-8df7-416f-b983-e3244b0935c5', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', NULL, '5cee8d60-1a09-4a5d-9e46-0d677b4412e2');
 
 -- --------------------------------------------------------
 
@@ -181,10 +184,11 @@ CREATE TABLE `condiciones_compra` (
 
 INSERT INTO `condiciones_compra` (`id`, `id_producto`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `modo_pago`, `porcentaje_inicial`, `modo_pago_final`, `porcentaje_final`, `notas`, `precio_puesto_domicilio`, `politicas_recepcion`) VALUES
 ('02b4e9d0-8ecb-49b8-859c-d454aff20f6a', 'Tomate', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, ''),
+('5cee8d60-1a09-4a5d-9e46-0d677b4412e2', 'Cacao', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, ''),
 ('73751a53-ff26-496c-95df-f78062822468', 'Tomate', 250, 'KG', 200, 'KG', 'Modo Garantía', 20, 'Pago en sitio', 80, '', 0, 'Necesito que se cumpla los tiempos de entrega pactados.'),
 ('b75501ae-fe6a-49a2-9c28-c40283bcf2d4', 'Maiz', 13, 'QQ', 150, 'QQ', 'Pago en sitio', 0, 'Pago en sitio', 0, 'Cumplir condiciones de compra', 1, 'Necesito que se cumpla con los tiempos de entrega determinados por el comprador.'),
 ('bc5cec82-e0bf-4d8d-a070-5288b5147280', 'Tomate', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, ''),
-('c6e697d5-90fc-412d-a262-1f25172e4ea1', 'Tomate', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, ''),
+('c6e697d5-90fc-412d-a262-1f25172e4ea1', 'Tomate', 2, 'QQ', 85, 'QQ', 'Modo Garantía', 70, 'Pago en sitio', 30, 'Nada que agregar', 0, 'Necesito que la calidad del producto sea la indicada por el vendedor, ademas de darme tiempo suficiente para comprobar lo recibido.'),
 ('db47147f-2b21-4b94-914b-de32238b1c2c', 'Tomate', 2, 'KG', 100, 'KG', 'Modo Garantía', 50, 'Pago en sitio', 50, 'Entregar a tiempo.', 1, 'No tengo políticas de recepción definidas'),
 ('fadf7488-6951-4376-8c81-77606f4c60d2', 'Cacao', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, ''),
 ('ff6d9dd4-01fd-4220-85df-1ac00a199a6e', 'Maiz', 25, 'KG', 250, 'KG', 'Modo Garantía', 20, 'Pago en sitio', 80, 'No hay comentarios adicionales.', 0, 'Respeta las cantidades definidas por producto.');
@@ -209,6 +213,7 @@ INSERT INTO `condicion_contiene_parametros` (`id`, `id_parametros`, `id_condicio
 ('0a75fcbd-0fbf-47b3-a4e0-746d533088cf', '54f8b16e-93a4-4841-bb04-dffb81b29c96', 'b75501ae-fe6a-49a2-9c28-c40283bcf2d4'),
 ('1edbb3a6-0e76-4b9d-9897-6c8b861e3608', '090c9231-c34f-49f9-b76f-4e2bdeaadbe3', '73751a53-ff26-496c-95df-f78062822468'),
 ('865321311212121', '10a7230f-c779-43fa-ba19-07070a41a4d1', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e'),
+('b586e738-65ee-47e6-887f-64e8d347c5b1', '492a6e70-7687-45a0-b7f9-833389aae1bc', 'c6e697d5-90fc-412d-a262-1f25172e4ea1'),
 ('de248c22-448a-4b8e-a3b2-63109e7c8475', '9a80e115-adfd-46e7-b681-6fa032433873', 'db47147f-2b21-4b94-914b-de32238b1c2c');
 
 -- --------------------------------------------------------
@@ -295,8 +300,9 @@ INSERT INTO `entregas` (`id`, `id_punto`, `id_condicion`, `cantidad`, `cantidad_
 ('050a772b-c8e2-4acf-adbd-cc96404cac79', 'de92k121s3212', '73751a53-ff26-496c-95df-f78062822468', 250, 'KG', '2024-03-19', '05:30:00'),
 ('163dc5bd-9757-48c3-b290-78f9ca5cfe45', 'de92k121s3212', 'b75501ae-fe6a-49a2-9c28-c40283bcf2d4', 150, 'QQ', '2024-09-25', '20:30:00'),
 ('16a0f30b-e07d-4632-930b-12ff59d287e7', 'de92k121s3212', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e', 250, 'KG', '2025-10-20', '10:30:00'),
-('8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-14', '10:45:00'),
-('9de6a422-3663-406d-bd58-59d731886ed5', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-09', '10:45:00');
+('8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-18', '10:45:00'),
+('9de6a422-3663-406d-bd58-59d731886ed5', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-09', '10:45:00'),
+('e8d4b15b-5f4e-4968-9fdf-37d1c18cc6be', 'de92k121s3212', 'c6e697d5-90fc-412d-a262-1f25172e4ea1', 85, 'QQ', '2024-11-16', '15:30:00');
 
 -- --------------------------------------------------------
 
@@ -307,7 +313,7 @@ INSERT INTO `entregas` (`id`, `id_punto`, `id_condicion`, `cantidad`, `cantidad_
 CREATE TABLE `estado_ordenes` (
   `id` varchar(250) NOT NULL,
   `id_orden` varchar(250) NOT NULL,
-  `estado` enum('Pendiente de entrega','En camino','Entregada','Aceptado','Rechazado') NOT NULL DEFAULT 'Pendiente de entrega',
+  `estado` enum('Pendiente de entrega','En camino','Entregada','Recibido','Rechazado','Aceptado','Revision') NOT NULL DEFAULT 'Pendiente de entrega',
   `motivo` enum('','Rechazado por calidad','Nunca llegó') NOT NULL DEFAULT '',
   `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -318,17 +324,23 @@ CREATE TABLE `estado_ordenes` (
 
 INSERT INTO `estado_ordenes` (`id`, `id_orden`, `estado`, `motivo`, `fecha`) VALUES
 ('0281a5fb-c087-4fef-9e3d-c075f64bf165', 'cb38f5fd-e1d2-48b5-9920-a491cd78e666', 'Rechazado', 'Nunca llegó', '2024-09-25 14:37:35'),
+('0b0c31a1-0722-4e8d-bdf0-d2659e34f45e', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'Pendiente de entrega', '', '2024-11-07 11:09:18'),
+('0b92ca8a-d065-4fa4-97a5-486c0e157868', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'En camino', '', '2024-11-07 11:11:56'),
+('2ebd556c-b0c1-43ab-a9e5-94ef4eee796b', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'Entregada', '', '2024-11-07 10:00:38'),
 ('3be9b29a-e5b4-4cb5-a3a6-833ad1a1f519', 'cb38f5fd-e1d2-48b5-9920-a491cd78e666', 'En camino', '', '2024-09-25 14:37:35'),
-('4d03ac26-0c48-4265-be80-8c2c901f4f87', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'Entregada', '', '2024-11-04 10:14:38'),
 ('52eb486f-5d7e-4858-8dae-a032924e9fed', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'En camino', '', '2024-11-02 10:43:16'),
 ('58b1102c-e019-40bb-9343-4d1c1132f389', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'Pendiente de entrega', '', '2024-11-01 10:09:56'),
 ('704a17e0-9039-4c9c-9b0a-c5946f419093', '30259de2-4997-46de-8ea0-ec60b4b71b82', 'Aceptado', '', '2024-09-24 23:18:27'),
-('90526fa7-9634-4b3a-87f1-d3a972701ea0', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'En camino', '', '2024-11-04 10:11:22'),
-('934b1d32-0029-4cbc-8dea-9799551dbaf9', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'Pendiente de entrega', '', '2024-11-02 23:23:41'),
+('7c5fdd6b-18e6-4894-a973-60a812775733', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'Recibido', '', '2024-11-07 11:11:56'),
+('8a1fe16e-e134-419c-ae7f-578b6d9a4cb1', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'Aceptado', '', '2024-11-07 10:23:58'),
+('8ddad9e5-f3c6-4ab6-85ba-763347da2fa5', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'En camino', '', '2024-11-07 09:43:43'),
 ('994c48ce-1c88-4265-aa1d-1ce66d24f66e', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'Pendiente de entrega', '', '2024-11-01 10:09:56'),
+('9b79b69d-ef93-4470-9f0b-2ad1ff5a5175', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'Revision', '', '2024-11-07 10:01:31'),
 ('b426bf6e-ecb7-41c2-94f0-38ae244850d3', '30259de2-4997-46de-8ea0-ec60b4b71b82', 'Pendiente de entrega', '', '2024-09-24 23:18:10'),
+('c3917117-3b04-4b16-8bc1-ed172b25a22a', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'Rechazado', 'Rechazado por calidad', '2024-11-07 13:25:21'),
 ('cbaae205-9eea-4187-8ad2-6cfe32e6a42d', '30259de2-4997-46de-8ea0-ec60b4b71b82', 'En camino', '', '2024-09-24 23:18:27'),
 ('d35f975a-bf4d-4d66-891c-108a68f96a2e', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'Aceptado', '', '2024-11-05 23:00:46'),
+('d3ac1cb4-e011-48ea-8651-737821876c06', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'Recibido', '', '2024-11-07 10:01:43'),
 ('ef3831fd-e1d2-48b5-9920-a491cd78e666', 'cb38f5fd-e1d2-48b5-9920-a491cd78e666', 'Pendiente de entrega', '', '2024-09-25 14:37:22');
 
 -- --------------------------------------------------------
@@ -351,8 +363,9 @@ CREATE TABLE `fee` (
 
 INSERT INTO `fee` (`id`, `id_entrega`, `id_billetera`, `monto_fee`, `fecha`) VALUES
 ('1b5af41d-b764-4adc-9ba4-980d860da8a1', '9de6a422-3663-406d-bd58-59d731886ed5', 'c0532fcd-314b-406b-bcb8-e3710d91c312', 1.5, '2024-11-05 23:00:54'),
-('d01b7471-56c4-4b4f-ba6a-0c8dfe56909c', '050a772b-c8e2-4acf-adbd-cc96404cac79', 'c0532fcd-314b-406b-bcb8-e3710d91c312', 937.5, '2024-10-11 10:32:57'),
-('fee28cca-5578-4b79-ab1d-8b490b2cf0b1', '050a772b-c8e2-4acf-adbd-cc96404cac79', 'b0572fcd-314b-406b-bcb8-e3710d91c312', 937.5, '2024-10-23 16:34:06');
+('5b1d0620-a424-4067-9ef9-af90e5b0f97d', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'b0572fcd-314b-406b-bcb8-e3710d91c312', 1.5, '2024-11-07 13:23:38'),
+('739a67fd-9f92-45d4-8221-3625e74b1030', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'c0532fcd-314b-406b-bcb8-e3710d91c312', 1.5, '2024-11-07 10:23:58'),
+('c9a19bab-e84a-45e8-914b-fd3084b0d609', '9de6a422-3663-406d-bd58-59d731886ed5', 'b0572fcd-314b-406b-bcb8-e3710d91c312', 1.5, '2024-11-07 13:14:25');
 
 -- --------------------------------------------------------
 
@@ -525,7 +538,7 @@ CREATE TABLE `notificaciones` (
   `id` varchar(255) NOT NULL,
   `id_notificado` varchar(255) NOT NULL,
   `id_producto` varchar(255) NOT NULL,
-  `fecha` DATETIME NOT NULL DEFAULT current_timestamp(),
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
   `vista` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -535,33 +548,54 @@ CREATE TABLE `notificaciones` (
 
 INSERT INTO `notificaciones` (`id`, `id_notificado`, `id_producto`, `fecha`, `vista`) VALUES
 ('05a4d9d1-7daf-4d96-9d12-38c522bbe563', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-10-11', 1),
+('07e19702-9db4-4d65-9fde-132d951b272b', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-07', 1),
 ('108c5089-b8fd-4fdb-99a3-73c54c1f11f7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', '2024-11-01', 1),
+('11874abb-0556-4b0e-a00d-a42639d03f0d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
+('15015f87-a20b-4fb3-93cb-0bbff68cbfba', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
 ('260c1493-2783-4103-8947-dbebba7062e1', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', '2024-11-04', 1),
+('28c7092a-befe-4bb9-a403-18e07b8dc045', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 0),
+('2ad1244b-27bd-497c-8db5-fdf275b6aee0', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-07', 1),
+('34fbe979-8825-4ef4-9b68-0e41c625ac64', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
+('3ee8b2bc-2ae9-43b1-9959-04db1a60f0dd', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 1),
 ('3eeabf36-7677-4f7d-8f5f-b3b83511c388', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-09', 1),
+('41e4a317-b80d-4a9f-9b85-4f40173c8dd0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
+('434a9458-9704-4809-ae69-0aeeea59027c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-07', 0),
 ('4d233d73-5bf2-4a61-80bc-799b18cb8e7b', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-24', 1),
 ('4f9bbbd0-4001-4ff1-810d-62e47ba88f8e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-05', 1),
 ('51a89e4a-aced-485e-be8a-e1271a7dec13', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-02', 1),
 ('526f7d58-63c8-4759-b851-7cde23a6d700', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', '2024-11-01', 1),
 ('5a8034a9-a48a-4066-b1ed-45555dfe907b', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-09', 1),
-('69695daa-ab78-4057-8e52-83e115935310', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-05', 0),
+('5e193dd6-9e19-4d26-b7cd-086ec5aa0902', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 1),
+('69695daa-ab78-4057-8e52-83e115935310', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-05', 1),
+('6e738813-d995-4c2e-80c3-a0dc83280b92', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
+('715ccc9f-7c88-4813-94e1-01af98a2f72c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-07', 0),
 ('73486d71-e97e-42ba-b401-86e48c05b310', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-01', 1),
 ('8087e186-2494-4d05-840c-5b22ef04fa4c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-01', 1),
 ('88220096-c866-4e9e-9d39-ed7072cf7481', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-10-28', 1),
 ('89b2d40b-299b-41f8-8ab4-145081db2130', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-03', 1),
+('8cae4e58-cced-4d23-994b-ad45913810aa', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 0),
 ('8ee09077-022b-4c06-ada0-1d9c97aca96a', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', '2024-11-05', 1),
 ('915c4d78-a9c4-4ae7-b90c-c759875146b0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-28', 1),
 ('923bd0ff-1638-4544-a7fb-f378a2ebc9a4', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-03', 1),
 ('96afbd04-8c1c-48d7-8338-85354d025fc2', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-01', 1),
+('9d60c717-37a1-40e9-914b-1a0a793dba10', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-07', 1),
+('a2c911b5-d06e-47a6-9f25-6d2e76dff386', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 0),
+('a45c2185-8722-4c22-b81c-2bd91ba2aa32', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
 ('abb67c1d-7861-45fa-89ea-b51bd0a70069', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-02', 1),
+('ad301965-a8d0-498c-a6ed-9cd2e3fa90de', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 0),
+('bb5fff0a-7003-4d7b-908d-ae6102bd15ff', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-11-07', 0),
 ('bce627e9-3885-4f96-904a-4cab4ffe7e58', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-11-02', 1),
 ('bd5c07e5-edc5-4c6c-a7ee-6592e19f43a4', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', '2024-10-19', 1),
-('c33cd20b-49fe-478b-828a-6f4f06078947', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-06', 0),
+('c33cd20b-49fe-478b-828a-6f4f06078947', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-06', 1),
 ('c430b746-fb75-48c7-828e-31de1c4ddbf2', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-03', 1),
 ('c6419b6b-958c-44d9-9c57-f79329e5784e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-01', 1),
+('c9b17239-62da-4ea2-9bd9-6a311f2901e8', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-07', 0),
 ('dceb6614-d55c-41f9-ae37-5a3e9c490e6b', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-23', 1),
 ('de0440e0-0bfd-4b3b-b3cd-60a0e78f5bc4', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', '2024-11-04', 1),
 ('e0c9b378-90fc-45cd-b13c-10418187c0ca', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-28', 1),
-('e7d4378b-151c-4a3f-b36c-1f662353532b', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-05', 0),
+('e2d13e38-f682-4277-bc35-35e3bbb5835b', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 1),
+('e614cd97-5628-4767-afb9-8c0418924edc', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-07', 1),
+('e7d4378b-151c-4a3f-b36c-1f662353532b', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-11-05', 1),
 ('e90b65ff-dcae-4509-9c99-5193053604de', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', '2024-10-18', 1),
 ('edd46729-369c-4785-9c33-a3cab7db13e3', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Tomate', '2024-10-10', 1),
 ('eefa3b1e-9ca2-4a30-88e4-5a1a5733fe8e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', '2024-11-03', 1),
@@ -633,14 +667,24 @@ CREATE TABLE `notificaciones_ordenes` (
 
 INSERT INTO `notificaciones_ordenes` (`id`, `id_notificacion`, `id_orden`, `mensaje`) VALUES
 ('202ea4ab-0f9f-47e1-a448-91830d646dbb', 'dceb6614-d55c-41f9-ae37-5a3e9c490e6b', '30259de2-4997-46de-8ea0-ec60b4b71b82', 'Pago de fee Agroec completado'),
+('47816f05-b4be-4703-9d4b-e474882802b9', '3ee8b2bc-2ae9-43b1-9959-04db1a60f0dd', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El comprador marco la orden como recibida'),
+('479bc16a-2cd6-4e37-a7c9-d4a2a8b5ab06', 'e2d13e38-f682-4277-bc35-35e3bbb5835b', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El comprador ha recibido la orden y estableció el tiempo de revisión hasta: 2024-11-18'),
+('4da84bfb-dc39-409f-9607-15648712552d', 'bb5fff0a-7003-4d7b-908d-ae6102bd15ff', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El vendedor indico que recibiste la orden'),
 ('65bd046f-f1f8-4eee-b5ff-a9ada782238e', '05a4d9d1-7daf-4d96-9d12-38c522bbe563', '30259de2-4997-46de-8ea0-ec60b4b71b82', 'Pago de fee Agroec completado'),
 ('6b5e5fde-e765-430b-9034-7b47e8bfff74', '8087e186-2494-4d05-840c-5b22ef04fa4c', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'El comprador ha completado el pago de garantía de 100'),
+('7ad4da8b-9da7-4e9f-bf8a-e9cfc1ee5e20', '41e4a317-b80d-4a9f-9b85-4f40173c8dd0', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El vendedor indico que recibiste la orden'),
+('7b56187a-9b27-4cbb-92a2-07363d854cf2', '2ad1244b-27bd-497c-8db5-fdf275b6aee0', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El comprador ha completado el pago de garantía de $1250'),
 ('828b1347-4cac-4dc2-9d60-8878a0be3dfe', 'c6419b6b-958c-44d9-9c57-f79329e5784e', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'El comprador ha completado el pago de garantía de 100'),
+('91d64a03-83c1-4833-80f9-0cfaaf6ec2af', '6e738813-d995-4c2e-80c3-a0dc83280b92', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El vendedor marco la orden como despachada'),
 ('955755f6-142d-4549-a98c-493ef0debf59', 'e7d4378b-151c-4a3f-b36c-1f662353532b', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'El comprador marco la orden como recibida'),
+('9eba4d5c-5c2d-426e-a7be-6a8709a8b0ab', '9d60c717-37a1-40e9-914b-1a0a793dba10', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El comprador marco la orden como rechazada'),
 ('aef0c3f0-5fd9-40e1-abfe-cb46c9efb4fc', '923bd0ff-1638-4544-a7fb-f378a2ebc9a4', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'El comprador ha recibido la orden y establecio el tiempo de revisión hasta: 2024-11-09'),
 ('b1304a96-e171-4ca0-bcc7-ad58f4229ff4', 'abb67c1d-7861-45fa-89ea-b51bd0a70069', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El comprador ha completado el pago de garantía de 1250'),
+('b96db0c6-26d4-4713-8cc1-25085b3c6fda', '5e193dd6-9e19-4d26-b7cd-086ec5aa0902', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El comprador ha recibido la orden y estableció el tiempo de revisión hasta: 2024-11-16'),
+('dcaf6f67-c075-4518-878b-91d6f7607e8f', 'e614cd97-5628-4767-afb9-8c0418924edc', 'd5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'El comprador marco la orden como recibida'),
 ('e103764e-6828-4f64-bfab-08eb312efaf5', '260c1493-2783-4103-8947-dbebba7062e1', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El vendedor indico que recibiste la orden'),
 ('ee89c0ad-2c56-40d3-be71-bc4bd43bcdc7', 'de0440e0-0bfd-4b3b-b3cd-60a0e78f5bc4', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El vendedor marco la orden como entregada'),
+('f8bef233-d81c-41d2-b16a-19339d4c2aed', '07e19702-9db4-4d65-9fde-132d951b272b', '38fb3c3d-8054-4b21-97a9-b565a1113016', 'El comprador marco la orden como recibida'),
 ('f97a90b3-1dbe-42e3-9ddd-cb501f2336e2', '51a89e4a-aced-485e-be8a-e1271a7dec13', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'El vendedor marco la orden como entregada'),
 ('fefd357e-8959-4a37-85a7-cd7cf6b1f258', '69695daa-ab78-4057-8e52-83e115935310', '58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'Pago de fee Agroec completado');
 
@@ -665,6 +709,7 @@ INSERT INTO `notificaciones_propuesta_compra` (`id`, `id_notificacion`, `id_prop
 ('4db44b65-6585-4d2c-b14e-cb9fac7e2741', 'c33cd20b-49fe-478b-828a-6f4f06078947', '7f567641-e6df-43c4-811e-8052883c40d8', 'El comprador ha rechazado la propuesta'),
 ('939e624a-01b7-475b-8f5c-81e5f68f4b0e', 'eefa3b1e-9ca2-4a30-88e4-5a1a5733fe8e', '7f567641-e6df-43c4-811e-8052883c40d8', 'Nuevo propuesta de compra de Cacao'),
 ('aa4b68c6-7be0-47dc-addf-b66d5c34e265', 'fa468afd-f76a-4911-b286-061e306afd8f', '19f2b62e-2894-40d5-94f3-fa1e4482e29d', 'El comprador ha aceptado la propuesta'),
+('e08e513e-0cb1-43d6-9c74-29b4501c6ca6', '434a9458-9704-4809-ae69-0aeeea59027c', 'd57ec7b5-5654-46ae-85cf-7e4ab3e659c4', 'Nueva propuesta de compra de Cacao'),
 ('f9a2f179-7776-468e-abe3-12824ee7dec5', 'bce627e9-3885-4f96-904a-4cab4ffe7e58', '19f2b62e-2894-40d5-94f3-fa1e4482e29d', 'El vendedor ha aceptado la propuesta');
 
 -- --------------------------------------------------------
@@ -688,7 +733,12 @@ INSERT INTO `notificaciones_propuesta_venta` (`id`, `id_notificacion`, `id_propu
 ('1802e4dd-66c5-4a9f-94d4-2b0e36a9ba33', 'e90b65ff-dcae-4509-9c99-5193053604de', 'bf7be359-4abb-4b62-98aa-4390eff6fb6d', NULL),
 ('2e1440f9-d65f-4e2b-adab-d2f062cef418', '5a8034a9-a48a-4066-b1ed-45555dfe907b', '9387c739-f768-4f22-99d6-0858aae8ce35', 'Has recibido una nueva propuesta de venta'),
 ('2f1e8b13-0f0a-4f50-b281-535d98f7f80e', '3eeabf36-7677-4f7d-8f5f-b3b83511c388', '9a5a320a-2895-4baf-ad8f-4a4d6286ec4e', 'Has recibido una nueva propuesta de venta'),
-('3548869f-e69b-4763-a3f1-239a73ebd723', '73486d71-e97e-42ba-b401-86e48c05b310', '5a8866e2-8e10-4f94-9002-8c0e74b4e664', 'El comprador ha aceptado la propuesta');
+('3548869f-e69b-4763-a3f1-239a73ebd723', '73486d71-e97e-42ba-b401-86e48c05b310', '5a8866e2-8e10-4f94-9002-8c0e74b4e664', 'El comprador ha aceptado la propuesta'),
+('421c0bbd-4d09-4667-92ea-b86be8e94a2a', '8cae4e58-cced-4d23-994b-ad45913810aa', '9387c739-f768-4f22-99d6-0858aae8ce35', 'El comprador ha aceptado la propuesta'),
+('ad3f4f6a-10bc-4ff0-92a4-38de1eed3fc7', 'a2c911b5-d06e-47a6-9f25-6d2e76dff386', '9387c739-f768-4f22-99d6-0858aae8ce35', 'El comprador ha aceptado la propuesta'),
+('c7a78341-d327-4ef0-915b-cd96f76f6520', '28c7092a-befe-4bb9-a403-18e07b8dc045', '9387c739-f768-4f22-99d6-0858aae8ce35', 'El comprador ha rechazado la propuesta'),
+('da4e34c2-3d82-4c6c-9eba-68027c4449b9', 'ad301965-a8d0-498c-a6ed-9cd2e3fa90de', '9a5a320a-2895-4baf-ad8f-4a4d6286ec4e', 'El comprador ha rechazado la propuesta'),
+('ea5f1bf0-3e7a-4f2e-a2a9-d2540e856108', '11874abb-0556-4b0e-a00d-a42639d03f0d', '9387c739-f768-4f22-99d6-0858aae8ce35', 'El vendedor ha aceptado la propuesta');
 
 -- --------------------------------------------------------
 
@@ -701,7 +751,7 @@ CREATE TABLE `ordenes` (
   `id_comprador` varchar(250) NOT NULL,
   `id_vendedor` varchar(250) NOT NULL,
   `id_entrega` varchar(250) NOT NULL,
-  `estado` enum('En espera','Pago en garantia','Pendiente de entrega','En camino','Rechazado','Aceptado','Entregada') DEFAULT 'Pago en garantia',
+  `estado` enum('En revision','Pago en garantia','Pendiente de entrega','En camino','Rechazado','Recibido','Entregada','Aceptado') DEFAULT 'Pago en garantia',
   `cantidad_recibida` int(11) NOT NULL DEFAULT 0,
   `creado` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -712,10 +762,11 @@ CREATE TABLE `ordenes` (
 
 INSERT INTO `ordenes` (`id`, `id_comprador`, `id_vendedor`, `id_entrega`, `estado`, `cantidad_recibida`, `creado`) VALUES
 ('30259de2-4997-46de-8ea0-ec60b4b71b82', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '050a772b-c8e2-4acf-adbd-cc96404cac79', 'Aceptado', 200, '2024-09-21 19:30:58'),
-('38fb3c3d-8054-4b21-97a9-b565a1113016', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '16a0f30b-e07d-4632-930b-12ff59d287e7', 'Entregada', 0, '2024-11-02 10:09:49'),
+('38fb3c3d-8054-4b21-97a9-b565a1113016', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '16a0f30b-e07d-4632-930b-12ff59d287e7', 'Rechazado', 250, '2024-11-02 10:09:49'),
+('40ae9141-1a7f-4237-8a45-3e5e4d87e741', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e8d4b15b-5f4e-4968-9fdf-37d1c18cc6be', 'Pago en garantia', 0, '2024-11-07 13:42:04'),
 ('58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '9de6a422-3663-406d-bd58-59d731886ed5', 'Aceptado', 100, '2024-11-01 08:45:01'),
 ('cb38f5fd-e1d2-48b5-9920-a491cd78e666', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '163dc5bd-9757-48c3-b290-78f9ca5cfe45', 'Rechazado', 0, '2024-09-20 23:49:29'),
-('d5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'Pendiente de entrega', 0, '2024-11-01 08:45:01');
+('d5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'Aceptado', 100, '2024-11-01 08:45:01');
 
 -- --------------------------------------------------------
 
@@ -738,7 +789,7 @@ CREATE TABLE `pago_garantia` (
 --
 
 INSERT INTO `pago_garantia` (`id`, `id_condicion`, `porcentaje`, `metodo_pago`, `total`, `fecha`, `devolucion`) VALUES
-('5e97ec85-b201-46e7-b2b3-73e936b70396', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e', 20, 'TD/TC', 1250, '2024-11-02 23:23:40', 0),
+('07a587f1-c379-46f7-bf23-050dcc2f2c32', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e', 20, 'TD/TC', 1250, '2024-11-07 11:09:18', 0),
 ('674375ff-a64e-44ce-9cbd-00cc7389d69d', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'TRANSFERENCIA', 100, '2024-11-01 10:09:56', 0),
 ('75c34c40-128b-4a45-a83d-f69fb2956eda', '73751a53-ff26-496c-95df-f78062822468', 20, 'TD/TC', 10000, '2024-09-24 23:18:10', 0);
 
@@ -764,11 +815,14 @@ INSERT INTO `parametros_calidad` (`id`, `id_usuario`, `nombre`, `min_calidad`, `
 ('090c9231-c34f-49f9-b76f-4e2bdeaadbe3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 18),
 ('10a7230f-c779-43fa-ba19-07070a41a4d1', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Almidon', 1, 1),
 ('3c1206ca-88d6-4fcc-b0a2-7340d1d0f685', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Almidon', 1, 1),
+('492a6e70-7687-45a0-b7f9-833389aae1bc', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 5),
 ('54f8b16e-93a4-4841-bb04-dffb81b29c96', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 15),
 ('6a2f602c-bf7c-4e82-94b6-d0f8db74f353', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Granulado', 5, 25),
 ('7c7f2221-9277-4174-86e4-ccac77b235bc', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 9),
 ('85a6cba3-3972-4d41-b4d2-db6bb3e4c787', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Granulado', 24, 26),
+('8e6c8945-f28d-4e7e-9171-78467986df80', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 7),
 ('9a80e115-adfd-46e7-b681-6fa032433873', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 8),
+('9c588bf7-16a2-4878-bd99-607b2b21a940', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 7),
 ('caf0cc58-699f-4a51-a7f5-b83e0ac79a34', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Humedad', 2, 5),
 ('e27dd533-7180-449a-aa82-870ab2ac732d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Almidon', 1, 1),
 ('e385ffca-b643-4922-9814-d6e7fa0c5140', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Aflaxtoxinas', 0, 3);
@@ -904,12 +958,12 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `nombre`, `imagen`) VALUES
-('Arroz', 'Arroz', 'https://agroec-api.onrender.com/public/images/products/Arroz.svg'),
-('Cacao', 'Cacao', 'https://agroec-api.onrender.com/public/images/products/Cacao.svg'),
-('Maiz', 'Maiz', 'https://agroec-api.onrender.com/public/images/products/Maiz.svg'),
-('Maracuya', 'Maracuya', 'https://agroec-api.onrender.com/public/images/products/Maracuya.svg'),
-('Polvillo de Arroz', 'Polvillo de Arroz', 'https://agroec-api.onrender.com/public/images/products/Polvillo.svg'),
-('Tomate', 'Tomate', 'https://agroec-api.onrender.com/public/images/products/Tomate.svg');
+('Arroz', 'Arroz', 'http://localhost:3000/public/images/products/Arroz.svg'),
+('Cacao', 'Cacao', 'http://localhost:3000/public/images/products/Cacao.svg'),
+('Maiz', 'Maiz', 'http://localhost:3000/public/images/products/Maiz.svg'),
+('Maracuya', 'Maracuya', 'http://localhost:3000/public/images/products/Maracuya.svg'),
+('Polvillo de Arroz', 'Polvillo de Arroz', 'http://localhost:3000/public/images/products/Polvillo.svg'),
+('Tomate', 'Tomate', 'http://localhost:3000/public/images/products/Tomate.svg');
 
 -- --------------------------------------------------------
 
@@ -965,9 +1019,9 @@ CREATE TABLE `productos_vender_imagenes` (
 --
 
 INSERT INTO `productos_vender_imagenes` (`id`, `id_venta`, `url_imagen`) VALUES
-('18fbcdf9-64ad-4202-8a95-4380f63c7537', '69aca895-621d-43d7-a7bf-18560f12bbb0', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1729774435678-156375135.webp'),
-('73462676-7dfb-42b7-a3f6-babbd4c7aa67', 'ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1724713051475-818296024.webp'),
-('af7572d9-dbbc-4d3d-8c33-a6f82cfb2ba2', 'f68951e7-a6a8-4974-ad49-37c6251fe336', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1730727078767-897971951.webp');
+('18fbcdf9-64ad-4202-8a95-4380f63c7537', '69aca895-621d-43d7-a7bf-18560f12bbb0', 'http://localhost:3000/public/images/sales/sale-image-1729774435678-156375135.webp'),
+('73462676-7dfb-42b7-a3f6-babbd4c7aa67', 'ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'http://localhost:3000/public/images/sales/sale-image-1724713051475-818296024.webp'),
+('af7572d9-dbbc-4d3d-8c33-a6f82cfb2ba2', 'f68951e7-a6a8-4974-ad49-37c6251fe336', 'http://localhost:3000/public/images/sales/sale-image-1730727078767-897971951.webp');
 
 -- --------------------------------------------------------
 
@@ -994,7 +1048,7 @@ CREATE TABLE `producto_licitar` (
 --
 
 INSERT INTO `producto_licitar` (`id`, `id_usuario`, `id_producto`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `valida_hasta`, `informacion_adicional`, `estado`) VALUES
-('275ad1f4-5936-4675-b083-391b596e645e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', 2, 'KG', 250, 'KG', 'En bolsas de 100 libras', '2024-12-10', 'Precio Negociable', 'Abierta'),
+('275ad1f4-5936-4675-b083-391b596e645e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', 2, 'KG', 165, 'KG', 'En bolsas de 100 libras', '2024-12-10', 'Precio Negociable', 'Abierta'),
 ('48b3ffd8-ae89-4857-969a-0823f8dbb45e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 200, 'QQ', 5000, 'QQ', 'En sacos de 100 libras', '2025-02-20', 'Precio Negociable', 'Eliminada');
 
 -- --------------------------------------------------------
@@ -1056,7 +1110,8 @@ CREATE TABLE `propuesta_compra` (
 INSERT INTO `propuesta_compra` (`id`, `id_venta`, `id_comprador`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `ubicacion_google_maps`, `horarios`, `valida_hasta`, `informacion_adicional`, `estado_comprador`, `estado_vendedor`) VALUES
 ('0d14d172-cd19-4f5e-b440-1a66ec99112f', 'ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 13, 'QQ', 150, 'QQ', 'En sacos de 100 libras', NULL, NULL, '2024-10-12', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
 ('19f2b62e-2894-40d5-94f3-fa1e4482e29d', 'ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 2, 'QQ', 100, 'QQ', 'En sacos de 100 libras', 'Pueblo Gardey, Avenida Mayo 312', 'Entre las 10 AM y las 3 PM', '2025-02-22', 'Necesito calidad de productos', 'Aceptada', 'Aceptada'),
-('7f567641-e6df-43c4-811e-8052883c40d8', '69aca895-621d-43d7-a7bf-18560f12bbb0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 2, 'KG', 30, 'KG', 'Cumpla con entrega segura y precisa', 'Parroquia Carbo, Bolivar SMN 312', 'Entre las 10 AM y las 3 PM', '2024-11-19', 'Necesito calidad de productos', 'Rechazada', 'Recibida');
+('7f567641-e6df-43c4-811e-8052883c40d8', '69aca895-621d-43d7-a7bf-18560f12bbb0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 2, 'KG', 30, 'KG', 'Cumpla con entrega segura y precisa', 'Parroquia Carbo, Bolivar SMN 312', 'Entre las 10 AM y las 3 PM', '2024-11-19', 'Necesito calidad de productos', 'Rechazada', 'Recibida'),
+('d57ec7b5-5654-46ae-85cf-7e4ab3e659c4', 'f68951e7-a6a8-4974-ad49-37c6251fe336', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 3, 'QQ', 65, 'QQ', 'Necesito que la condición de los sacos sea adecuada', 'Pueblo Gardey, Avenida Mayo 312', 'Entre las 10 AM y las 3 PM', '2024-11-24', 'Necesito calidad de productos', 'Recibida', 'Recibida');
 
 -- --------------------------------------------------------
 
@@ -1077,6 +1132,7 @@ CREATE TABLE `propuesta_compra_contiene_condicion` (
 INSERT INTO `propuesta_compra_contiene_condicion` (`id`, `id_propuesta`, `id_condicion`) VALUES
 ('203221a3-9005-4656-8424-f47e450bd53b', '19f2b62e-2894-40d5-94f3-fa1e4482e29d', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e'),
 ('39b3f711-c9b7-497c-bf46-80483ae41ea8', '0d14d172-cd19-4f5e-b440-1a66ec99112f', 'b75501ae-fe6a-49a2-9c28-c40283bcf2d4'),
+('99e022b2-e3ba-4e08-a0f7-d1e6cb435022', 'd57ec7b5-5654-46ae-85cf-7e4ab3e659c4', '5cee8d60-1a09-4a5d-9e46-0d677b4412e2'),
 ('b19465f2-285f-4dd7-8f85-cc7e9c12cee1', '7f567641-e6df-43c4-811e-8052883c40d8', 'fadf7488-6951-4376-8c81-77606f4c60d2');
 
 -- --------------------------------------------------------
@@ -1107,15 +1163,15 @@ CREATE TABLE `propuesta_venta` (
 INSERT INTO `propuesta_venta` (`id`, `id_licitacion`, `id_vendedor`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `fecha_entrega`, `informacion_adicional`, `estado_comprador`, `estado_vendedor`) VALUES
 ('5a8866e2-8e10-4f94-9002-8c0e74b4e664', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 14.8, 'KG', 250, 'KG', 'En sacos de 100 libras', '2024-10-23', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
 ('5a8a702d-f4a6-4bf1-85a1-2aa133d2b87c', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 13, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2024-10-12', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
-('9387c739-f768-4f22-99d6-0858aae8ce35', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 24.8, 'QQ', 650, 'QQ', 'En sacos de 50 libras', '2024-10-27', 'Es importante cumplir con los tiempos', 'Recibida', 'Recibida'),
-('9a5a320a-2895-4baf-ad8f-4a4d6286ec4e', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 24.8, 'QQ', 650, 'QQ', 'En sacos de 50 libras', '2024-10-27', 'Es importante cumplir con los tiempos', 'Recibida', 'Recibida'),
+('9387c739-f768-4f22-99d6-0858aae8ce35', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 24.8, 'QQ', 650, 'QQ', 'En sacos de 50 libras', '2024-10-27', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
+('9a5a320a-2895-4baf-ad8f-4a4d6286ec4e', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 24.8, 'QQ', 650, 'QQ', 'En sacos de 50 libras', '2024-10-27', 'Es importante cumplir con los tiempos', 'Rechazada', 'Recibida'),
 ('bf7be359-4abb-4b62-98aa-4390eff6fb6d', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 19, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2025-05-22', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
 ('ff8b5b14-09eb-4552-9ad4-0e2458b6d02c', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 13, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2024-10-12', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `propuesta_venta_contiene_condicion` 
+-- Estructura de tabla para la tabla `propuesta_venta_contiene_condicion`
 --
 
 CREATE TABLE `propuesta_venta_contiene_condicion` (
@@ -1153,8 +1209,8 @@ CREATE TABLE `publicidades` (
 --
 
 INSERT INTO `publicidades` (`id`, `nombre`, `url`, `imagen`) VALUES
-('e0259de2-5997-48de-8ea0-ec60b4b71b81', 'Anuncio Agrometal', 'https://www.agrometal.com/', 'https://agroec-api.onrender.com/public/images/sales/agrometal_arg_cover.webp'),
-('f7259cx1-5997-48de-8ea0-ec60b4b71b83', 'Agtrac Insumos', 'https://agtrac.mx/', 'https://agroec-api.onrender.com/public/images/sales/agtrac.webp');
+('e0259de2-5997-48de-8ea0-ec60b4b71b81', 'Anuncio Agrometal', 'https://www.agrometal.com/', 'http://localhost:3000/public/images/sales/agrometal_arg_cover.webp'),
+('f7259cx1-5997-48de-8ea0-ec60b4b71b83', 'Agtrac Insumos', 'https://agtrac.mx/', 'http://localhost:3000/public/images/sales/agtrac.webp');
 
 -- --------------------------------------------------------
 
@@ -1330,7 +1386,7 @@ INSERT INTO `venta_contiene_calidad` (`id_parametros`, `id_venta`) VALUES
 -- Índices para tablas volcadas
 --
 
-
+--
 -- Indices de la tabla `billetera`
 --
 ALTER TABLE `billetera`
@@ -1736,7 +1792,7 @@ ALTER TABLE `venta_contiene_calidad`
 --
 -- Restricciones para tablas volcadas
 --
-/*
+
 --
 -- Filtros para la tabla `billetera`
 --

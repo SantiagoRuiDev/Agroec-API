@@ -41,7 +41,6 @@ export const getOrdersByUser = async (user_id) => {
   }
 };
 
-
 export const getOrderUsers = async (order_id) => {
   try {
     const [statement] = await connection.query(
@@ -58,7 +57,6 @@ export const getOrderUsers = async (order_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const updateOrderStatus = async (order_id, status) => {
   try {
@@ -95,7 +93,6 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
   }
 };
 
-
 export const getOrdersBySellerUndelivered = async (user_id) => {
   try {
     const [statement] = await connection.query(
@@ -130,8 +127,8 @@ export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
       INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
-      LEFT JOIN fee f ON f.id_billetera = b.id
-       WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL ORDER BY o.creado DESC
+      LEFT JOIN fee f ON f.id_billetera = b.id AND f.id_entrega = e.id
+       WHERE o.id_vendedor = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL GROUP BY o.id ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -154,7 +151,9 @@ export const getOrdersByBuyerDeliveredAndPaid = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
       INNER JOIN billetera b ON b.id_usuario = o.id_comprador
       LEFT JOIN fee f ON f.id_billetera = b.id
-       WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL ORDER BY o.creado DESC
+       WHERE o.id_comprador = ? AND o.estado = "Aceptado" AND f.monto_fee IS NOT NULL
+       GROUP BY o.id
+       ORDER BY o.creado DESC
       `,
       [user_id]
     );
@@ -180,7 +179,7 @@ export const getOrdersByConditions = async (condition_id) => {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 export const getOrdersById = async (order_id, user_id) => {
   try {
@@ -292,10 +291,28 @@ export const createDeliveredStatus = async (uuid, order_id) => {
   }
 };
 
-export const createReceivedStatus = async (uuid, order_id) => {
+export const createAcceptedStatus = async (uuid, order_id) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'Aceptado')
+      `,
+      [uuid, order_id]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createReceivedStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'Recibido')
       `,
       [uuid, order_id]
     );
@@ -316,6 +333,24 @@ export const createRejectedStatus = async (uuid, order_id, reason) => {
       `INSERT INTO estado_ordenes (id, id_orden, estado, motivo) VALUES (?,?, 'Rechazado', ?)
       `,
       [uuid, order_id, reason]
+    );
+
+    if (statement.affectedRows > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const createRevisionStatus = async (uuid, order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO estado_ordenes (id, id_orden, estado) VALUES (?,?, 'Revision')
+      `,
+      [uuid, order_id]
     );
 
     if (statement.affectedRows > 0) {
@@ -351,6 +386,44 @@ export const checkShippingStatus = async (order_id) => {
     const [statement] = await connection.query(
       `SELECT * FROM estado_ordenes
       WHERE id_orden = ? AND estado = 'En camino'
+      `,
+      [order_id]
+    );
+
+    if (statement.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const checkDeliveredStatus = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM estado_ordenes
+      WHERE id_orden = ? AND estado = "Entregada"
+      `,
+      [order_id]
+    );
+
+    if (statement.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const checkRevisionStatus = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM estado_ordenes
+      WHERE id_orden = ? AND estado = 'En revision'
       `,
       [order_id]
     );
@@ -414,14 +487,15 @@ export const deleteDelivery = async (delivery_id) => {
 export const getUnpaidOrders = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT o.id, e.fecha_entrega, e.cantidad, e.cantidad_unidad, e.hora_entrega, cc.precio, cc.precio_unidad, cc.id_producto, p.imagen  FROM estado_ordenes eo
+      `SELECT o.id, o.creado, e.fecha_entrega, e.cantidad, e.cantidad_unidad, e.hora_entrega, cc.id_producto, cc.precio, cc.precio_unidad, cc.id_producto, p.imagen, f.monto_fee  FROM estado_ordenes eo
       INNER JOIN ordenes o ON o.id = eo.id_orden
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
       INNER JOIN productos p ON p.id = cc.id_producto
       INNER JOIN billetera b ON b.id_usuario = o.id_comprador
-      LEFT JOIN fee f ON f.id_billetera = b.id
-      WHERE eo.estado = "Aceptado" AND f.monto_fee IS NULL AND o.id_comprador = ?
+      LEFT JOIN fee f ON f.id_billetera = b.id AND e.id = f.id_entrega
+      WHERE eo.estado = "Recibido" AND f.monto_fee IS NULL AND o.id_comprador = ?
+      GROUP BY o.id
       `,
       [user_id]
     );
@@ -431,7 +505,6 @@ export const getUnpaidOrders = async (user_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const getUnpaidOrdersBySeller = async (user_id) => {
   try {
@@ -463,8 +536,9 @@ export const getPaidOrdersBySeller = async (user_id) => {
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
       INNER JOIN productos p ON p.id = cc.id_producto
       INNER JOIN billetera b ON b.id_usuario = o.id_vendedor
-      LEFT JOIN fee ON fee.id_billetera = b.id
+      LEFT JOIN fee ON fee.id_billetera = b.id AND fee.id_entrega = e.id
       WHERE eo.estado = "Aceptado" AND fee.monto_fee IS NOT NULL AND o.id_vendedor = ?
+      GROUP BY o.id
       `,
       [user_id]
     );

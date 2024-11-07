@@ -63,13 +63,11 @@ export const getOrdersById = async (req, res) => {
   }
 };
 
-
-
 export const setOrderShippedStatus = async (req, res) => {
   try {
     const order_id = req.params.id;
 
-    if(!await orderModel.checkPendingStatus(order_id)){
+    if (!(await orderModel.checkPendingStatus(order_id))) {
       throw new Error("La orden aun no se puede marcar como enviada");
     }
 
@@ -108,12 +106,11 @@ export const setOrderShippedStatus = async (req, res) => {
   }
 };
 
-
 export const setOrderDeliveredStatus = async (req, res) => {
   try {
     const order_id = req.params.id;
 
-    if(!await orderModel.checkShippingStatus(order_id)){
+    if (!(await orderModel.checkShippingStatus(order_id))) {
       throw new Error("La orden aun no se puede marcar como entregada");
     }
 
@@ -152,7 +149,6 @@ export const setOrderDeliveredStatus = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 export const setOrderReceivedStatus = async (req, res) => {
   try {
@@ -193,7 +189,7 @@ export const setOrderReceivedStatus = async (req, res) => {
             user.id_subscripcion
           );
         }
-        await orderModel.updateOrderStatus(order_id, "Aceptado");
+        await orderModel.updateOrderStatus(order_id, "Recibido");
         await orderModel.updateOrderReceivedQuantity(
           req.body.cantidad,
           order_id
@@ -206,7 +202,7 @@ export const setOrderReceivedStatus = async (req, res) => {
       const order = await orderModel.createReceivedStatus(uuidv4(), order_id);
 
       if (order) {
-        await orderModel.updateOrderStatus(order_id, "En espera");
+        await orderModel.updateOrderStatus(order_id, "Entregada");
         return res
           .status(200)
           .json({ message: "La orden se ha marcado como entregada" });
@@ -282,12 +278,12 @@ export const getUnpaidOrders = async (req, res) => {
   try {
     const user_id = req.user_id;
 
-    if(await profileChecker.isBuyerProfile(user_id)){
+    if (await profileChecker.isBuyerProfile(user_id)) {
       const orders = await orderModel.getUnpaidOrders(user_id);
-      return res.status(200).json(orders)
+      return res.status(200).json(orders);
     } else {
       const orders = await orderModel.getUnpaidOrdersBySeller(user_id);
-      return res.status(200).json(orders)
+      return res.status(200).json(orders);
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -298,18 +294,19 @@ export const getUndeliveredOrders = async (req, res) => {
   try {
     const user_id = req.user_id;
 
-    if(await profileChecker.isBuyerProfile(user_id)){
+    if (await profileChecker.isBuyerProfile(user_id)) {
       const orders = await orderModel.getUnpaidOrders(user_id);
-      return res.status(200).json(orders)
+      return res.status(200).json(orders);
     } else {
-      const undeliveredOrders = await orderModel.getOrdersBySellerUndelivered(user_id);
-      return res.status(200).json(undeliveredOrders)
+      const undeliveredOrders = await orderModel.getOrdersBySellerUndelivered(
+        user_id
+      );
+      return res.status(200).json(undeliveredOrders);
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 export const setOrderDeliveryDate = async (req, res) => {
   try {
@@ -318,32 +315,43 @@ export const setOrderDeliveryDate = async (req, res) => {
     if (await profileChecker.isBuyerProfile(req.user_id)) {
       let order = true;
 
-      if (!await orderModel.checkShippingStatus(order_id)) {
-        throw new Error("La orden no ha sido marcada como despachada");
+      if (!(await orderModel.checkDeliveredStatus(order_id))) {
+        throw new Error("Debes esperar al que vendedor indique que recibiste la orden");
+      }
+      if (await orderModel.checkRevisionStatus(order_id)) {
+        throw new Error("Ya has marcado anteriormente un periodo de revisión");
       }
 
       const orderDetails = await orderModel.getOrderUsers(order_id);
 
       if (order) {
         await deliveryModel.updateDeliveryDate(order_id, req.body.fecha);
+        await orderModel.updateOrderStatus(order_id, "En revision");
+        order = await orderModel.createRevisionStatus(uuidv4(), order_id);
 
-        const notification = await notificationService.createNotification(
-          orderDetails.id_vendedor,
-          orderDetails.id_producto
-        );
+        if (order) {
+          const notification = await notificationService.createNotification(
+            orderDetails.id_vendedor,
+            orderDetails.id_producto
+          );
 
-        if (notification) {
-          await notificationService.createOrderNotification(
-            order_id,
-            notification.id,
-            "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " + req.body.fecha
-          );
-          const user = await authModel.getAccountById(orderDetails.id_vendedor);
-          await notificationService.sendPushNotification(
-            "La orden fue recibida",
-            "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " + req.body.fecha,
-            user.id_subscripcion
-          );
+          if (notification) {
+            await notificationService.createOrderNotification(
+              order_id,
+              notification.id,
+              "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
+                req.body.fecha
+            );
+            const user = await authModel.getAccountById(
+              orderDetails.id_vendedor
+            );
+            await notificationService.sendPushNotification(
+              "La orden fue recibida",
+              "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
+                req.body.fecha,
+              user.id_subscripcion
+            );
+          }
         }
 
         return res

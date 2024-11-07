@@ -1,6 +1,7 @@
 import * as walletModel from "../models/wallet.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
-import * as notificationService from "../services/notification.service.js";
+import * as orderModel from "../models/order.model.js";
+import * as profileChecker from "../libs/checker.js";
 import * as paymentCore from "../payments/index.js";
 import * as authModel from "../models/auth.model.js";
 import { formatTransactionMail } from '../email/transaction.js';
@@ -124,33 +125,11 @@ export const createFee = async (req, res) => {
     if (!createFee) {
       return res.status(404).send({ error: "Error al procesar el cobro" });
     }
-
-    const orderDetails = await deliveryModel.getDeliveryById(id_delivery);
-    const notified_id =
-      orderDetails.id_comprador == user_id
-        ? orderDetails.id_vendedor
-        : orderDetails.id_comprador;
-    const notification = await notificationService.createNotification(
-      notified_id,
-      orderDetails.id_producto
-    );
-
-    if (notification) {
-      await notificationService.createOrderNotification(
-        orderDetails.id,
-        notification.id,
-        "Pago de fee Agroec completado"
-      );
-      const user = await authModel.getAccountById(notified_id);
-      await notificationService.sendPushNotification(
-        "Pago de fee Agroec",
-        "El usuario pago el fee de la orden " +
-          String(orderDetails.id).slice(0, 8),
-        user.id_subscripcion
-      );
-      await sendMail(
-        "Agroec - Pago de fee ✔",
-        formatTransactionMail({operacion: "El usuario ha pagado la fee de $" + feeBalance + " de la orden #" + orderDetails.id}), user.correo);
+    
+    const order = await deliveryModel.getDeliveryById(id_delivery);
+    if(await profileChecker.isBuyerProfile(req.user_id) && order){
+      await orderModel.createAcceptedStatus(uuidv4(), order.id);
+      await orderModel.updateOrderStatus(order.id, 'Aceptado');
     }
 
     const emailedUser = await authModel.getAccountById(req.user_id);
