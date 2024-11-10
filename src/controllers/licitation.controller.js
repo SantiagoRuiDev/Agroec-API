@@ -151,7 +151,8 @@ export const getLicitationById = async (req, res) => {
 export const getAllLicitationsByProduct = async (req, res) => {
   try {
     const licitations = await licitationModel.getAllLicitationsByProduct(
-      req.params.id
+      req.params.id,
+      req.user_id
     );
 
     if (licitations) {

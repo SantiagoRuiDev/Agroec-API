@@ -438,6 +438,23 @@ export const checkRevisionStatus = async (order_id) => {
   }
 };
 
+export const checkRejectedStatus = async (order_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM estado_ordenes WHERE id_orden = ? AND estado = 'Rechazado'
+      `,
+      [order_id]
+    );
+
+    if (statement.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 export const checkPendingStatus = async (order_id) => {
   try {
     const [statement] = await connection.query(

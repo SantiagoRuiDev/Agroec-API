@@ -587,10 +587,16 @@ export const acceptProposalByConditions = async (req, res) => {
       proposal.proposal.estado_vendedor == "Aceptada"
     ) {
       if(proposal.type == "Licitation"){
-        await salesModel.closeSale(proposal.proposal.id_venta);
+        await salesModel.setQuantity(proposal.proposal.id_venta, conditions.cantidad);
+        if(await salesModel.checkQuantity(proposal.proposal.id_venta)){
+          await salesModel.closeSale(proposal.proposal.id_venta);
+        }
       }
       if(proposal.type == "Sale"){
         await licitationModel.setQuantity(proposal.proposal.id_licitacion, conditions.cantidad);
+        if(await licitationModel.checkQuantity(proposal.proposal.id_licitacion)){
+          await licitationModel.markLicitationAsDone(proposal.proposal.id_licitacion);
+        }
       }
       // Si ambos estados son iguales
       const delivery = await conditionModel.getDeliveriesByCondition(
@@ -691,7 +697,7 @@ export const rejectProposalByConditions = async (req, res) => {
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
+          await notificationService.createSaleProposalNotification(
             proposal.proposal.id,
             notification.id,
             "El vendedor ha rechazado la propuesta"

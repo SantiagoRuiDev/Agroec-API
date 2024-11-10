@@ -128,8 +128,10 @@ export const createFee = async (req, res) => {
     
     const order = await deliveryModel.getDeliveryById(id_delivery);
     if(await profileChecker.isBuyerProfile(req.user_id) && order){
-      await orderModel.createAcceptedStatus(uuidv4(), order.id);
-      await orderModel.updateOrderStatus(order.id, 'Aceptado');
+      if(!await orderModel.checkRejectedStatus(order.id)){
+        await orderModel.createAcceptedStatus(uuidv4(), order.id);
+        await orderModel.updateOrderStatus(order.id, 'Aceptado');
+      }
     }
 
     const emailedUser = await authModel.getAccountById(req.user_id);

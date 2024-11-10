@@ -174,7 +174,7 @@ export const createAccount = async (req, res) => {
           
         return res
           .status(200)
-          .json({ message: "Codigo enviado a tu telefono revisalo porfavor" });
+          .json({ message: "Codigo enviado a tu telefono revisalo porfavor", code: code });
       }
 
       return res.status(200).json(fetchUser);

@@ -33,7 +33,7 @@ export function initializeSocket(io){
       socket.join(room);
 
       // Emitir un mensaje solo a los usuarios en esa sala, excepto al que se acaba de unir
-      io.to(room).emit("room-messages", {chat, user: userData.user});
+      io.to(room).emit("room-messages", {chat});
     });
 
     socket.on("send-message", async (data) => {
@@ -79,7 +79,7 @@ export function initializeSocket(io){
         }
       }
 
-      io.to(room).emit("room-messages", {chat, user: userData.user});
+      io.to(room).emit("room-messages", {chat});
     })
   });
   

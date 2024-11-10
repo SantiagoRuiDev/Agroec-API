@@ -161,12 +161,11 @@ export const setOrderReceivedStatus = async (req, res) => {
 
       let order = false;
 
-      if (await orderModel.checkShippingStatus(order_id)) {
-        order = await orderModel.createReceivedStatus(uuidv4(), order_id);
-      } else {
-        await orderModel.createShippingStatus(uuidv4(), order_id);
-        order = await orderModel.createReceivedStatus(uuidv4(), order_id);
+      if(!await orderModel.checkDeliveredStatus(order.id)){
+        throw new Error("Debes esperar al que vendedor indique que recibiste la orden");
       }
+
+      order = await orderModel.createReceivedStatus(uuidv4(), order_id);
 
       const orderDetails = await orderModel.getOrderUsers(order_id);
 
@@ -222,20 +221,15 @@ export const setOrderRejectedStatus = async (req, res) => {
     if (await profileChecker.isBuyerProfile(req.user_id)) {
       let order = false;
 
-      if (await orderModel.checkShippingStatus(order_id)) {
-        order = await orderModel.createRejectedStatus(
-          uuidv4(),
-          order_id,
-          req.body.razon
-        );
-      } else {
-        await orderModel.createShippingStatus(uuidv4(), order_id);
-        order = await orderModel.createRejectedStatus(
-          uuidv4(),
-          order_id,
-          req.body.razon
-        );
+      if(!await orderModel.checkDeliveredStatus(order_id)){
+        throw new Error("Debes esperar al que vendedor indique que recibiste la orden")
       }
+
+      order = await orderModel.createRejectedStatus(
+        uuidv4(),
+        order_id,
+        req.body.razon
+      );
 
       const orderDetails = await orderModel.getOrderUsers(order_id);
 

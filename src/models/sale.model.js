@@ -71,8 +71,7 @@ export const getSalesByProduct = async (product_id, user_id) => {
         LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
         WHERE vcc.id_venta = pv.id
         LIMIT 1
-      ) AS max_parametro_calidad,
-       pc.estado_comprador
+      ) AS max_parametro_calidad
       FROM producto_vender pv 
       INNER JOIN productos p ON p.id = pv.id_producto 
       INNER JOIN usuarios u ON u.id = pv.id_usuario
@@ -81,12 +80,17 @@ export const getSalesByProduct = async (product_id, user_id) => {
       LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
-      LEFT JOIN propuesta_compra pc ON pc.id_venta = pv.id AND pc.id_comprador = ?
       WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") 
-            AND (pc.estado_comprador IS NULL OR pc.estado_comprador != "Rechazada")
+          AND NOT EXISTS (
+              SELECT 1
+              FROM propuesta_compra pc
+              WHERE pc.id_venta = pv.id 
+                AND pc.id_comprador = ? 
+                AND pc.estado_comprador = "Rechazada"
+          )
       GROUP BY pv.id
       ORDER BY pv.fecha_publicacion DESC`,
-      [user_id, product_id]
+      [product_id, user_id]
     );
 
     return statement;
@@ -223,10 +227,35 @@ export const deleteImage = async (image_id) => {
   }
 };
 
+export const setQuantity = async (sale_id, quantity) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_vender SET cantidad = cantidad - ? WHERE id = ?`,
+      [quantity, sale_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const checkQuantity = async (sale_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT cantidad FROM producto_vender WHERE cantidad <= 0 AND id = ?`,
+      [sale_id]
+    );
+    return statement.length > 0;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 export const closeSale = async (sale_id) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE producto_vender SET estado = "Cerrada" WHERE id = ?`,
+      `UPDATE producto_vender SET estado = "Cerrada", cantidad = 0 WHERE id = ?`,
       [sale_id]
     );
 
