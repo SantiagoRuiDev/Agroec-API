@@ -95,12 +95,12 @@ export const createWarranty = async (req, res) => {
         await notificationService.createOrderNotification(
           order_id,
           notification.id,
-          `El comprador ha completado el pago de garantía de $${total}`
+          `El comprador ha completado el pago de garantía de $${total.toFixed(2)}`
         );
         const user = await authModel.getAccountById(orderData[0].id_vendedor);
         await notificationService.sendPushNotification(
           "Pago de garantía",
-          "El comprador ha realizado el pago de $" + total,
+          "El comprador ha realizado el pago de $" + total.toFixed(2),
           user.id_subscripcion
         );
       }

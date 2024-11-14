@@ -1,6 +1,5 @@
 import * as conditionModel from "../models/condition.model.js";
 
-
 export const getConditionsByChat = async (req, res) => {
     try {
         const conditions = await conditionModel.getConditionByChat(req.params.id);

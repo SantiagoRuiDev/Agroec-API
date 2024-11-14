@@ -71,3 +71,15 @@ export const isMerchant = async (uuid) => {
     return false;
   }
 };
+
+export const getType = async (uuid) => {
+  try {
+    const profile = await profileModel.getProfileType(uuid);
+    
+    if(profile){
+      return profile.tipo_perfil
+    }
+  } catch (error) {
+    return "Comerciante";
+  }
+}

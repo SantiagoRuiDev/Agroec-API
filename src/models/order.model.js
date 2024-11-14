@@ -423,7 +423,7 @@ export const checkRevisionStatus = async (order_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT * FROM estado_ordenes
-      WHERE id_orden = ? AND estado = 'En revision'
+      WHERE id_orden = ? AND estado = 'Revision'
       `,
       [order_id]
     );

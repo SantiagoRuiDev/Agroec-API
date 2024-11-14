@@ -1,4 +1,5 @@
 import * as licitationModel from "../models/licitations.model.js";
+import * as proposalModel from "../models/proposal.model.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -46,6 +47,12 @@ export const updateLicitation = async (req, res) => {
   try {
     const licitation_id = req.params.id;
     const user_id = req.user_id;
+
+    const proposals = await proposalModel.getProposalsByLicitation(licitation_id);
+
+    if(Array(...proposals).length > 0){
+      req.body.licitation.cantidad = proposals[0].cantidad;
+    }
 
     const updateRow = await licitationModel.updateLicitation(
       licitation_id,

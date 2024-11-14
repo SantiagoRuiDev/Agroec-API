@@ -119,6 +119,7 @@ export const getConditionByChat = async (chat_id) => {
       COALESCE (pc.valida_hasta, pv.fecha_entrega) AS fecha_limite,
       COALESCE (pc.presentacion_entrega, pv.presentacion_entrega) AS presentacion_propuesta,
       COALESCE (pc.informacion_adicional, pv.informacion_adicional) AS informacion_adicional,
+      COALESCE (prod_l.cantidad, prod_v.cantidad) as cantidad_maxima,
       COALESCE (pc.ubicacion_google_maps) AS ubicacion,
       COALESCE (pc.horarios) AS horarios
       FROM condiciones_compra cc 
@@ -128,6 +129,8 @@ export const getConditionByChat = async (chat_id) => {
       LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
       LEFT JOIN propuesta_compra pc ON pc.id = pccc.id_propuesta
       LEFT JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta
+      LEFT JOIN producto_vender prod_v ON prod_v.id = pc.id_venta
+      LEFT JOIN producto_licitar prod_l ON prod_l.id = pv.id_licitacion
       WHERE ch.id = ?`,
       [chat_id]
     );

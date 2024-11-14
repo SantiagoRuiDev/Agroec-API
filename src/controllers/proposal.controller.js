@@ -65,7 +65,8 @@ export const createSaleProposal = async (req, res) => {
         if (notification) {
           await notificationService.createSaleProposalNotification(
             proposal_id,
-            notification.id
+            notification.id,
+            "Te han enviado una nueva propuesta de venta"
           );
           const user = await authModel.getAccountById(
             fetchLicitation.id_usuario

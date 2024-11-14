@@ -161,6 +161,35 @@ export const getProposalInformation = async (proposal_id) => {
   }
 };
 
+export const getProposalsBySale = async (sale_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pc.*, pv.cantidad FROM propuesta_compra pc 
+      INNER JOIN producto_vender pv ON pc.id_venta = pv.id 
+      WHERE pv.id = ?`,
+      [sale_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const getProposalsByLicitation = async (licitation_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT pv.*, pl.cantidad FROM propuesta_venta pv 
+      INNER JOIN producto_licitar pl ON pv.id_licitacion = pl.id 
+      WHERE pl.id = ?`,
+      [licitation_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getSaleProposalByLicitation = async (user_id) => {
   try {
     const [statement] = await connection.query(

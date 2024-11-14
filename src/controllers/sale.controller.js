@@ -1,5 +1,6 @@
 import * as salesModel from "../models/sale.model.js";
 import * as profileModel from "../models/profile.model.js";
+import * as proposalModel from "../models/proposal.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import { v4 as uuidv4 } from "uuid";
@@ -36,14 +37,22 @@ export const updateSale = async (req, res) => {
         const sale_id = req.params.id;
         const user_id = req.user_id;
 
+        const proposals = await proposalModel.getProposalsBySale(sale_id);
+
+        if(Array(...proposals).length > 0){
+          req.body.sale.cantidad = proposals[0].cantidad;
+        }
+        
         const insertSale = await salesModel.updateSale(sale_id, req.body.sale);
 
         if(insertSale > 0){
             if(req.body.quality_params){
                 for(const param of req.body.quality_params){
-                    const newParamRowId = uuidv4();
-                    await qualityParamsModel.createQualityParam(newParamRowId, user_id, param);
-                    await qualityParamsModel.createQualityParamForSale(newParamRowId, sale_id);
+                    if(param.id == ""){
+                        const newParamRowId = uuidv4();
+                        await qualityParamsModel.createQualityParam(newParamRowId, user_id, param);
+                        await qualityParamsModel.createQualityParamForSale(newParamRowId, sale_id);
+                    }
                 }
             }
 

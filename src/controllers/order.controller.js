@@ -161,7 +161,7 @@ export const setOrderReceivedStatus = async (req, res) => {
 
       let order = false;
 
-      if(!await orderModel.checkDeliveredStatus(order.id)){
+      if(!await orderModel.checkDeliveredStatus(order_id)){
         throw new Error("Debes esperar al que vendedor indique que recibiste la orden");
       }
 
