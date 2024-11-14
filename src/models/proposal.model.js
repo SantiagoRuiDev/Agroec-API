@@ -263,6 +263,7 @@ export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
        pc.id_producto, 
        uv.provincia, uv.canton, u.id as id_comprador,
        ch.id AS chat_id,
+       (SELECT o.estado FROM entregas e INNER JOIN ordenes o ON o.id_entrega = e.id WHERE e.id_condicion = cc.id AND o.estado = "Aceptado" LIMIT 1) AS finalizada,
        COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil
         FROM propuesta_venta pv
         INNER JOIN propuesta_venta_contiene_condicion pvcc ON pv.id = pvcc.id_propuesta
@@ -276,9 +277,7 @@ export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_vendedor
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
     	WHERE u.id = ? AND pc.id_producto = ?
-      AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")
-      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada")
-      AND NOT (pv.estado_vendedor = "Rechazada" OR pv.estado_comprador = "Rechazada");`,
+      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada");`,
       [user_id, product_id]
     );
 

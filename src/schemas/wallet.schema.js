@@ -9,5 +9,5 @@ export const rechargeSchema = Joi.object({
 
 
 export const feeSchema = Joi.object({
-    monto_fee: Joi.number().min(1).required()
+    monto_fee: Joi.number().min(0.1).required()
 });

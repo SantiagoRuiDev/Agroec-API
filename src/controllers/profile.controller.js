@@ -7,6 +7,7 @@ import * as proposalModel from "../models/proposal.model.js";
 import * as walletModel from "../models/wallet.model.js";
 import * as notificationService from '../services/notification.service.js';
 import * as qualificationModel from "../models/qualification.models.js";
+import * as contactModel from "../models/contact.model.js";
 import * as licitationsModel from "../models/licitations.model.js";
 import * as pointsModel from "../models/points.model.js";
 //importar esquemas
@@ -175,7 +176,9 @@ export const getBuyerProfile = async (req, res) => {
     }
 
     if(await profileChecker.isBuyerProfile(user_id)){
-      return res.status(200).json({ user: {...findUser}, profile: await profileModel.getBuyerProfileByUser(user_id) });
+      const reception_points = await pointsModel.getPoints(req.user_id);
+      const contacts = await contactModel.getContacts(req.user_id);
+      return res.status(200).json({ user: {...findUser}, profile: await profileModel.getBuyerProfileByUser(user_id), points: reception_points, contacts: contacts });
     }
     
     throw new Error("Perfil no encontrado");
