@@ -60,15 +60,13 @@ export function initializeSocket(io){
           const notifiedUser = (userData.user == chat.chat.id_vendedor) ? chat.chat.id_comprador : chat.chat.id_vendedor;
           const notification = await notificationService.createNotification(
             notifiedUser,
-            chat.chat.id_producto
+            chat.chat.id_producto,
+            `Has recibido un mensaje en la negociación`,
+            "Mensaje Recibido",
+            "/chat/licitacion/" + chat.chat.id_producto + "/" + room
           );
     
           if (notification) {
-            await notificationService.createChatNotification(
-              room,
-              notification.id,
-              `Has recibido un mensaje en la negociación`
-            );
             const user = await authModel.getAccountById(notifiedUser);
             await notificationService.sendPushNotification(
               "Nuevo mensaje",

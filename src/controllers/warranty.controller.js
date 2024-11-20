@@ -64,9 +64,15 @@ export const createWarranty = async (req, res) => {
 
     const total = price * quantity * (percentage / 100);
 
-    const payment = await paymentCore.chargeCard(total, "Pago de Garantia Agroec", req.body.identificador, String(req.body.documento), "GARANTIA-" + Math.floor(Math.random() * 99999))
+    const payment = await paymentCore.chargeCard(
+      total,
+      "Pago de Garantia Agroec",
+      req.body.identificador,
+      String(req.body.documento),
+      "GARANTIA-" + Math.floor(Math.random() * 99999)
+    );
 
-    if(!payment){
+    if (!payment) {
       throw new Error("Error al realizar el cobro de la tarjeta.");
     }
 
@@ -88,15 +94,15 @@ export const createWarranty = async (req, res) => {
       const orderData = await orderModel.getOrdersByConditions(idCondition);
       const notification = await notificationService.createNotification(
         orderData[0].id_vendedor,
-        orderData[0].id_producto
+        orderData[0].id_producto,
+        `El comprador ha completado el pago de garantía de $${total.toFixed(
+          2
+        )}`,
+        "Pago de garantía",
+        "/order/" + order_id
       );
 
       if (notification) {
-        await notificationService.createOrderNotification(
-          order_id,
-          notification.id,
-          `El comprador ha completado el pago de garantía de $${total.toFixed(2)}`
-        );
         const user = await authModel.getAccountById(orderData[0].id_vendedor);
         await notificationService.sendPushNotification(
           "Pago de garantía",

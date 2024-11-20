@@ -23,61 +23,9 @@ export const getNotificationsUnreadedByUser = async (uuid_user) => {
     }
 }
 
-export const createNotification = async (uuid_user, uuid_product) => {
+export const createNotification = async (uuid_user, uuid_product, message, title, redirection) => {
     try {
-        const notification = await  notificationModel.createNotification(uuidv4(), uuid_user, uuid_product);
-        
-        return notification;
-    } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
-    }
-}
-
-
-export const createOrderNotification = async (uuid_order, uuid_notification, message) => {
-    try {
-        const notification = await  notificationModel.createOrderNotification(uuidv4(), uuid_notification, uuid_order, message);
-        
-        return notification;
-    } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
-    }
-}
-
-export const createChatNotification = async (uuid_chat, uuid_notification, message) => {
-    try {
-        const notification = await  notificationModel.createChatNotification(uuidv4(), uuid_notification, uuid_chat, message);
-        
-        return notification;
-    } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
-    }
-}
-
-export const createWarrantyNotification = async (uuid_warranty, uuid_notification) => {
-    try {
-        const message = `El comprador ha completado el pago de garantía`;
-        const notification = await  notificationModel.createWarrantyNotification(uuidv4(), uuid_notification, uuid_warranty, message);
-        
-        return notification;
-    } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
-    }
-}
-
-export const createSaleProposalNotification = async (uuid_proposal, uuid_notification, message) => {
-    try {        
-        const notification = await  notificationModel.createSaleProposalNotification(uuidv4(), uuid_notification, uuid_proposal, message);
-        
-        return notification;
-    } catch (error) {
-        throw new Error("Error al crear la notificación: " + error.message);
-    }
-}
-
-export const createLicitationProposalNotification = async (uuid_proposal, uuid_notification, message) => {
-    try {
-        const notification = await  notificationModel.createLicitationProposalNotification(uuidv4(), uuid_notification, uuid_proposal, message);
+        const notification = await  notificationModel.createNotification(uuidv4(), uuid_user, uuid_product, message, title, redirection);
         
         return notification;
     } catch (error) {

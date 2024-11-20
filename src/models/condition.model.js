@@ -1,10 +1,10 @@
 import { connection } from "../index.js";
 
-export const createContidion = async (condition_id, product_id) => {
+export const createCondition = async (condition_id, product_id, reception_rules, schema) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO condiciones_compra(id, id_producto) VALUES (?, ?)`,
-      [condition_id, product_id]
+      `INSERT INTO condiciones_compra(id, id_producto, precio, precio_unidad, cantidad, cantidad_unidad, politicas_recepcion) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [condition_id, product_id, schema.precio, schema.precio_unidad, schema.cantidad, schema.cantidad_unidad, reception_rules]
     );
 
     return statement.affectedRows;
@@ -13,7 +13,7 @@ export const createContidion = async (condition_id, product_id) => {
   }
 };
 
-export const updateCondition = async (condition_id, schema) => {
+export const updateCondition = async (condition_id, schema, reception_rules) => {
   try {
     const [statement] = await connection.query(
       `UPDATE condiciones_compra SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, modo_pago = ?, notas = ?, precio_puesto_domicilio = ?, politicas_recepcion = ? WHERE id = ?`,
@@ -25,7 +25,7 @@ export const updateCondition = async (condition_id, schema) => {
         schema.modo_pago,
         schema.notas,
         schema.precio_puesto_domicilio,
-        schema.politicas_recepcion,
+        reception_rules,
         condition_id,
       ]
     );

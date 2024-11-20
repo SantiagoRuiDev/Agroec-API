@@ -76,16 +76,14 @@ export const setOrderShippedStatus = async (req, res) => {
     const orderDetails = await orderModel.getOrderUsers(order_id);
     const notification = await notificationService.createNotification(
       orderDetails.id_comprador,
-      orderDetails.id_producto
+      orderDetails.id_producto,
+      "El vendedor marco la orden como despachada",
+      "Orden de " + orderDetails.id_producto,
+      "/order/" + order_id // FALTA ID CHAT
     );
 
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "En camino");
-      await notificationService.createOrderNotification(
-        order_id,
-        notification.id,
-        "El vendedor marco la orden como despachada"
-      );
       const user = await authModel.getAccountById(orderDetails.id_comprador);
       await notificationService.sendPushNotification(
         "Tu orden esta en camino",
@@ -119,16 +117,14 @@ export const setOrderDeliveredStatus = async (req, res) => {
     const orderDetails = await orderModel.getOrderUsers(order_id);
     const notification = await notificationService.createNotification(
       orderDetails.id_comprador,
-      orderDetails.id_producto
+      orderDetails.id_producto,
+      "El vendedor indico que recibiste la orden",
+      "Orden de " + orderDetails.id_producto,
+      "/order/" + order_id // FALTA ID CHAT
     );
 
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "Entregada");
-      await notificationService.createOrderNotification(
-        order_id,
-        notification.id,
-        "El vendedor indico que recibiste la orden"
-      );
       const user = await authModel.getAccountById(orderDetails.id_comprador);
       await notificationService.sendPushNotification(
         "La orden fue entregada",
@@ -172,15 +168,13 @@ export const setOrderReceivedStatus = async (req, res) => {
       if (order) {
         const notification = await notificationService.createNotification(
           orderDetails.id_vendedor,
-          orderDetails.id_producto
+          orderDetails.id_producto,
+            "El comprador marco la orden como recibida",
+            "Orden de " + orderDetails.id_producto,
+            "/order/" + order_id // FALTA ID CHAT
         );
 
         if (notification) {
-          await notificationService.createOrderNotification(
-            order_id,
-            notification.id,
-            "El comprador marco la orden como recibida"
-          );
           const user = await authModel.getAccountById(orderDetails.id_vendedor);
           await notificationService.sendPushNotification(
             "La orden fue recibida",
@@ -238,15 +232,13 @@ export const setOrderRejectedStatus = async (req, res) => {
 
         const notification = await notificationService.createNotification(
           orderDetails.id_vendedor,
-          orderDetails.id_producto
+          orderDetails.id_producto,
+          "El comprador marco la orden como rechazada",
+          "Orden de " + orderDetails.id_producto,
+          "/order/" + order_id // FALTA ID CHAT
         );
 
         if (notification) {
-          await notificationService.createOrderNotification(
-            order_id,
-            notification.id,
-            "El comprador marco la orden como rechazada"
-          );
           const user = await authModel.getAccountById(orderDetails.id_vendedor);
           await notificationService.sendPushNotification(
             "La orden fue rechazada",
@@ -326,16 +318,14 @@ export const setOrderDeliveryDate = async (req, res) => {
         if (order) {
           const notification = await notificationService.createNotification(
             orderDetails.id_vendedor,
-            orderDetails.id_producto
+            orderDetails.id_producto,
+            "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
+                req.body.fecha,
+            "Orden de " + orderDetails.id_producto,
+            "/order/" + order_id // FALTA ID CHAT
           );
 
           if (notification) {
-            await notificationService.createOrderNotification(
-              order_id,
-              notification.id,
-              "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
-                req.body.fecha
-            );
             const user = await authModel.getAccountById(
               orderDetails.id_vendedor
             );

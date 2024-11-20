@@ -110,7 +110,7 @@ export const createFee = async (req, res) => {
     if (balanceNow < feeBalance) {
       return res
         .status(404)
-        .send({ error: "El saldo debe ser mayor al monto para cobrar" });
+        .send({ error: "Saldo insuficiente, recarga tu billetera" });
     }
 
     const balanceLessFee = balanceNow - feeBalance;

@@ -1,4 +1,5 @@
 import * as qualificationModel from "../models/qualification.models.js";
+import * as notificationService from "../services/notification.service.js";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,7 +26,7 @@ export const createQualification = async (req, res) => {
     );
 
     if (!createQualification) {
-      res.status(404).send({ message: "Error al crear la calificacion" });
+      return res.status(404).send({ message: "Error al crear la calificacion" });
     }
 
     return res

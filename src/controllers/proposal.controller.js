@@ -2,13 +2,14 @@ import * as salesModel from "../models/sale.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as licitationModel from "../models/licitations.model.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
+import * as profileModel from "../models/profile.model.js";
+import * as notificationService from "../services/notification.service.js";
 import * as conditionModel from "../models/condition.model.js";
 import * as authModel from "../models/auth.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as orderModel from "../models/order.model.js";
 import * as chatModel from "../models/chat.model.js";
-import * as notificationService from "../services/notification.service.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createSaleProposal = async (req, res) => {
@@ -16,7 +17,7 @@ export const createSaleProposal = async (req, res) => {
     const licitation_id = req.params.id;
     const user_id = req.user_id;
     const proposal_id = uuidv4();
-    const contidion_id = uuidv4();
+    const condition_id = uuidv4();
 
     if (await profileChecker.isBuyerProfile(user_id)) {
       throw new Error("Solo los vendedores pueden hacer propuestas de venta.");
@@ -34,9 +35,14 @@ export const createSaleProposal = async (req, res) => {
       throw new Error("No puedes crear una oferta de venta a ti mismo");
     }
 
-    if (fetchLicitation.estado == "Cerrada" || fetchLicitation.estado == "Eliminada"){
+    if (
+      fetchLicitation.estado == "Cerrada" ||
+      fetchLicitation.estado == "Eliminada"
+    ) {
       throw new Error("Esta licitación esta cerrada o eliminada del mercado");
     }
+
+    const buyerUser = await profileModel.getBuyerProfileByUser(fetchLicitation.id_usuario);
 
     const insertProposal = await proposalModel.createSaleProposal(
       proposal_id,
@@ -46,28 +52,29 @@ export const createSaleProposal = async (req, res) => {
     );
 
     if (insertProposal > 0) {
-      const insertCondition = await conditionModel.createContidion(
-        contidion_id,
-        fetchLicitation.id_producto
+      const chat_uuid = uuidv4();
+      const insertCondition = await conditionModel.createCondition(
+        condition_id,
+        fetchLicitation.id_producto,
+        buyerUser.politicas_recepcion,
+        req.body
       );
       if (insertCondition > 0) {
         await proposalModel.createSaleCondition(
           uuidv4(),
           proposal_id,
-          contidion_id
+          condition_id
         );
 
         const notification = await notificationService.createNotification(
           fetchLicitation.id_usuario,
-          fetchLicitation.id_producto
+          fetchLicitation.id_producto,
+          "Nueva propuesta de venta de " + fetchLicitation.id_producto,
+          "Propuesta de venta",
+          "/chat/licitacion/" + fetchLicitation.id_producto + "/" + chat_uuid
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
-            proposal_id,
-            notification.id,
-            "Te han enviado una nueva propuesta de venta"
-          );
           const user = await authModel.getAccountById(
             fetchLicitation.id_usuario
           );
@@ -78,17 +85,17 @@ export const createSaleProposal = async (req, res) => {
           );
         }
 
-        const chat_uuid = uuidv4();
         await chatModel.createChat(
           chat_uuid,
           fetchLicitation.id_usuario,
           user_id,
-          contidion_id
+          condition_id
         );
 
-        return res
-          .status(200)
-          .send({ message: `Oferta de venta realizada con exito`, chat: chat_uuid });
+        return res.status(200).send({
+          message: `Oferta de venta realizada con exito`,
+          chat: chat_uuid,
+        });
       }
     }
 
@@ -116,11 +123,11 @@ export const getSaleProposalById = async (req, res) => {
 
 export const getProposalInformation = async (req, res) => {
   try {
-    if(await profileChecker.isBuyerProfile(req.user_id)){
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
       const proposal = await proposalModel.getProposalInformation(
         req.params.id
       );
-  
+
       if (proposal) {
         return res.status(200).json(proposal);
       }
@@ -128,13 +135,15 @@ export const getProposalInformation = async (req, res) => {
       const proposal = await proposalModel.getProposalInformation(
         req.params.id
       );
-  
+
       if (proposal) {
         return res.status(200).json(proposal);
       }
     }
 
-    throw new Error("No se encontro o hubo un error interno al cargar la propuesta");
+    throw new Error(
+      "No se encontro o hubo un error interno al cargar la propuesta"
+    );
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -159,7 +168,7 @@ export const getSaleProposalByUser = async (req, res) => {
 export const getSaleProposalByUserAndProduct = async (req, res) => {
   try {
     let proposals = [];
-    if(await profileChecker.isBuyerProfile(req.user_id)){
+    if (await profileChecker.isBuyerProfile(req.user_id)) {
       proposals = await proposalModel.getSaleProposalByBuyerAndProduct(
         req.user_id,
         req.params.id
@@ -188,14 +197,14 @@ export const createLicitationProposal = async (req, res) => {
     const sale_id = req.params.id;
     const user_id = req.user_id;
     const proposal_id = uuidv4();
-    const contidion_id = uuidv4();
+    const condition_id = uuidv4();
 
     const fetchSale = await salesModel.getSalesById(sale_id);
 
-    if (fetchSale.estado == "Cerrada" || fetchSale.estado == "Eliminada"){
+    if (fetchSale.estado == "Cerrada" || fetchSale.estado == "Eliminada") {
       throw new Error("Esta venta esta cerrada o eliminada del mercado");
     }
-    
+
     if (!fetchSale) {
       throw new Error("Esta venta no existe");
     }
@@ -210,6 +219,8 @@ export const createLicitationProposal = async (req, res) => {
       );
     }
 
+    const buyerUser = await profileModel.getBuyerProfileByUser(user_id);
+
     const insertProposal = await proposalModel.createLicitationProposal(
       proposal_id,
       sale_id,
@@ -218,28 +229,29 @@ export const createLicitationProposal = async (req, res) => {
     );
 
     if (insertProposal > 0) {
-      const insertCondition = await conditionModel.createContidion(
-        contidion_id,
-        fetchSale.id_producto
+      const insertCondition = await conditionModel.createCondition(
+        condition_id,
+        fetchSale.id_producto,
+        buyerUser.politicas_recepcion,
+        req.body
       );
       if (insertCondition > 0) {
+        const chat_uuid = uuidv4();
         await proposalModel.createLicitationCondition(
           uuidv4(),
           proposal_id,
-          contidion_id
+          condition_id
         );
 
         const notification = await notificationService.createNotification(
           fetchSale.id_usuario,
-          fetchSale.id_producto
+          fetchSale.id_producto,
+          "Nueva propuesta de compra de " + fetchSale.id_producto,
+          "Propuesta de compra",
+          "/app/chat/oferta/" + chat_uuid
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
-            proposal_id,
-            notification.id,
-            "Nueva propuesta de compra de " + fetchSale.id_producto
-          );
           const user = await authModel.getAccountById(fetchSale.id_usuario);
           await notificationService.sendPushNotification(
             "Nueva propuesta de compra",
@@ -247,17 +259,16 @@ export const createLicitationProposal = async (req, res) => {
             user.id_subscripcion
           );
         }
-
-        const chat_uuid = uuidv4();
         await chatModel.createChat(
           chat_uuid,
           user_id,
           fetchSale.id_usuario,
-          contidion_id
+          condition_id
         );
-        return res
-          .status(200)
-          .send({ message: `Oferta de compra realizada con exito`, chat: chat_uuid });
+        return res.status(200).send({
+          message: `Oferta de compra realizada con exito`,
+          chat: chat_uuid,
+        });
       }
     }
 
@@ -359,12 +370,42 @@ export const updateCondition = async (req, res) => {
       }
     }
 
+    const buyerUser = await profileModel.getBuyerProfileByUser(user_id);
+
     const updateRow = await conditionModel.updateCondition(
       condition_id,
-      condition_schema
+      condition_schema,
+      buyerUser.politicas_recepcion
     );
 
     if (updateRow > 0) {
+      // NOTIFICATION
+      const updateProposalStates =
+        await proposalModel.updateProposalByConditions(condition_id);
+      if (updateProposalStates > 0) {
+        const proposal = await proposalModel.getProposalByConditions(
+          condition_id
+        );
+        // SYSTEM MESSAGE IN CHAT
+        await chatModel.sendSystemMessage(uuidv4(), proposal.proposal.id_chat, "Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.")
+        //
+        if (proposal.proposal) {
+          await notificationService.createNotification(
+            proposal.proposal.id_vendedor,
+            proposal.proposal.id_producto,
+            "Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.",
+            "Condición Actualizada",
+            "/app/chat/oferta/" + proposal.proposal.id_chat
+          );
+          await notificationService.sendPushNotification(
+            "Condición Actualizada",
+            "Las condiciones han sido actualizadas, visita dando click en boton condiciones",
+            proposal.proposal.id_vendedor,
+            ""
+          );
+        }
+      }
+
       if (quality_params) {
         for (const param of req.body.quality_params) {
           if (param.id == "") {
@@ -478,15 +519,13 @@ export const acceptProposalByConditions = async (req, res) => {
         );
         const notification = await notificationService.createNotification(
           proposal.proposal.id_vendedor,
-          conditions.id_producto
+          conditions.id_producto,
+          "El comprador ha aceptado la propuesta",
+          "Propuesta de venta",
+          "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El comprador ha aceptado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_vendedor
           );
@@ -500,15 +539,13 @@ export const acceptProposalByConditions = async (req, res) => {
         // PROPUESTA DE VENTA Y VENDEDOR
         const notification = await notificationService.createNotification(
           proposal.proposal.id_comprador,
-          conditions.id_producto
+          conditions.id_producto,
+          "El vendedor ha aceptado la propuesta",
+          "Propuesta de venta",
+          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El vendedor ha aceptado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_comprador
           );
@@ -533,15 +570,13 @@ export const acceptProposalByConditions = async (req, res) => {
 
         const notification = await notificationService.createNotification(
           proposal.proposal.id_vendedor,
-          conditions.id_producto
+          conditions.id_producto,
+          "El comprador ha aceptado la propuesta",
+          "Propuesta de compra",
+          "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El comprador ha aceptado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_vendedor
           );
@@ -555,15 +590,13 @@ export const acceptProposalByConditions = async (req, res) => {
         // PROPUESTA DE COMPRA Y VENDEDOR
         const notification = await notificationService.createNotification(
           proposal.proposal.id_comprador,
-          conditions.id_producto
+          conditions.id_producto,
+          "El vendedor ha aceptado la propuesta",
+          "Propuesta de compra",
+          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El vendedor ha aceptado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_comprador
           );
@@ -587,16 +620,26 @@ export const acceptProposalByConditions = async (req, res) => {
       proposal.proposal.estado_comprador == "Aceptada" &&
       proposal.proposal.estado_vendedor == "Aceptada"
     ) {
-      if(proposal.type == "Licitation"){
-        await salesModel.setQuantity(proposal.proposal.id_venta, conditions.cantidad);
-        if(await salesModel.checkQuantity(proposal.proposal.id_venta)){
+      if (proposal.type == "Licitation") {
+        await salesModel.setQuantity(
+          proposal.proposal.id_venta,
+          conditions.cantidad
+        );
+        if (await salesModel.checkQuantity(proposal.proposal.id_venta)) {
           await salesModel.closeSale(proposal.proposal.id_venta);
         }
       }
-      if(proposal.type == "Sale"){
-        await licitationModel.setQuantity(proposal.proposal.id_licitacion, conditions.cantidad);
-        if(await licitationModel.checkQuantity(proposal.proposal.id_licitacion)){
-          await licitationModel.markLicitationAsDone(proposal.proposal.id_licitacion);
+      if (proposal.type == "Sale") {
+        await licitationModel.setQuantity(
+          proposal.proposal.id_licitacion,
+          conditions.cantidad
+        );
+        if (
+          await licitationModel.checkQuantity(proposal.proposal.id_licitacion)
+        ) {
+          await licitationModel.markLicitationAsDone(
+            proposal.proposal.id_licitacion
+          );
         }
       }
       // Si ambos estados son iguales
@@ -636,8 +679,6 @@ export const acceptProposalByConditions = async (req, res) => {
   }
 };
 
-
-
 // Esta funcion acepta una propuesta por condiciones, es decir busca a partir de una condicion una propuesta, de venta o compra y la acepta
 export const rejectProposalByConditions = async (req, res) => {
   try {
@@ -672,15 +713,13 @@ export const rejectProposalByConditions = async (req, res) => {
         );
         const notification = await notificationService.createNotification(
           proposal.proposal.id_vendedor,
-          conditions.id_producto
+          conditions.id_producto,
+          "El comprador ha rechazado la propuesta",
+          "Propuesta de venta",
+          "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El comprador ha rechazado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_vendedor
           );
@@ -694,15 +733,13 @@ export const rejectProposalByConditions = async (req, res) => {
         // PROPUESTA DE VENTA Y VENDEDOR
         const notification = await notificationService.createNotification(
           proposal.proposal.id_comprador,
-          conditions.id_producto
+          conditions.id_producto,
+          "El vendedor ha rechazado la propuesta",
+          "Propuesta de venta",
+          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createSaleProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El vendedor ha rechazado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_comprador
           );
@@ -727,20 +764,18 @@ export const rejectProposalByConditions = async (req, res) => {
 
         const notification = await notificationService.createNotification(
           proposal.proposal.id_vendedor,
-          conditions.id_producto
+          conditions.id_producto,
+          "El comprador ha rechazado la propuesta",
+          "Propuesta de compra",
+          "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El comprador ha rechazado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_vendedor
           );
           await notificationService.sendPushNotification(
-            "Una propuesta de rechazada fue rechazada",
+            "Una propuesta de compra fue rechazada",
             "El comprador ha rechazada la propuesta " + conditions.id_producto,
             user.id_subscripcion
           );
@@ -749,15 +784,13 @@ export const rejectProposalByConditions = async (req, res) => {
         // PROPUESTA DE COMPRA Y VENDEDOR
         const notification = await notificationService.createNotification(
           proposal.proposal.id_comprador,
-          conditions.id_producto
+          conditions.id_producto,
+          "El vendedor ha rechazado la propuesta",
+          "Propuesta de compra",
+          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
         if (notification) {
-          await notificationService.createLicitationProposalNotification(
-            proposal.proposal.id,
-            notification.id,
-            "El vendedor ha rechazado la propuesta"
-          );
           const user = await authModel.getAccountById(
             proposal.proposal.id_comprador
           );

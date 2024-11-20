@@ -667,8 +667,9 @@ export const createLicitationCondition = async (
 export const getProposalByConditions = async (condition_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta, cc.modo_pago
+      `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta, cc.modo_pago, ch.id as id_chat, cc.id_producto
       FROM condiciones_compra cc 
+      INNER JOIN chat ch ON ch.id_condiciones = cc.id
       LEFT JOIN propuesta_compra_contiene_condicion pccc ON pccc.id_condicion = cc.id
       LEFT JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
       WHERE cc.id = ?`,
@@ -691,6 +692,8 @@ export const getProposalByConditions = async (condition_id) => {
           [sale[0].id_licitacion]
         );
         sale[0].id_comprador = buyer[0].id_usuario;
+        sale[0].id_chat = statement[0].id_chat;
+        sale[0].id_producto = statement[0].id_producto;
         return {
           proposal: sale[0],
           type: "Sale",
@@ -713,6 +716,8 @@ export const getProposalByConditions = async (condition_id) => {
           [licitation[0].id_venta]
         );
         licitation[0].id_vendedor = seller[0].id_usuario;
+        licitation[0].id_chat = statement[0].id_chat;
+        licitation[0].id_producto = statement[0].id_producto;
         return {
           proposal: licitation[0],
           type: "Licitation",
@@ -724,3 +729,23 @@ export const getProposalByConditions = async (condition_id) => {
     throw new Error(error.message);
   }
 };
+
+
+export const updateProposalByConditions = async (condition_id) => {
+  try {
+    const [buyProposal] = await connection.query(
+      `UPDATE propuesta_compra pc SET pc.estado_comprador = 'Recibida', pc.estado_vendedor = 'Recibida'
+      WHERE pc.id IN (SELECT pccc.id_propuesta FROM propuesta_compra_contiene_condicion pccc WHERE pccc.id_condicion = ?)`,
+      [condition_id]
+    );
+    const [saleProposal] = await connection.query(
+      `UPDATE propuesta_venta pv SET pv.estado_comprador = 'Recibida', pv.estado_vendedor = 'Recibida'
+      WHERE pv.id IN (SELECT pvcc.id_propuesta FROM propuesta_venta_contiene_condicion pvcc WHERE pvcc.id_condicion = ?)`,
+      [condition_id]
+    );
+
+    return saleProposal.affectedRows + buyProposal.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

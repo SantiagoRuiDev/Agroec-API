@@ -77,3 +77,17 @@ export const sendMessage = async (uuid, sender_id, chat_id, text) => {
     throw new Error(error.message);
   }
 };
+
+
+export const sendSystemMessage = async (uuid, chat_id, text) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO mensajes(id, id_remitente, id_chat, texto) VALUES (?,"Sistema",?,?)`,
+      [uuid, chat_id, text]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
