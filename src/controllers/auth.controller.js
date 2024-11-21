@@ -171,10 +171,12 @@ export const createAccount = async (req, res) => {
           .then()
           .catch((error) => console.error("Error:", error));
 
-          
         return res
           .status(200)
-          .json({ message: "Codigo enviado a tu telefono revisalo porfavor", code: code });
+          .json({
+            message: "Codigo enviado a tu telefono revisalo porfavor",
+            code: code,
+          });
       }
 
       return res.status(200).json(fetchUser);
@@ -189,25 +191,37 @@ export const loginAccount = async (req, res) => {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
     if (!fetchUser) {
-      const fetchMultiuser = await authModel.getMultiuserByEmail(req.body.correo);
-      if(!fetchMultiuser){
+      const fetchMultiuser = await authModel.getMultiuserByEmail(
+        req.body.correo
+      );
+      if (!fetchMultiuser) {
         throw new Error("No hemos podido encontrar una cuenta con ese correo.");
       }
 
-      if(!await comparePassword(req.body.clave, fetchMultiuser.clave)){
+      if (!(await comparePassword(req.body.clave, fetchMultiuser.clave))) {
         throw new Error("Clave Incorrecta");
       }
 
-      const multi_token = encodeMultiuserToken(fetchMultiuser.id_usuario, fetchMultiuser.id, "3h");
+      const multi_token = encodeMultiuserToken(
+        fetchMultiuser.id_usuario,
+        fetchMultiuser.id,
+        "3h"
+      );
       const token = encodeToken(fetchMultiuser.id_usuario, "3h");
-      
-      return res.status(200).json({ message: "Sesion iniciada correctamente", token: token, multi_token: multi_token });
+
+      return res
+        .status(200)
+        .json({
+          message: "Sesion iniciada correctamente",
+          token: token,
+          multi_token: multi_token,
+        });
     }
 
-    if(!await profileChecker.isBuyerProfile(fetchUser.id)){
+    if (!(await profileChecker.isBuyerProfile(fetchUser.id))) {
       throw new Error("No puedes ingresar con una cuenta de vendedor");
     }
-    
+
     if (fetchUser.estado == 0) {
       throw new Error("Tu cuenta no finalizo el registro");
     }
@@ -218,7 +232,9 @@ export const loginAccount = async (req, res) => {
 
     const token = encodeToken(fetchUser.id, "3h");
 
-    return res.status(200).json({ message: "Sesion iniciada correctamente", token: token });
+    return res
+      .status(200)
+      .json({ message: "Sesion iniciada correctamente", token: token });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -228,7 +244,7 @@ export const loginSellerAccount = async (req, res) => {
   try {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
-    if(await profileChecker.isBuyerProfile(fetchUser.id)){
+    if (await profileChecker.isBuyerProfile(fetchUser.id)) {
       throw new Error("No puedes ingresar con una cuenta de comprador");
     }
 
@@ -242,7 +258,9 @@ export const loginSellerAccount = async (req, res) => {
 
     const token = encodeToken(fetchUser.id, "3h");
 
-    return res.status(200).json({ message: "Sesion iniciada correctamente", token: token });
+    return res
+      .status(200)
+      .json({ message: "Sesion iniciada correctamente", token: token });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -292,6 +310,30 @@ export const logoutAccount = async (req, res) => {
       sameSite: "none",
     });
     res.status(200).json({ message: "Logout successful, token removed" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const updateAccount = async (req, res) => {
+  try {
+    const user = req.user_id;
+    if (req.body.clave != "") {
+      const hashedPassword = await hashPassword(req.body.clave);
+      req.body.clave = hashedPassword;
+    } else {
+      const userData = await authModel.getAccountById(user);
+      req.body.clave = userData.clave;
+    }
+
+    const updateRow = await authModel.updateAccount(user, req.body);
+    if (updateRow > 0) {
+      return res
+        .status(200)
+        .json({ message: "Cuenta actualizada exitosamente" });
+    } else {
+      throw new Error("Error al actualizar la cuenta");
+    }
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

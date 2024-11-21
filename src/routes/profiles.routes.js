@@ -13,6 +13,8 @@ router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, 
 router.get('/me', authMiddleware.isAuthentified, profileController.getBuyerProfile)
 router.get('/me/stats', authMiddleware.isAuthentified, profileController.getProfileStats)    
 router.get('/me/reception-points', authMiddleware.isAuthentified, profileController.getProfilePoints);
+router.delete('/me/reception-points/:id', authMiddleware.isAuthentified, profileController.deleteProfilePoint);
+router.delete('/me/contact/:id', authMiddleware.isAuthentified, profileController.deleteContact);
 router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile)
 
 //UPDATE bank accounts

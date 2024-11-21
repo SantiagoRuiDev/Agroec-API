@@ -162,3 +162,23 @@ export const getConditionByChat = async (chat_id) => {
     throw new Error(error.message);
   }
 };
+
+export const updateConditionReceptionRules = async (rules, user_id) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE condiciones_compra cc 
+      SET cc.politicas_recepcion = ? 
+      WHERE cc.id IN (SELECT pccc.id_condicion FROM propuesta_compra_contiene_condicion pccc INNER JOIN propuesta_compra pc ON pc.id = pccc.id_propuesta WHERE pc.id_comprador = ?)
+      OR cc.id IN (SELECT pvcc.id_condicion FROM propuesta_venta_contiene_condicion pvcc INNER JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta INNER JOIN producto_licitar pl ON pl.id = pv.id_licitacion WHERE pl.id_usuario = ?)`,
+      [
+        rules,
+        user_id,
+        user_id
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

@@ -1,6 +1,6 @@
 import { validateSchemas } from "../libs/schema.js";
 import { decodeToken } from "../libs/token.js";
-import { accountSchema } from "../schemas/account.schema.js";
+import { accountSchema, accountUpdateSchema } from "../schemas/account.schema.js";
 import { authSchema } from "../schemas/auth.schema.js";
 import { codeSchema } from "../schemas/code.schema.js";
 import { buyerSchema } from "../schemas/buyer.schema.js";
@@ -13,6 +13,16 @@ import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js"
 import { pointsSchemaArray } from "../schemas/points.schema.js";
 import { associationSchema } from "../schemas/association.schema.js";
 import * as multiuserModel from '../models/multiusers.model.js';
+
+export const updateAccount = async (req, res, next) => {
+  try {
+    validateSchemas(req.body, accountUpdateSchema);
+
+    next();
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 
 export const createAccount = async (req, res, next) => {
   try {

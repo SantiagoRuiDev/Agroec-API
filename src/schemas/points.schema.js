@@ -15,3 +15,4 @@ export const pointsDeliverySchema = Joi.object({
 });
 
 export const pointsSchemaArray = Joi.array().items(pointsSchema);
+export const pointsDeliverySchemaArray = Joi.array().items(pointsDeliverySchema);
