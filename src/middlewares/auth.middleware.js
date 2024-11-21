@@ -110,6 +110,7 @@ export const isAuthentified = async (req, res, next) => {
           req.multiuser_id = decoded.multiuser;
         }
         req.permissions = await multiuserModel.getMultiuserRoleByUser(decoded.multiuser);
+        req.token = decoded;
         next();
         return;
       } else {
@@ -127,6 +128,7 @@ export const isAuthentified = async (req, res, next) => {
       if (decoded instanceof Object) {
         req.user_id = decoded.user;
       }
+      req.token = decoded;
       next();
     } else {
       throw new Error("Please insert a valid token");

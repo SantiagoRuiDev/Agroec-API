@@ -25,6 +25,16 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import "./socket/socket.js";
 import { initializeSocket } from "./socket/socket.js";
+import { rateLimit } from 'express-rate-limit'
+
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000, // 15 minutes
+	limit: 150, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	// store: ... , // Redis, Memcached, etc. See below.
+})
+
 // ---
 // Abro la conexión aca para evitar realizar muchas conexiones en modelo.
 export const connection = await connect();
@@ -36,6 +46,8 @@ export const io = new Server(server, {
     origin: "*", // Permite cualquier origen
   },
 });
+
+app.use(limiter);
 
 app.use(
   "*",

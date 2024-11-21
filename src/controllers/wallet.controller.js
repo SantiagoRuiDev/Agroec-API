@@ -4,7 +4,7 @@ import * as orderModel from "../models/order.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as paymentCore from "../payments/index.js";
 import * as authModel from "../models/auth.model.js";
-import { formatTransactionMail } from '../email/transaction.js';
+import { formatTransactionMail } from "../email/transaction.js";
 import { sendMail } from "../libs/emailer.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -72,7 +72,11 @@ export const rechargeWallet = async (req, res) => {
         const user = await authModel.getAccountById(req.user_id);
         await sendMail(
           "Agroec - Recarga exitosa ✔",
-          formatTransactionMail({operacion: "Recarga de $" + rechargeAmount + " saldo en billetera"}), user.correo);
+          formatTransactionMail({
+            operacion: "Recarga de $" + rechargeAmount + " saldo en billetera",
+          }),
+          user.correo
+        );
 
         await walletModel.updateBalance(idWallet, rechargeMoreBalance);
       }
@@ -125,19 +129,24 @@ export const createFee = async (req, res) => {
     if (!createFee) {
       return res.status(404).send({ error: "Error al procesar el cobro" });
     }
-    
+
     const order = await deliveryModel.getDeliveryById(id_delivery);
-    if(await profileChecker.isBuyerProfile(req.user_id) && order){
-      if(!await orderModel.checkRejectedStatus(order.id)){
+    if ((await profileChecker.isBuyerProfile(req.user_id)) && order) {
+      if (!(await orderModel.checkRejectedStatus(order.id))) {
         await orderModel.createAcceptedStatus(uuidv4(), order.id);
-        await orderModel.updateOrderStatus(order.id, 'Aceptado');
+        await orderModel.updateOrderStatus(order.id, "Aceptado");
       }
     }
 
     const emailedUser = await authModel.getAccountById(req.user_id);
     await sendMail(
       "Agroec - Pagaste una fee de manera exitosa ✔",
-      formatTransactionMail({operacion: "Pagaste la fee de $" + feeBalance + " con saldo de la billetera"}), emailedUser.correo);
+      formatTransactionMail({
+        operacion:
+          "Pagaste la fee de $" + feeBalance + " con saldo de la billetera",
+      }),
+      emailedUser.correo
+    );
 
     await walletModel.updateBalance(idWallet, balanceLessFee);
 
@@ -198,18 +207,40 @@ export const getCardsByUser = async (req, res) => {
 
 export const createCardTokenization = async (req, res) => {
   try {
-    const document = String(req.body.documento);
-    const name = req.body.nombre;
-    const email = req.body.email;
-    const phone = String(req.body.telefono);
-    const address = req.body.direccion;
+    const userDetails = await authModel.getAccountById(req.user_id);
+
+    const paymentDetails = {
+      document: "",
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+    };
+
+    if (req.body.tipo != "with-document") {
+      if (userDetails.tipo_identificacion == "Cédula") {
+        paymentDetails.document = userDetails.numero_identificacion;
+        paymentDetails.name = req.body.nombre;
+        paymentDetails.email = userDetails.correo;
+        paymentDetails.phone = userDetails.telefono;
+        paymentDetails.address = userDetails.direccion;
+      } else {
+        return res.status(400).json({error: "Necesitas agregar un documento de 10 digitos (No RUC, No Pasaporte)", document_field: true});
+      }
+    } else {
+      paymentDetails.document = req.body.documento;
+      paymentDetails.name = req.body.nombre;
+      paymentDetails.email = userDetails.correo;
+      paymentDetails.phone = userDetails.telefono;
+      paymentDetails.address = userDetails.direccion;
+    }
 
     const tokenization = await paymentCore.tokenizateCard(
-      document,
-      name,
-      email,
-      phone,
-      address
+      paymentDetails.document,
+      paymentDetails.name,
+      paymentDetails.email,
+      paymentDetails.name,
+      paymentDetails.address
     );
 
     return res.status(200).json({ url: tokenization.data.url });

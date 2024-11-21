@@ -205,9 +205,9 @@ export const loginAccount = async (req, res) => {
       const multi_token = encodeMultiuserToken(
         fetchMultiuser.id_usuario,
         fetchMultiuser.id,
-        "3h"
+        "24h"
       );
-      const token = encodeToken(fetchMultiuser.id_usuario, "3h");
+      const token = encodeToken(fetchMultiuser.id_usuario, "24h");
 
       return res
         .status(200)
@@ -230,7 +230,7 @@ export const loginAccount = async (req, res) => {
       throw new Error("Clave Incorrecta");
     }
 
-    const token = encodeToken(fetchUser.id, "3h");
+    const token = encodeToken(fetchUser.id, "24h");
 
     return res
       .status(200)
@@ -256,7 +256,7 @@ export const loginSellerAccount = async (req, res) => {
       throw new Error("Clave Incorrecta");
     }
 
-    const token = encodeToken(fetchUser.id, "3h");
+    const token = encodeToken(fetchUser.id, "24h");
 
     return res
       .status(200)
@@ -289,7 +289,23 @@ export const finishAccount = async (req, res) => {
 
 export const isAuthentified = async (req, res) => {
   try {
-    return res.status(200).json({ loggedIn: true });
+    const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+    const timeRemaining = req.token.exp - currentTime;
+    
+    const TEN_HOURS_IN_SECONDS = 10 * 60 * 60; // 36000 segundos
+    if(timeRemaining <= TEN_HOURS_IN_SECONDS){
+      // Si el token expira en menos de 10 horas.
+      if(req.token.multiuser){
+        const refreshToken = encodeToken(req.token.user, '24h');
+        const refreshMultiuserToken = encodeMultiuserToken(req.token.user, req.token.multiuser, '24h');
+        return res.status(200).json({loggedIn: true, token: refreshToken, multiuser_token: refreshMultiuserToken, type: "multiuser"})
+      } else {
+        const refreshToken = encodeToken(req.token.user, '24h');
+        return res.status(200).json({loggedIn: true, token: refreshToken, type: "user"})
+      }
+    }
+
+    return res.status(200).json({ loggedIn: true, token: null, type: "none" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
