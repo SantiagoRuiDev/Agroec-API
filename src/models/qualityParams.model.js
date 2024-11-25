@@ -1,5 +1,19 @@
 import { connection } from "../index.js";
 
+
+export const createConditionQualityParam = async (param_id, user_id, schema) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO parametros_calidad(id, id_usuario, nombre, max_calidad, min_calidad) VALUES (?,?,?,?,?)`,
+      [param_id, user_id, schema.nombre, schema.max_calidad, schema.min_calidad]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const createQualityParam = async (param_id, user_id, schema) => {
   try {
     const [statement] = await connection.query(
@@ -12,7 +26,6 @@ export const createQualityParam = async (param_id, user_id, schema) => {
     throw new Error(error.message);
   }
 };
-
 
 export const updateQualityParam = async (param_id, schema) => {
   try {
@@ -44,7 +57,6 @@ export const createQualityParamForCondition = async (
   }
 };
 
-
 export const createQualityParamForLicitation = async (
   param_id,
   licitation_id
@@ -61,10 +73,7 @@ export const createQualityParamForLicitation = async (
   }
 };
 
-export const createQualityParamForSale = async (
-  param_id,
-  sale_id
-) => {
+export const createQualityParamForSale = async (param_id, sale_id) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO venta_contiene_calidad(id_parametros, id_venta) VALUES (?,?)`,
@@ -77,10 +86,7 @@ export const createQualityParamForSale = async (
   }
 };
 
-
-export const getQualityParamForLicitation = async (
-  licitation_id
-) => {
+export const getQualityParamForLicitation = async (licitation_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT * FROM licitacion_contiene_calidad WHERE id_licitacion = ?`,
@@ -93,10 +99,7 @@ export const getQualityParamForLicitation = async (
   }
 };
 
-
-export const deleteQualityParamForLicitation = async (
-  licitation_id
-) => {
+export const deleteQualityParamForLicitation = async (licitation_id) => {
   try {
     const [statement] = await connection.query(
       `DELETE FROM licitacion_contiene_calidad WHERE id_licitacion = ?`,
@@ -108,8 +111,6 @@ export const deleteQualityParamForLicitation = async (
     throw new Error(error.message);
   }
 };
-
-
 
 export const getQualityParamByUser = async (user_id) => {
   try {
@@ -124,7 +125,6 @@ export const getQualityParamByUser = async (user_id) => {
   }
 };
 
-
 export const deleteQualityParam = async (param_id, user_id) => {
   try {
     const [statement] = await connection.query(
@@ -137,7 +137,6 @@ export const deleteQualityParam = async (param_id, user_id) => {
     throw new Error(error.message);
   }
 };
-
 
 export const deleteQualityParamForSale = async (param_id, sale_id, user_id) => {
   try {
@@ -156,7 +155,6 @@ export const deleteQualityParamForSale = async (param_id, sale_id, user_id) => {
   }
 };
 
-
 export const deleteQualityParamForCondition = async (param_id) => {
   try {
     const [statement] = await connection.query(
@@ -165,6 +163,41 @@ export const deleteQualityParamForCondition = async (param_id) => {
     );
 
     return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getQualityParamsFromSale = async (sale_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT 
+      pc.*
+      FROM parametros_calidad pc
+      INNER JOIN venta_contiene_calidad vcc ON vcc.id_parametros = pc.id
+      WHERE vcc.id_venta = ?`,
+      [sale_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getQualityParamFromLicitation = async (licitation_id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT 
+      pc.*
+      FROM parametros_calidad pc 
+      INNER JOIN licitacion_contiene_calidad lcc ON pc.id = lcc.id_parametros
+      WHERE lcc.id_licitacion = ?`,
+      [licitation_id]
+    );
+
+    return statement;
   } catch (error) {
     throw new Error(error.message);
   }

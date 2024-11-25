@@ -31,12 +31,7 @@ export const createLicitation = async (
   }
 };
 
-
-export const updateLicitation = async (
-  licitation_id,
-  user_id,
-  schema
-) => {
+export const updateLicitation = async (licitation_id, user_id, schema) => {
   try {
     const [statement] = await connection.query(
       `UPDATE producto_licitar SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, presentacion_entrega = ?, valida_hasta = ?, informacion_adicional = ?
@@ -50,7 +45,7 @@ export const updateLicitation = async (
         schema.valida_hasta,
         schema.informacion_adicional,
         licitation_id,
-        user_id
+        user_id,
       ]
     );
 
@@ -63,7 +58,8 @@ export const updateLicitation = async (
 export const getLicitationsByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.estado != "Eliminada" AND pl.estado != "Cumplida"`,
+      `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.estado != "Eliminada" AND pl.estado != "Cumplida"
+      ORDER BY pl.fecha_publicacion ASC`,
       [user_id]
     );
 
@@ -77,7 +73,8 @@ export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl 
-      INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.id_producto = ? AND pl.estado != "Eliminada"`,
+      INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.id_producto = ? AND pl.estado != "Eliminada"
+      ORDER BY pl.fecha_publicacion ASC`,
       [user_id, product_id]
     );
 
@@ -103,7 +100,7 @@ export const getLicitationById = async (licitation_id) => {
 
     return {
       ...statement[0],
-      quality_params
+      quality_params,
     };
   } catch (error) {
     throw new Error(error.message);
@@ -113,7 +110,8 @@ export const getLicitationById = async (licitation_id) => {
 export const getAllLicitations = async () => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado  "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")`
+      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado  "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
+      ORDER BY fecha_publicacion ASC`
     );
 
     return statement;
@@ -160,7 +158,7 @@ export const getAllLicitationsByProduct = async (product_id, user_id) => {
             AND pv.estado_vendedor = "Rechazada"
       )
       GROUP BY pl.id
-      ORDER BY pl.fecha_publicacion DESC`,
+      ORDER BY pl.fecha_publicacion ASC`,
       [product_id, user_id]
     );
 
@@ -219,7 +217,7 @@ export const checkQuantity = async (licitation_id) => {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 export const markLicitationAsDone = async (licitation_id) => {
   try {

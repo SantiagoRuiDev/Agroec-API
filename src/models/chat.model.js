@@ -35,6 +35,11 @@ export const getChatById = async (uuid, user) => {
       `UPDATE mensajes m SET m.leido = 1 WHERE m.id_chat = ? AND m.id_remitente != ?`,
       [statement[0].id, user]
     )
+    const [system_read] = await connection.query(
+      `UPDATE mensajes m SET m.leido = 2 WHERE m.id_remitente = 'Sistema' AND m.id_chat IN (SELECT c.id FROM chat c WHERE c.id_vendedor = ? AND c.id = ?)`,
+      [user, statement[0].id]
+    )
+
 
     return {
       chat: statement[0],

@@ -42,7 +42,9 @@ export const createSaleProposal = async (req, res) => {
       throw new Error("Esta licitación esta cerrada o eliminada del mercado");
     }
 
-    const buyerUser = await profileModel.getBuyerProfileByUser(fetchLicitation.id_usuario);
+    const buyerUser = await profileModel.getBuyerProfileByUser(
+      fetchLicitation.id_usuario
+    );
 
     const insertProposal = await proposalModel.createSaleProposal(
       proposal_id,
@@ -65,6 +67,25 @@ export const createSaleProposal = async (req, res) => {
           proposal_id,
           condition_id
         );
+
+        const quality_params =
+          await qualityParamsModel.getQualityParamFromLicitation(licitation_id);
+
+        if (quality_params.length > 0) {
+          for (const param of quality_params) {
+            const newParamRowId = uuidv4();
+            await qualityParamsModel.createConditionQualityParam(
+              newParamRowId,
+              user_id,
+              param
+            );
+            await qualityParamsModel.createQualityParamForCondition(
+              uuidv4(),
+              newParamRowId,
+              condition_id
+            );
+          }
+        }
 
         const notification = await notificationService.createNotification(
           fetchLicitation.id_usuario,
@@ -243,6 +264,25 @@ export const createLicitationProposal = async (req, res) => {
           condition_id
         );
 
+        const quality_params =
+          await qualityParamsModel.getQualityParamsFromSale(sale_id);
+
+        if (quality_params.length > 0) {
+          for (const param of quality_params) {
+            const newParamRowId = uuidv4();
+            await qualityParamsModel.createConditionQualityParam(
+              newParamRowId,
+              user_id,
+              param
+            );
+            await qualityParamsModel.createQualityParamForCondition(
+              uuidv4(),
+              newParamRowId,
+              condition_id
+            );
+          }
+        }
+
         const notification = await notificationService.createNotification(
           fetchSale.id_usuario,
           fetchSale.id_producto,
@@ -387,7 +427,11 @@ export const updateCondition = async (req, res) => {
           condition_id
         );
         // SYSTEM MESSAGE IN CHAT
-        await chatModel.sendSystemMessage(uuidv4(), proposal.proposal.id_chat, "Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.")
+        await chatModel.sendSystemMessage(
+          uuidv4(),
+          proposal.proposal.id_chat,
+          "Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta."
+        );
         //
         if (proposal.proposal) {
           await notificationService.createNotification(
@@ -542,7 +586,10 @@ export const acceptProposalByConditions = async (req, res) => {
           conditions.id_producto,
           "El vendedor ha aceptado la propuesta",
           "Propuesta de venta",
-          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
+          "/chat/licitacion/" +
+            conditions.id_producto +
+            "/" +
+            proposal.proposal.id_chat
         );
 
         if (notification) {
@@ -593,7 +640,10 @@ export const acceptProposalByConditions = async (req, res) => {
           conditions.id_producto,
           "El vendedor ha aceptado la propuesta",
           "Propuesta de compra",
-          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
+          "/chat/licitacion/" +
+            conditions.id_producto +
+            "/" +
+            proposal.proposal.id_chat
         );
 
         if (notification) {
@@ -736,7 +786,10 @@ export const rejectProposalByConditions = async (req, res) => {
           conditions.id_producto,
           "El vendedor ha rechazado la propuesta",
           "Propuesta de venta",
-          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
+          "/chat/licitacion/" +
+            conditions.id_producto +
+            "/" +
+            proposal.proposal.id_chat
         );
 
         if (notification) {
@@ -787,7 +840,10 @@ export const rejectProposalByConditions = async (req, res) => {
           conditions.id_producto,
           "El vendedor ha rechazado la propuesta",
           "Propuesta de compra",
-          "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
+          "/chat/licitacion/" +
+            conditions.id_producto +
+            "/" +
+            proposal.proposal.id_chat
         );
 
         if (notification) {

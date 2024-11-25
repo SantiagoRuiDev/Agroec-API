@@ -89,7 +89,7 @@ export const getSalesByProduct = async (product_id, user_id) => {
                 AND pc.estado_comprador = "Rechazada"
           )
       GROUP BY pv.id
-      ORDER BY pv.fecha_publicacion DESC`,
+      ORDER BY pv.fecha_publicacion ASC`,
       [product_id, user_id]
     );
 
@@ -105,7 +105,7 @@ export const getSalesByUser = async (user_id) => {
       `SELECT pv.*, p.nombre, p.imagen, 
         (SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = pv.id LIMIT 1) AS producto_imagen
         FROM producto_vender pv 
-       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ? ORDER BY pv.fecha_publicacion DESC`,
+       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ? ORDER BY pv.fecha_publicacion ASC`,
       [user_id]
     );
 
@@ -179,7 +179,7 @@ export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, p.nombre, p.imagen, p.id as id_producto FROM producto_vender pv 
-      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ? ORDER BY pv.fecha_publicacion DESC`,
+      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ? ORDER BY pv.fecha_publicacion ASC`,
       [sale_id]
     );
 
