@@ -81,13 +81,6 @@ export const getSalesByProduct = async (product_id, user_id) => {
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
       WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") 
-          AND NOT EXISTS (
-              SELECT 1
-              FROM propuesta_compra pc
-              WHERE pc.id_venta = pv.id 
-                AND pc.id_comprador = ? 
-                AND pc.estado_comprador = "Rechazada"
-          )
       GROUP BY pv.id
       ORDER BY pv.fecha_publicacion ASC`,
       [product_id, user_id]

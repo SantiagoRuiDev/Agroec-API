@@ -150,13 +150,6 @@ export const getAllLicitationsByProduct = async (product_id, user_id) => {
       INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
       LEFT JOIN calificacion c ON c.id_calificado = pl.id_usuario
       WHERE pl.id_producto = ? AND NOT (pl.estado = "Cerrada" OR pl.estado = "Eliminada" OR pl.estado = "Cumplida")
-      AND NOT EXISTS (
-          SELECT 1
-          FROM propuesta_venta pv
-          WHERE pv.id_licitacion = pl.id 
-            AND pv.id_vendedor = ? 
-            AND pv.estado_vendedor = "Rechazada"
-      )
       GROUP BY pl.id
       ORDER BY pl.fecha_publicacion ASC`,
       [product_id, user_id]

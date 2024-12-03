@@ -86,8 +86,7 @@ export const getSaleProposalByUser = async (user_id) => {
       INNER JOIN usuarios u ON pv.id_vendedor = u.id 
       WHERE u.id = ? 
       AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")
-      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada")
-      AND NOT (pv.estado_vendedor = "Rechazada" OR pv.estado_comprador = "Rechazada");`,
+      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada")`,
       [user_id]
     );
 
@@ -195,7 +194,7 @@ export const getSaleProposalByLicitation = async (user_id) => {
     const [statement] = await connection.query(
       `SELECT pv.* FROM propuesta_venta pv 
       INNER JOIN producto_licitar pl ON pv.id_licitacion = pl.id 
-      WHERE pl.id_usuario = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada") AND pv.estado_comprador != "Rechazada";`,
+      WHERE pl.id_usuario = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada");`,
       [user_id]
     );
 
@@ -227,8 +226,7 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_vendedor
     	WHERE pv.id_vendedor = ? AND pc.id_producto = ? 
       AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada")
-      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada")
-      AND NOT (pv.estado_vendedor = "Rechazada" OR pv.estado_comprador = "Rechazada")`,
+      AND NOT (pv.estado_vendedor = "Rechazada" AND pv.estado_comprador = "Rechazada")`,
       [user_id, product_id]
     );
 
@@ -474,8 +472,7 @@ export const getLicitationProposalByUser = async (user_id) => {
     INNER JOIN usuarios u ON pc.id_comprador = u.id 
     INNER JOIN producto_vender pv ON pv.id = pc.id_venta
     WHERE u.id = ? AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada") 
-      AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")
-      AND NOT (pc.estado_vendedor = "Rechazada" OR pc.estado_comprador = "Rechazada");`,
+      AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")`,
       [user_id]
     );
 
@@ -509,9 +506,10 @@ export const getLicitationProposalByUserAndProduct = async (
         LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
         LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
         WHERE u.id = ? AND pv.id_producto = ? 
-        AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada")
-      AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")
-      AND NOT (pc.estado_vendedor = "Rechazada" OR pc.estado_comprador = "Rechazada")
+        AND (
+        pv.estado NOT IN ("Cerrada", "Eliminada") 
+        OR (pv.estado IN ("Cerrada", "Eliminada") AND (pc.estado_comprador = "Aceptada" AND pc.estado_vendedor = "Aceptada"))
+        )
       GROUP BY pc.id;`,
       [user_id, product_id]
     );
@@ -603,7 +601,6 @@ export const getLicitationProposalBySale = async (user_id) => {
       WHERE 
       NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada")
       AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")
-      AND NOT (pc.estado_vendedor = "Rechazada" OR pc.estado_comprador = "Rechazada")
        AND pv.id_usuario = ?
       GROUP BY pv.id_producto;`,
       [user_id]
@@ -730,7 +727,6 @@ export const getProposalByConditions = async (condition_id) => {
   }
 };
 
-
 export const updateProposalByConditions = async (condition_id) => {
   try {
     const [buyProposal] = await connection.query(
@@ -748,4 +744,4 @@ export const updateProposalByConditions = async (condition_id) => {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};

@@ -2,12 +2,13 @@ import { Router } from "express";
 import * as licitationController from '../controllers/licitation.controller.js'
 import * as authMiddleware from '../middlewares/auth.middleware.js'
 import * as licitationMiddleware from '../middlewares/licitation.middleware.js'
+import * as ruler from '../middlewares/ruler.middleware.js';
 
 export const router = Router();
 
 
-router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationMiddleware.createLicitation, licitationController.createLicitation)
-router.put('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationMiddleware.createLicitation, licitationController.updateLicitation)
+router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, ruler.checkNotReceivedOrders, licitationMiddleware.createLicitation, licitationController.createLicitation)
+router.put('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, ruler.checkNotReceivedOrders, licitationMiddleware.createLicitation, licitationController.updateLicitation)
 
 router.get('/filter/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 router.get('/me', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUser)

@@ -116,6 +116,43 @@ export const getOrdersBySellerUndelivered = async (user_id) => {
     throw new Error(error.message);
   }
 };
+
+
+export const getOrdersBySellerUndeliveredBeforeDate = async (user_id, date) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, e.fecha_entrega, e.hora_entrega
+	     FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       WHERE o.id_vendedor = ? AND o.estado = "Pendiente de entrega" AND e.fecha_entrega < ?
+      `,
+      [user_id, date]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getOrdersByBuyerNotReceivedBeforeDate = async (user_id, date) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT o.id, e.fecha_entrega, e.hora_entrega
+	     FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       WHERE o.id_comprador = ? AND o.estado != "Aceptado" AND e.fecha_entrega < ?
+      `,
+      [user_id, date]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getOrdersBySellerDeliveredAndPaid = async (user_id) => {
   try {
     const [statement] = await connection.query(

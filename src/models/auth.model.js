@@ -80,6 +80,21 @@ export const setState = async (uuid, state) => {
   }
 };
 
+
+export const accountIsBlocked = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM usuarios WHERE estado = 0 AND id = ?`,
+      [uuid]
+    );
+
+    return statement.length > 0;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const updateAccount = async (uuid, schema) => {
   try {
     const [statement] = await connection.query(

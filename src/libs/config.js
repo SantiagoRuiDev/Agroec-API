@@ -24,5 +24,7 @@ export const APP_SETTINGS = {
     account_sid_twilio: process.env.ACCOUNT_SID_TWILIO,
     payment_token: process.env.PAGOMEDIOS_TOKEN,
     secure: process.env.SECURE,
+    max_pending_orders: process.env.MAX_PENDING_ORDERS,
+    max_unreceived_orders: process.env.MAX_UNRECEIVED_ORDERS,
     production: (process.env.PRODUCTION == 'true') ? true : false
 }
