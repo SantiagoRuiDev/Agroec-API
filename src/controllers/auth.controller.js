@@ -244,6 +244,10 @@ export const loginSellerAccount = async (req, res) => {
   try {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
+    if(!fetchUser){
+      throw new Error("No hemos podido encontrar una cuenta con ese correo.");
+    }
+
     if (await profileChecker.isBuyerProfile(fetchUser.id)) {
       throw new Error("No puedes ingresar con una cuenta de comprador");
     }

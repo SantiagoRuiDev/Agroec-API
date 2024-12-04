@@ -8,13 +8,6 @@ export const createInput = async (req, res) => {
     const uuid_table = uuidv4();
     const inputSchema = req.body;
 
-    // Prueba de como funciona el checker por tipo de perfil
-    // ( Se envia UUID de usuario y devuelve true/false si tiene ese tipo de perfil)
-    if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
-      throw new Error(
-        "Perfil de tipo invalido, necesitas ser Comerciante de Agroquimicos"
-      );
-    }
 
     const createInput = await inputModel.createInput(
       uuid_table,
@@ -25,11 +18,50 @@ export const createInput = async (req, res) => {
       res.status(404).send({ message: "Error al crear el insumo" });
     }
 
-    res.status(200).send({ message: "Insumo creado correctamente" });
+    res.status(200).send({ message: "Insumo creado correctamente", uuid: uuid_table });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const deleteImage = async (req, res) => {
+  try {
+      const input_id = req.params.input_id
+
+      const input = await inputModel.getInputById(input_id);
+
+      if(input.images.length == 1){
+          throw new Error("Debes tener al menos dos imagenes para eliminar una");
+      }
+
+      const deletedRow = await inputModel.deleteImage(req.params.id, input_id);
+
+      if(deletedRow > 0) {
+          return res.status(200).json({message: "Imagen eliminada correctamente"});
+      }
+
+      throw new Error("La eliminación de la imagen ha fallado, intenta nuevamente")
+  } catch (error) {
+      return res.status(400).json({ error: error.message });
+  }
+}
+
+export const insertImageInput = async (req, res) => {
+  try {
+      const input_id = req.params.input_id;
+
+      if(req.images_urls){
+          for(const image of req.images_urls){
+              await inputModel.insertImage(uuidv4(), input_id, image);
+          }
+          return res.status(200).json({message: "Imagenes subidas con exito"});
+      }
+
+      throw new Error("La subida de la imagen ha fallado, intenta nuevamente")
+  } catch (error) {
+      return res.status(400).json({ error: error.message });
+  }
+}
 
 export const updateInput = async (req, res) => {
   try {
@@ -54,11 +86,11 @@ export const deleteInput = async (req, res) => {
 
     const deletedInput = await inputModel.deleteInput(input_id);
 
-    if (!deletedInput) {
+    if (deletedInput == 0) {
       return res.status(404).send({ message: "Error al eliminar el insumo" });
     }
 
-    res.status(200).send({ message: "Insumo eliminado correctamente" });
+    return res.status(200).send({ message: "Insumo eliminado correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

@@ -22,11 +22,39 @@ export const createInput = async (uuid, uuid_user, schema) => {
         schema.titular,
         schema.clasificacion,
         schema.instrucciones_de_uso,
-        schema.epoca_intervalo,
+        schema.modo_aplicacion,
         schema.intervalo_entrada,
         schema.link,
         schema.atencion,
       ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const insertImage = async (image_id, input_id, url_imagen) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO insumos_imagenes (id, id_insumo, url_imagen) VALUES (?,?,?)`,
+      [image_id, input_id, url_imagen]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const deleteImage = async (image_id, input_id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM insumos_imagenes WHERE id = ? AND id_insumo = ?`,
+      [image_id, input_id]
     );
 
     return statement.affectedRows;
@@ -53,7 +81,7 @@ export const updateInput = async (input_id, schema) => {
         schema.titular,
         schema.clasificacion,
         schema.instrucciones_de_uso,
-        schema.epoca_intervalo,
+        schema.modo_aplicacion,
         schema.intervalo_entrada,
         schema.link,
         schema.atencion,
@@ -71,6 +99,10 @@ export const deleteInput = async (input_id) => {
   try {
     const [statement] = await connection.query(
       `DELETE FROM insumos WHERE id = ?`,
+      [input_id]
+    );
+    await connection.query(
+      `DELETE FROM insumos_imagenes WHERE id_insumo = ?`,
       [input_id]
     );
 
@@ -105,10 +137,9 @@ export const getInputById = async (input_id) => {
       [statement[0].id]
     );
 
-
     return {
       input: statement[0],
-      images: images
+      images: images,
     };
   } catch (error) {
     throw new Error(error.message);
