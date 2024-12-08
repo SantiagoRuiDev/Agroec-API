@@ -22,6 +22,18 @@ export const createAccount = async (req, res) => {
 
     req.body.user.clave = await hashPassword(req.body.user.clave);
 
+    const getAccount = await authModel.getAccountByEmail(req.body.user.correo);
+
+    if(getAccount){
+      throw new Error("Ya existe una cuenta con este correo");
+    }
+
+    const getAccountByDocument = await authModel.getAccountByDocument(req.body.user.numero_identificacion);
+
+    if(getAccountByDocument){
+      throw new Error("Ya existe una cuenta con este documento");
+    }
+
     const insertedRow = await authModel.createAccount(uuid, req.body.user);
 
     if (insertedRow > 0) {
@@ -40,9 +52,7 @@ export const createAccount = async (req, res) => {
         const wallet_id = uuidv4();
         const bodyProfile = req.body.profile;
         const bodyBankAccount = req.body.bank_account;
-        const bodyAssociation = req.body.association;
 
-        const idAssociation = uuidv4();
         switch (req.body.profile.type) {
           case "Comprador":
             await profileModel.createBuyerProfile(
@@ -77,10 +87,6 @@ export const createAccount = async (req, res) => {
             await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Agricultor":
-            await associationModel.createAssociation(
-              idAssociation,
-              bodyAssociation
-            );
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
@@ -88,7 +94,6 @@ export const createAccount = async (req, res) => {
             await profileModel.createFarmerProfile(
               profile_uuid,
               uuid,
-              idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
@@ -118,10 +123,6 @@ export const createAccount = async (req, res) => {
             await walletModel.createWallet(wallet_id, uuid);
             break;
           case "Comerciante Agroquimico":
-            await associationModel.createAssociation(
-              idAssociation,
-              bodyAssociation
-            );
             await bankAccountModel.createBankAccount(
               bankAccount_uuid,
               bodyBankAccount
@@ -129,7 +130,6 @@ export const createAccount = async (req, res) => {
             await profileModel.createMerchantAgrochemicalProfile(
               profile_uuid,
               uuid,
-              idAssociation,
               bankAccount_uuid,
               bodyProfile
             );
@@ -138,9 +138,7 @@ export const createAccount = async (req, res) => {
               formatMailSeller(bodyProfile),
               req.body.user.correo
             );
-
             await walletModel.createWallet(wallet_id, uuid);
-
             break;
           default:
             throw new Error("Ingresa un tipo de Perfil Valido");
@@ -162,6 +160,7 @@ export const createAccount = async (req, res) => {
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
 
+        /*
         client.messages
           .create({
             body: "[AGROEC] Código de confirmación de Registro: " + code,
@@ -169,7 +168,7 @@ export const createAccount = async (req, res) => {
             to: req.body.user.telefono,
           })
           .then()
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => console.error("Error:", error));*/
 
         return res
           .status(200)

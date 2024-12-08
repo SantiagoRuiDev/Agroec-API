@@ -256,6 +256,16 @@ export const getProfilePoints = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const getOrganizations = async (req, res) => {
+  try {
+    const rows = await profileModel.getOrganizations();
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const deleteProfilePoint = async (req, res) => {
   try {
     if (profileChecker.isBuyerProfile(req.user_id)) {

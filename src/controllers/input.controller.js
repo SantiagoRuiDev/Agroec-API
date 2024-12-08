@@ -8,6 +8,9 @@ export const createInput = async (req, res) => {
     const uuid_table = uuidv4();
     const inputSchema = req.body;
 
+    if(!await profileChecker.isMerchantAgrochemical(uuid_user)){
+      throw new Error("Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos")
+    }
 
     const createInput = await inputModel.createInput(
       uuid_table,

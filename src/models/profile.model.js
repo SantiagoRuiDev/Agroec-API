@@ -33,13 +33,12 @@ export const createMerchantProfile = async (
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO perfil_comerciante (id, id_usuario, id_cuenta_bancaria, nombre, apellido, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO perfil_comerciante (id, id_usuario, id_cuenta_bancaria, nombre, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?)`,
       [
         profile_uuid,
         uuid_user,
         bankAccount_uuid,
         schema.nombre,
-        schema.apellido,
         schema.centro_acopio,
         schema.capacidad_secado,
         schema.capacidad_almacenamiento,
@@ -57,23 +56,20 @@ export const createMerchantProfile = async (
 export const createFarmerProfile = async (
   profile_uuid,
   uuid_user,
-  association_uuid,
   bankAccount_uuid,
   schema
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO perfil_agricultor (id, id_usuario, id_cuenta_bancaria, id_asociacion, nombre, apellido, numero_hectareas, cantidad_hectareas_siembras, nueva_asociacion, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO perfil_agricultor (id, id_usuario, id_cuenta_bancaria, id_asociacion, nombre, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?,?)`,
       [
         profile_uuid,
         uuid_user,
         bankAccount_uuid,
-        association_uuid,
+        schema.id_asociacion,
         schema.nombre,
-        schema.apellido,
         schema.numero_hectareas,
-        schema.cantidad_hectareas_siembras,
-        schema.nueva_asociacion,
+        schema.cantidad_hectareas_siembra,
         schema.acceso_internet,
       ]
     );
@@ -87,22 +83,21 @@ export const createFarmerProfile = async (
 export const createMerchantAgrochemicalProfile = async (
   profile_uuid,
   uuid_user,
-  association_uuid,
   bankAccount_uuid,
   schema
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO perfil_comerciante_agroquimicos (id, id_usuario, id_asociacion, id_cuenta_bancaria, nombre, apellido, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO perfil_comerciante_agroquimicos (id, id_usuario, id_cuenta_bancaria, nombre, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?)`,
       [
         profile_uuid,
         uuid_user,
-        association_uuid,
         bankAccount_uuid,
         schema.nombre,
-        schema.apellido,
-        schema.numero_hectareas,
-        schema.cantidad_hectareas_siembras,
+        schema.centro_acopio,
+        schema.capacidad_secado,
+        schema.capacidad_almacenamiento,
+        schema.capacidad,
         schema.acceso_internet,
       ]
     );
@@ -121,19 +116,18 @@ export const createAssocAgriculturalProfile = async (
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO perfil_asociacion_agricola (id, id_usuario, id_cuenta_bancaria, nombre, apellido, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO perfil_asociacion_agricola (id, id_usuario, id_cuenta_bancaria, nombre, centro_acopio, capacidad_secado, capacidad_almacenamiento, capacidad, numero_hectareas, cantidad_hectareas_siembras, acceso_internet) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
       [
         profile_uuid,
         uuid_user,
         bankAccount_uuid,
         schema.nombre,
-        schema.apellido,
         schema.centro_acopio,
         schema.capacidad_secado,
         schema.capacidad_almacenamiento,
         schema.capacidad,
         schema.numero_hectareas,
-        schema.cantidad_hectareas_siembras,
+        schema.cantidad_hectareas_siembra,
         schema.acceso_internet,
       ]
     );
@@ -158,11 +152,11 @@ export const getBuyerProfileById = async (id) => {
     p.razon_social,
     p.id AS id_perfil_comprador,
     u.id AS id_perfil_usuario
-FROM 
-    perfil_comprador p
-JOIN 
-    usuarios u ON p.id_usuario = u.id
-WHERE 
+    FROM 
+        perfil_comprador p
+    JOIN 
+        usuarios u ON p.id_usuario = u.id
+    WHERE 
     p.id = ?;
   `,
       [id]
@@ -177,7 +171,7 @@ WHERE
 export const getMerchantProfileById = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id AS id_perfil_comerciante, u.id AS id_perfil_usuario FROM perfil_comerciante p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id AS id_perfil_comerciante, u.id AS id_perfil_usuario FROM perfil_comerciante p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
   `,
       [id]
     );
@@ -191,7 +185,7 @@ export const getMerchantProfileById = async (id) => {
 export const getFarmerProfileById = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id_asociacion, p.nueva_asociacion, p.id AS id_perfil_agricultor, u.id AS id_perfil_usuario FROM perfil_agricultor p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id_asociacion, p.nueva_asociacion, p.id AS id_perfil_agricultor, u.id AS id_perfil_usuario FROM perfil_agricultor p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
   `,
       [id]
     );
@@ -205,7 +199,7 @@ export const getFarmerProfileById = async (id) => {
 export const getAssociationAgriculturalProfileById = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.centro_acopio, p.capacidad_secado, p.capacidad_almacenamiento, p.id AS id_perfil_asociacion_agricola, u.id AS id_perfil_usuario FROM perfil_asociacion_agricola p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.centro_acopio, p.capacidad_secado, p.capacidad_almacenamiento, p.id AS id_perfil_asociacion_agricola, u.id AS id_perfil_usuario FROM perfil_asociacion_agricola p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
   `,
       [id]
     );
@@ -219,7 +213,7 @@ export const getAssociationAgriculturalProfileById = async (id) => {
 export const getMerchantAgrochemicalProfileById = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.numero_hectareas, p.cantidad_hectareas_siembras, id_asociacion, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.numero_hectareas, p.cantidad_hectareas_siembras, id_asociacion, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?;
   `,
       [id]
     );
@@ -256,10 +250,9 @@ export const updateBuyerProfile = async (user_id, schema) => {
 export const updateMerchantProfile = async (user_id, schema) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE perfil_comerciante SET nombre = ?, apellido = ?, centro_acopio = ?, capacidad_secado = ?, capacidad_almacenamiento = ?, capacidad = ?, acceso_internet = ? WHERE id_usuario = ?`,
+      `UPDATE perfil_comerciante SET nombre = ?, centro_acopio = ?, capacidad_secado = ?, capacidad_almacenamiento = ?, capacidad = ?, acceso_internet = ? WHERE id_usuario = ?`,
       [
         schema.nombre,
-        schema.apellido,
         schema.centro_acopio,
         schema.capacidad_secado,
         schema.capacidad_almacenamiento,
@@ -278,10 +271,9 @@ export const updateMerchantProfile = async (user_id, schema) => {
 export const updateFarmerProfile = async (user_id, schema) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE perfil_comerciante_agroquimicos SET nombre = ?, apellido = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, nueva_asociacion = ?, acceso_internet = ? WHERE id_usuario = ?`,
+      `UPDATE perfil_comerciante_agroquimicos SET nombre = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, nueva_asociacion = ?, acceso_internet = ? WHERE id_usuario = ?`,
       [
         schema.nombre,
-        schema.apellido,
         schema.numero_hectareas,
         schema.cantidad_hectareas_siembras,
         schema.nueva_asociacion,
@@ -299,10 +291,9 @@ export const updateFarmerProfile = async (user_id, schema) => {
 export const updateMerchantAgrochemicalProfile = async (user_id, schema) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE perfil_comerciante_agroquimicos SET nombre = ?, apellido = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, acceso_internet = ? WHERE id_usuario = ?`,
+      `UPDATE perfil_comerciante_agroquimicos SET nombre = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, acceso_internet = ? WHERE id_usuario = ?`,
       [
         schema.nombre,
-        schema.apellido,
         schema.numero_hectareas,
         schema.cantidad_hectareas_siembras,
         schema.acceso_internet,
@@ -319,10 +310,9 @@ export const updateMerchantAgrochemicalProfile = async (user_id, schema) => {
 export const updateAssociationAgriculturalProfile = async (user_id, schema) => {
   try {
     const [statement] = await connection.query(
-      `UPDATE perfil_asociacion_agricola SET nombre = ?, apellido = ?, centro_acopio =?, capacidad_secado = ?, capacidad_almacenamiento = ?, capacidad = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, acceso_internet = ? WHERE id_usuario = ?`,
+      `UPDATE perfil_asociacion_agricola SET nombre = ?, centro_acopio =?, capacidad_secado = ?, capacidad_almacenamiento = ?, capacidad = ?, numero_hectareas = ?, cantidad_hectareas_siembras = ?, acceso_internet = ? WHERE id_usuario = ?`,
       [
         schema.nombre,
-        schema.apellido,
         schema.centro_acopio,
         schema.capacidad_secado,
         schema.capacidad_almacenamiento,
@@ -519,7 +509,7 @@ WHERE
 export const getMerchantProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id AS id_perfil_comerciante, u.id AS id_perfil_usuario FROM perfil_comerciante p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id AS id_perfil_comerciante, u.id AS id_perfil_usuario FROM perfil_comerciante p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
   `,
       [id]
     );
@@ -533,7 +523,7 @@ export const getMerchantProfileByUser = async (id) => {
 export const getFarmerProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id_asociacion, p.nueva_asociacion, p.id AS id_perfil_agricultor, u.id AS id_perfil_usuario FROM perfil_agricultor p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id_asociacion, p.nueva_asociacion, p.id AS id_perfil_agricultor, u.id AS id_perfil_usuario FROM perfil_agricultor p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
   `,
       [id]
     );
@@ -547,7 +537,7 @@ export const getFarmerProfileByUser = async (id) => {
 export const getAssociationAgriculturalProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.centro_acopio, p.capacidad_secado, p.capacidad_almacenamiento, p.id AS id_perfil_asociacion_agricola, u.id AS id_perfil_usuario FROM perfil_asociacion_agricola p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.centro_acopio, p.capacidad_secado, p.capacidad_almacenamiento, p.id AS id_perfil_asociacion_agricola, u.id AS id_perfil_usuario FROM perfil_asociacion_agricola p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
   `,
       [id]
     );
@@ -561,7 +551,7 @@ export const getAssociationAgriculturalProfileByUser = async (id) => {
 export const getMerchantAgrochemicalProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, p.apellido, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.numero_hectareas, p.cantidad_hectareas_siembras, id_asociacion, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.numero_hectareas, p.cantidad_hectareas_siembras, id_asociacion, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
   `,
       [id]
     );
@@ -588,6 +578,16 @@ export const getProfileType = async (id) => {
     );
 
     return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getOrganizations = async () => {
+  try {
+    const [statement] = await connection.query(`SELECT * FROM asociacion;`);
+
+    return statement;
   } catch (error) {
     throw new Error(error.message);
   }

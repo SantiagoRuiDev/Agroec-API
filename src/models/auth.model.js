@@ -41,6 +41,19 @@ export const getAccountById = async (uuid) => {
   }
 };
 
+export const getAccountByDocument = async (documento) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM usuarios WHERE numero_identificacion = ?`,
+      [documento]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getAccountByEmail = async (correo) => {
   try {
     const [statement] = await connection.query(

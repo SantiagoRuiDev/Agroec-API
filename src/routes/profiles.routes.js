@@ -10,6 +10,7 @@ router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, 
 
 //GETS
 // Envio el ID del usuario a buscar, y busco entre todos los perfiles cual tiene.  
+router.get('/organizations', profileController.getOrganizations)
 router.get('/me', authMiddleware.isAuthentified, profileController.getBuyerProfile)
 router.get('/me/stats', authMiddleware.isAuthentified, profileController.getProfileStats)    
 router.get('/me/reception-points', authMiddleware.isAuthentified, profileController.getProfilePoints);

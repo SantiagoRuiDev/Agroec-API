@@ -43,8 +43,7 @@ export const getWalletByUser = async (uuid_user) => {
     const [fee] = await connection.query(
       `
           SELECT f.id, cc.id_producto, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps,
-          COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre,
-          COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS vendedor_apellido
+          COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre
           FROM fee f 
           INNER JOIN entregas e ON f.id_entrega = e.id 
           INNER JOIN ordenes o ON o.id_entrega = e.id
