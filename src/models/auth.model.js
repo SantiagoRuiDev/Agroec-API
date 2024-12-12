@@ -1,11 +1,11 @@
 import { connection } from "../index.js";
 
-export const createAccount = async (uuid, schema) => {
+export const createAccount = async (uuid, schema, state) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO usuarios
-      (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono) 
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`,
+      (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono, estado) 
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         uuid,
         schema.tipo_identificacion,
@@ -19,6 +19,7 @@ export const createAccount = async (uuid, schema) => {
         schema.direccion,
         schema.ubicacion,
         schema.telefono,
+        state
       ]
     );
 

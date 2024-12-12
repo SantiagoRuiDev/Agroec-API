@@ -24,143 +24,148 @@ export const createAccount = async (req, res) => {
 
     const getAccount = await authModel.getAccountByEmail(req.body.user.correo);
 
-    if(getAccount){
+    if (getAccount) {
       throw new Error("Ya existe una cuenta con este correo");
     }
 
-    const getAccountByDocument = await authModel.getAccountByDocument(req.body.user.numero_identificacion);
+    const getAccountByDocument = await authModel.getAccountByDocument(
+      req.body.user.numero_identificacion
+    );
 
-    if(getAccountByDocument){
+    if (getAccountByDocument) {
       throw new Error("Ya existe una cuenta con este documento");
     }
 
-    const insertedRow = await authModel.createAccount(uuid, req.body.user);
+    let insertedRow = 0;
+    if(req.body.profile.type == "Comprador"){
+      insertedRow = await authModel.createAccount(uuid, req.body.user, 0);
+    } else {
+      insertedRow = await authModel.createAccount(uuid, req.body.user, 1);
+    }
 
     if (insertedRow > 0) {
-      // AGROEC-0000 : Codigo telefonico enviado.
-      const registration_uuid = uuidv4();
-      const code = "AGROEC-" + Math.floor(Math.random() * 999);
-      const insertedCode = await codesModel.insertCode(
-        registration_uuid,
-        code,
-        uuid
-      );
+      const profile_uuid = uuidv4();
+      const bankAccount_uuid = uuidv4();
+      const wallet_id = uuidv4();
+      const bodyProfile = req.body.profile;
+      const bodyBankAccount = req.body.bank_account;
 
-      if (insertedCode > 0) {
-        const profile_uuid = uuidv4();
-        const bankAccount_uuid = uuidv4();
-        const wallet_id = uuidv4();
-        const bodyProfile = req.body.profile;
-        const bodyBankAccount = req.body.bank_account;
+      switch (req.body.profile.type) {
+        case "Comprador":
+          // AGROEC-0000 : Codigo telefonico enviado.
+          const registration_uuid = uuidv4();
+          const code = "AGROEC-" + Math.floor(Math.random() * 999);
+          await codesModel.insertCode(
+            registration_uuid,
+            code,
+            uuid
+          );
+          await profileModel.createBuyerProfile(
+            profile_uuid,
+            uuid,
+            bodyProfile
+          ); // Se crea el Perfil
+          // Envia Email al comprador
+          await sendMail(
+            "Agroec - Nuevo Registro ✔",
+            formatMailBuyer(bodyProfile, code),
+            req.body.user.correo
+          );
+          await walletModel.createWallet(wallet_id, uuid);
+          break;
+        case "Comerciante":
+          await bankAccountModel.createBankAccount(
+            bankAccount_uuid,
+            bodyBankAccount
+          );
+          await profileModel.createMerchantProfile(
+            profile_uuid,
+            uuid,
+            bankAccount_uuid,
+            bodyProfile
+          );
+          await sendMail(
+            "Agroec - Nuevo Registro ✔",
+            formatMailSeller(bodyProfile),
+            req.body.user.correo
+          );
+          await walletModel.createWallet(wallet_id, uuid);
+          break;
+        case "Agricultor":
+          await bankAccountModel.createBankAccount(
+            bankAccount_uuid,
+            bodyBankAccount
+          );
+          await profileModel.createFarmerProfile(
+            profile_uuid,
+            uuid,
+            bankAccount_uuid,
+            bodyProfile
+          );
+          await sendMail(
+            "Agroec - Nuevo Registro ✔",
+            formatMailSeller(bodyProfile),
+            req.body.user.correo
+          );
+          await walletModel.createWallet(wallet_id, uuid);
+          break;
+        case "Asociacion Agricola":
+          await bankAccountModel.createBankAccount(
+            bankAccount_uuid,
+            bodyBankAccount
+          );
+          await profileModel.createAssocAgriculturalProfile(
+            profile_uuid,
+            uuid,
+            bankAccount_uuid,
+            bodyProfile
+          );
+          await sendMail(
+            "Agroec - Nuevo Registro ✔",
+            formatMailSeller(bodyProfile),
+            req.body.user.correo
+          );
+          await walletModel.createWallet(wallet_id, uuid);
+          break;
+        case "Comerciante Agroquimico":
+          await bankAccountModel.createBankAccount(
+            bankAccount_uuid,
+            bodyBankAccount
+          );
+          await profileModel.createMerchantAgrochemicalProfile(
+            profile_uuid,
+            uuid,
+            bankAccount_uuid,
+            bodyProfile
+          );
+          await sendMail(
+            "Agroec - Nuevo Registro ✔",
+            formatMailSeller(bodyProfile),
+            req.body.user.correo
+          );
+          await walletModel.createWallet(wallet_id, uuid);
+          break;
+        default:
+          throw new Error("Ingresa un tipo de Perfil Valido");
+      }
 
-        switch (req.body.profile.type) {
-          case "Comprador":
-            await profileModel.createBuyerProfile(
-              profile_uuid,
-              uuid,
-              bodyProfile
-            ); // Se crea el Perfil
-            // Envia Email al comprador
-            await sendMail(
-              "Agroec - Nuevo Registro ✔",
-              formatMailBuyer(bodyProfile, code),
-              req.body.user.correo
-            );
-            await walletModel.createWallet(wallet_id, uuid);
-            break;
-          case "Comerciante":
-            await bankAccountModel.createBankAccount(
-              bankAccount_uuid,
-              bodyBankAccount
-            );
-            await profileModel.createMerchantProfile(
-              profile_uuid,
-              uuid,
-              bankAccount_uuid,
-              bodyProfile
-            );
-            await sendMail(
-              "Agroec - Nuevo Registro ✔",
-              formatMailSeller(bodyProfile),
-              req.body.user.correo
-            );
-            await walletModel.createWallet(wallet_id, uuid);
-            break;
-          case "Agricultor":
-            await bankAccountModel.createBankAccount(
-              bankAccount_uuid,
-              bodyBankAccount
-            );
-            await profileModel.createFarmerProfile(
-              profile_uuid,
-              uuid,
-              bankAccount_uuid,
-              bodyProfile
-            );
-            await sendMail(
-              "Agroec - Nuevo Registro ✔",
-              formatMailSeller(bodyProfile),
-              req.body.user.correo
-            );
-            await walletModel.createWallet(wallet_id, uuid);
-            break;
-          case "Asociacion Agricola":
-            await bankAccountModel.createBankAccount(
-              bankAccount_uuid,
-              bodyBankAccount
-            );
-            await profileModel.createAssocAgriculturalProfile(
-              profile_uuid,
-              uuid,
-              bankAccount_uuid,
-              bodyProfile
-            );
-            await sendMail(
-              "Agroec - Nuevo Registro ✔",
-              formatMailSeller(bodyProfile),
-              req.body.user.correo
-            );
-            await walletModel.createWallet(wallet_id, uuid);
-            break;
-          case "Comerciante Agroquimico":
-            await bankAccountModel.createBankAccount(
-              bankAccount_uuid,
-              bodyBankAccount
-            );
-            await profileModel.createMerchantAgrochemicalProfile(
-              profile_uuid,
-              uuid,
-              bankAccount_uuid,
-              bodyProfile
-            );
-            await sendMail(
-              "Agroec - Nuevo Registro ✔",
-              formatMailSeller(bodyProfile),
-              req.body.user.correo
-            );
-            await walletModel.createWallet(wallet_id, uuid);
-            break;
-          default:
-            throw new Error("Ingresa un tipo de Perfil Valido");
-        }
+      // Si se envian Contactos, se agregan.
+      if (req.body.contact) {
+        req.body.contact.forEach(async (contact) => {
+          await contactModel.createContact(uuidv4(), uuid, contact);
+        });
+      }
+      if (req.body.points) {
+        req.body.points.forEach(async (point) => {
+          await pointsModel.createPoint(uuidv4(), uuid, point);
+        });
+      }
 
-        // Si se envian Contactos, se agregan.
-        if (req.body.contact) {
-          req.body.contact.forEach(async (contact) => {
-            await contactModel.createContact(uuidv4(), uuid, contact);
-          });
-        }
-        if (req.body.points) {
-          req.body.points.forEach(async (point) => {
-            await pointsModel.createPoint(uuidv4(), uuid, point);
-          });
-        }
-
+      /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
 
-        /*
         client.messages
           .create({
             body: "[AGROEC] Código de confirmación de Registro: " + code,
@@ -170,15 +175,9 @@ export const createAccount = async (req, res) => {
           .then()
           .catch((error) => console.error("Error:", error));*/
 
-        return res
-          .status(200)
-          .json({
-            message: "Codigo enviado a tu telefono revisalo porfavor",
-            code: code,
-          });
-      }
-
-      return res.status(200).json(fetchUser);
+      return res.status(200).json({
+        message: "Codigo enviado a tu telefono revisalo porfavor"
+      });
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -208,13 +207,11 @@ export const loginAccount = async (req, res) => {
       );
       const token = encodeToken(fetchMultiuser.id_usuario, "360d");
 
-      return res
-        .status(200)
-        .json({
-          message: "Sesion iniciada correctamente",
-          token: token,
-          multi_token: multi_token,
-        });
+      return res.status(200).json({
+        message: "Sesion iniciada correctamente",
+        token: token,
+        multi_token: multi_token,
+      });
     }
 
     if (!(await profileChecker.isBuyerProfile(fetchUser.id))) {
@@ -243,7 +240,7 @@ export const loginSellerAccount = async (req, res) => {
   try {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
 
-    if(!fetchUser){
+    if (!fetchUser) {
       throw new Error("No hemos podido encontrar una cuenta con ese correo.");
     }
 
@@ -299,12 +296,23 @@ export const isAuthentified = async (req, res) => {
     if (timeRemaining <= SIXTY_DAYS_IN_SECONDS) {
       // Si el token expira en menos de 60 días
       if (req.token.multiuser) {
-        const refreshToken = encodeToken(req.token.user, '360d');
-        const refreshMultiuserToken = encodeMultiuserToken(req.token.user, req.token.multiuser, '360d');
-        return res.status(200).json({ loggedIn: true, token: refreshToken, multiuser_token: refreshMultiuserToken, type: "multiuser" });
+        const refreshToken = encodeToken(req.token.user, "360d");
+        const refreshMultiuserToken = encodeMultiuserToken(
+          req.token.user,
+          req.token.multiuser,
+          "360d"
+        );
+        return res.status(200).json({
+          loggedIn: true,
+          token: refreshToken,
+          multiuser_token: refreshMultiuserToken,
+          type: "multiuser",
+        });
       } else {
-        const refreshToken = encodeToken(req.token.user, '360d');
-        return res.status(200).json({ loggedIn: true, token: refreshToken, type: "user" });
+        const refreshToken = encodeToken(req.token.user, "360d");
+        return res
+          .status(200)
+          .json({ loggedIn: true, token: refreshToken, type: "user" });
       }
     }
 
