@@ -113,7 +113,6 @@ export const getProposalInformation = async (proposal_id) => {
         `SELECT pl.*, pv.id_vendedor, pv.fecha_entrega,
         COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
         COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
-        COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS apellido,
         u.provincia, u.canton
         FROM producto_licitar pl
         INNER JOIN propuesta_venta pv ON pv.id_licitacion = pl.id
@@ -130,7 +129,6 @@ export const getProposalInformation = async (proposal_id) => {
         `SELECT pv.*, pv.id_usuario as id_vendedor, pc.valida_hasta as fecha_entrega,
         COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
         COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
-        COALESCE(pa.apellido, pac.apellido, pca.apellido, pcaq.apellido) AS apellido,
         u.provincia, u.canton
         FROM producto_vender pv
         INNER JOIN propuesta_compra pc ON pc.id_venta = pv.id

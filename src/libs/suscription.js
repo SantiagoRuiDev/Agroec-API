@@ -52,7 +52,7 @@ export const checkForUnpaidSuscriptions = async () => {
 };
 
 // Programar la tarea diaria a las 3:00 AM
-scheduleJob("*/5 * * * * *", async () => {
+scheduleJob("0 3 * * * *", async () => {
   console.log("Iniciando revisión diaria de suscripciones vencidas...");
   await checkForUnpaidSuscriptions();
 });

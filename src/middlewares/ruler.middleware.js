@@ -21,7 +21,7 @@ export const checkPendingOrders = async (req, res, next) => {
     const fetchPendingOrdersBeforeDate =
       await orderModel.getOrdersBySellerUndeliveredBeforeDate(user_id, today);
 
-    if (fetchPendingOrdersBeforeDate.length > APP_SETTINGS.max_pending_orders) {
+    if (fetchPendingOrdersBeforeDate.length >= APP_SETTINGS.max_pending_orders) {
       await authModel.setState(user_id, 0);
       throw new Error(
         "Tu cuenta ha sido suspendida, alcanzaste el limite de ordenes sin actualizar estado, porfavor contacta al soporte."
@@ -30,7 +30,7 @@ export const checkPendingOrders = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(403).json({ error: error.message, blocked: true });
   }
 };
 
@@ -52,7 +52,7 @@ export const checkNotReceivedOrders = async (req, res, next) => {
     const fetchUndeliveredOrders =
       await orderModel.getOrdersByBuyerNotReceivedBeforeDate(user_id, today);
 
-    if (fetchUndeliveredOrders.length > APP_SETTINGS.max_unreceived_orders) {
+    if (fetchUndeliveredOrders.length >= APP_SETTINGS.max_unreceived_orders) {
       await authModel.setState(user_id, 0);
       throw new Error(
         "Tu cuenta ha sido suspendida, alcanzaste el limite de ordenes sin confirmar recepción, porfavor contacta al soporte."
@@ -61,6 +61,6 @@ export const checkNotReceivedOrders = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(403).json({ error: error.message, blocked: true });
   }
 };
