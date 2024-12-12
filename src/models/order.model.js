@@ -142,7 +142,7 @@ export const getOrdersByBuyerNotReceivedBeforeDate = async (user_id, date) => {
       `SELECT o.id, e.fecha_entrega, e.hora_entrega
 	     FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
-       WHERE o.id_comprador = ? AND o.estado != "Aceptado" AND e.fecha_entrega < ?
+       WHERE o.id_comprador = ? AND o.estado NOT IN ('Rechazado', 'Aceptado') AND e.fecha_entrega < ?
       `,
       [user_id, date]
     );

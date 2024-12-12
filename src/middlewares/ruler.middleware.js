@@ -51,7 +51,7 @@ export const checkNotReceivedOrders = async (req, res, next) => {
 
     const fetchUndeliveredOrders =
       await orderModel.getOrdersByBuyerNotReceivedBeforeDate(user_id, today);
-
+      
     if (fetchUndeliveredOrders.length >= APP_SETTINGS.max_unreceived_orders) {
       await authModel.setState(user_id, 2);
       throw new Error(
