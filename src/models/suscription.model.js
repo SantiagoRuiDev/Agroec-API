@@ -3,7 +3,7 @@ import { connection } from "../index.js";
 export const createSuscription = async (uuid, uuid_plan, uuid_user, uuid_card, date) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO suscripcion (id, id_plan, id_usuario, id_tarjeta, vencimiento, estado) VALUES (?, ?, ?, ?, ?, 1) `,
+      `INSERT INTO suscripcion (id, id_plan, id_usuario, id_tarjeta, vencimiento, estado) VALUES (?,?,?,?,?,1) `,
       [uuid, uuid_plan, uuid_user, uuid_card, date]
     );
 

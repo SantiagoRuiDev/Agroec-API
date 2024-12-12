@@ -34,13 +34,14 @@ export const createSuscription = async (req, res) => {
 
     const limit_date = new Date();
     limit_date.setMonth(limit_date.getMonth() + details.meses); // Sumar los meses del plan
-
+  
     const uuid = uuidv4();
 
     const suscription = await suscriptionModel.createSuscription(
       uuid,
       plan,
       req.user_id,
+      identificador,
       limit_date
     );
 
