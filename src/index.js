@@ -20,10 +20,12 @@ import { router as warrantyRoutes } from "./routes/warranty.routes.js";
 import { router as advertisingRoutes } from "./routes/advertising.routes.js";
 import { router as notificationRoutes } from "./routes/notification.routes.js";
 import { router as multiusersRoutes } from "./routes/multiusers.routes.js";
+import { router as suscriptionRoutes } from "./routes/suscription.routes.js";
 import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import "./socket/socket.js";
+import "./libs/suscription.js";
 import { initializeSocket } from "./socket/socket.js";
 import { rateLimit } from 'express-rate-limit'
 
@@ -83,6 +85,7 @@ app.use("/api/v1/warranty", warrantyRoutes);
 app.use("/api/v1/advertising", advertisingRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/multiusers", multiusersRoutes);
+app.use("/api/v1/suscription", suscriptionRoutes);
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));
