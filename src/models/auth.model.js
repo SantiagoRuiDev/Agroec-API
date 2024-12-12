@@ -97,7 +97,7 @@ export const setState = async (uuid, state) => {
 export const accountIsBlocked = async (uuid) => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM usuarios WHERE estado = 0 AND id = ?`,
+      `SELECT * FROM usuarios WHERE estado = 2 AND id = ?`,
       [uuid]
     );
 
