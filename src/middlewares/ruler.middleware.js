@@ -64,3 +64,22 @@ export const checkNotReceivedOrders = async (req, res, next) => {
     return res.status(403).json({ error: error.message, blocked: true });
   }
 };
+
+
+export const checkAccountStatus = async (req, res, next) => {
+  try {
+    const { user_id } = req;
+
+    const isBlocked = await authModel.accountIsBlocked(user_id);
+
+    if(isBlocked){
+        throw new Error(
+          "Tu cuenta esta suspendida, debido a la infracción de las normas de la plataforma, contacta al soporte."
+        );
+    }
+
+    next();
+  } catch (error) {
+    return res.status(403).json({ error: error.message, blocked: true });
+  }
+};

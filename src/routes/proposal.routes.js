@@ -7,8 +7,8 @@ import * as ruler from '../middlewares/ruler.middleware.js';
 export const router = Router();
 
 router.get('/:id', authMiddleware.isAuthentified, proposalController.getProposalInformation)
-router.post('/accept/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
-router.post('/reject/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserTalksAllowed, proposalController.rejectProposalByConditions)
+router.post('/accept/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
+router.post('/reject/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiserTalksAllowed, proposalController.rejectProposalByConditions)
 
 // Propuestas de Ventas a Licitaciones
 router.post('/sale/:id', authMiddleware.isAuthentified, ruler.checkPendingOrders, proposalMiddleware.createSaleProposal, proposalController.createSaleProposal)
