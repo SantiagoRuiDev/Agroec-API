@@ -551,7 +551,7 @@ export const getAssociationAgriculturalProfileByUser = async (id) => {
 export const getMerchantAgrochemicalProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.numero_hectareas, p.cantidad_hectareas_siembras, id_asociacion, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
+      `SELECT p.nombre, u.direccion, u.ubicacion_google_maps, u.provincia, u.canton, u.parroquia, p.id AS id_perfil_comerciante_agroquimicos, u.id AS id_perfil_usuario FROM perfil_comerciante_agroquimicos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id_usuario = ?;
   `,
       [id]
     );

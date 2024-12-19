@@ -47,7 +47,6 @@ export const isAssociationAgricultural = async (uuid) => {
 export const isMerchantAgrochemical = async (uuid) => {
   try {
     const profile = await profileModel.getMerchantAgrochemicalProfileByUser(uuid);
-    
     if(profile){
       return true
     }else {

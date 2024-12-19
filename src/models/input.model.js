@@ -97,12 +97,12 @@ export const updateInput = async (input_id, schema) => {
 
 export const deleteInput = async (input_id) => {
   try {
-    const [statement] = await connection.query(
-      `DELETE FROM insumos WHERE id = ?`,
-      [input_id]
-    );
     await connection.query(
       `DELETE FROM insumos_imagenes WHERE id_insumo = ?`,
+      [input_id]
+    );
+    const [statement] = await connection.query(
+      `DELETE FROM insumos WHERE id = ?`,
       [input_id]
     );
 
