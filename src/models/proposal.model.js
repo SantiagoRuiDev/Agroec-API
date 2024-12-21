@@ -597,9 +597,10 @@ export const getLicitationProposalBySale = async (user_id) => {
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta
       INNER JOIN productos p ON p.id = pv.id_producto
       WHERE 
-      NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada")
+      NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada") 
       AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")
-       AND pv.id_usuario = ?
+      AND NOT (pc.estado_vendedor = "Rechazada" OR pc.estado_comprador = "Rechazada")
+      AND pv.id_usuario = ?
       GROUP BY pv.id_producto;`,
       [user_id]
     );
