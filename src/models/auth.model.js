@@ -19,7 +19,7 @@ export const createAccount = async (uuid, schema, state) => {
         schema.direccion,
         schema.ubicacion,
         schema.telefono,
-        state
+        state,
       ]
     );
 
@@ -94,7 +94,6 @@ export const setState = async (uuid, state) => {
   }
 };
 
-
 export const accountIsBlocked = async (uuid) => {
   try {
     const [statement] = await connection.query(
@@ -107,7 +106,6 @@ export const accountIsBlocked = async (uuid) => {
     throw new Error(error.message);
   }
 };
-
 
 export const updateAccount = async (uuid, schema) => {
   try {
@@ -127,6 +125,20 @@ export const updateAccount = async (uuid, schema) => {
         schema.telefono,
         uuid,
       ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const updateAccountPassword = async (uuid, clave) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE usuarios SET clave = ?
+      WHERE id = ?`,
+      [clave, uuid]
     );
 
     return statement.affectedRows;

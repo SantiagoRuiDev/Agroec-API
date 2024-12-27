@@ -43,10 +43,6 @@ export const updateProfile = async (req, res, next) => {
       validateSchemas(req.body.bank_account, bankAccount);
     }
 
-    if (req.body.association) {
-      validateSchemas(req.body.association, associationSchema);
-    }
-
     next();
   } catch (error) {
     return res.status(400).json({ error: error.message });

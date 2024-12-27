@@ -9,12 +9,13 @@ import * as walletModel from "../models/wallet.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
 import { formatMailSeller } from "../email/seller.js";
-import { comparePassword, hashPassword } from "../libs/password.js";
+import { comparePassword, generateRandomPassword, hashPassword } from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeMultiuserToken, encodeToken } from "../libs/token.js";
 import Twilio from "twilio";
 import * as profileChecker from "../libs/checker.js";
 import { APP_SETTINGS } from "../libs/config.js";
+import { formatPasswordMail } from "../email/password.js";
 
 export const createAccount = async (req, res) => {
   try {
@@ -37,7 +38,7 @@ export const createAccount = async (req, res) => {
     }
 
     let insertedRow = 0;
-    if(req.body.profile.type == "Comprador"){
+    if (req.body.profile.type == "Comprador") {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 0);
     } else {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 1);
@@ -55,11 +56,7 @@ export const createAccount = async (req, res) => {
           // AGROEC-0000 : Codigo telefonico enviado.
           const registration_uuid = uuidv4();
           const code = "AGROEC-" + Math.floor(Math.random() * 999);
-          await codesModel.insertCode(
-            registration_uuid,
-            code,
-            uuid
-          );
+          await codesModel.insertCode(registration_uuid, code, uuid);
           await profileModel.createBuyerProfile(
             profile_uuid,
             uuid,
@@ -176,7 +173,7 @@ export const createAccount = async (req, res) => {
           .catch((error) => console.error("Error:", error));*/
 
       return res.status(200).json({
-        message: "Codigo enviado a tu telefono revisalo porfavor"
+        message: "Codigo enviado a tu telefono revisalo porfavor",
       });
     }
   } catch (error) {
@@ -205,7 +202,7 @@ export const loginAccount = async (req, res) => {
         fetchMultiuser.id,
         "360d"
       );
-      const token = encodeToken(fetchMultiuser.id_usuario, "360d");
+      const token = encodeToken(fetchMultiuser.id_usuario, "buyer", "360d");
 
       return res.status(200).json({
         message: "Sesion iniciada correctamente",
@@ -226,7 +223,7 @@ export const loginAccount = async (req, res) => {
       throw new Error("Clave Incorrecta");
     }
 
-    const token = encodeToken(fetchUser.id, "360d");
+    const token = encodeToken(fetchUser.id, "buyer", "360d");
 
     return res
       .status(200)
@@ -256,7 +253,7 @@ export const loginSellerAccount = async (req, res) => {
       throw new Error("Clave Incorrecta");
     }
 
-    const token = encodeToken(fetchUser.id, "360d");
+    const token = encodeToken(fetchUser.id, "seller", "360d");
 
     return res
       .status(200)
@@ -296,7 +293,11 @@ export const isAuthentified = async (req, res) => {
     if (timeRemaining <= SIXTY_DAYS_IN_SECONDS) {
       // Si el token expira en menos de 60 días
       if (req.token.multiuser) {
-        const refreshToken = encodeToken(req.token.user, "360d");
+        const refreshToken = encodeToken(
+          req.token.user,
+          req.token.profile,
+          "360d"
+        );
         const refreshMultiuserToken = encodeMultiuserToken(
           req.token.user,
           req.token.multiuser,
@@ -307,17 +308,32 @@ export const isAuthentified = async (req, res) => {
           token: refreshToken,
           multiuser_token: refreshMultiuserToken,
           type: "multiuser",
+          profile: req.token.profile
         });
       } else {
-        const refreshToken = encodeToken(req.token.user, "360d");
+        const refreshToken = encodeToken(
+          req.token.user,
+          req.token.profile,
+          "360d"
+        );
         return res
           .status(200)
-          .json({ loggedIn: true, token: refreshToken, type: "user" });
+          .json({
+            loggedIn: true,
+            token: refreshToken,
+            type: "user",
+            profile: req.token.profile,
+          });
       }
     }
 
     // Si aún le queda más de 60 días al token, no lo renovamos
-    return res.status(200).json({ loggedIn: true, token: null, type: "none" });
+    return res.status(200).json({
+      loggedIn: true,
+      token: null,
+      type: "none",
+      profile: req.token.profile,
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -364,5 +380,42 @@ export const updateAccount = async (req, res) => {
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });
+  }
+};
+
+
+export const resetPassword = async (req, res) => {
+  try {
+    const email = req.body.correo;
+
+    if(email == null || email == undefined || String(email).trim() == ""){
+      throw new Error("Porfavor ingresa un correo electronico valido");
+    }
+
+    const userData = await authModel.getAccountByEmail(email);
+
+    if(!userData){
+      throw new Error("No encontramos una cuenta con este correo");
+    }
+
+    const plainPassword = generateRandomPassword();
+    const randomGeneratedPassword = await hashPassword(plainPassword);
+    console.log(plainPassword)/*
+    await sendMail(
+      "Agroec - Cambio de contraseña ✔",
+      formatPasswordMail({correo: email, clave: plainPassword}),
+      email
+    );*/
+
+    const updateRow = await authModel.updateAccountPassword(userData.id, randomGeneratedPassword);
+    if (updateRow > 0) {
+      return res
+        .status(200)
+        .json({ message: "Contraseña actualizada exitosamente" });
+    } else {
+      throw new Error("Error al actualizar la cuenta");
+    }
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
   }
 };

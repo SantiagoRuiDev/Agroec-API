@@ -26,6 +26,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import "./socket/socket.js";
 import "./libs/suscription.js";
+import "./libs/robot.js";
 import { initializeSocket } from "./socket/socket.js";
 import { rateLimit } from 'express-rate-limit'
 

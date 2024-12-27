@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import {APP_SETTINGS} from '../libs/config.js';
 
 
-export const encodeToken = (uuid, expire) => {
-    return jwt.sign({user: uuid}, APP_SETTINGS.secret_key, {expiresIn: expire})
+export const encodeToken = (uuid, profile_type, expire) => {
+    return jwt.sign({user: uuid, profile: profile_type}, APP_SETTINGS.secret_key, {expiresIn: expire})
 }
 
 export const encodeMultiuserToken = (uuid, uuid_multi, expire) => {

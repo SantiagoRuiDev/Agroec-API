@@ -6,24 +6,13 @@ import * as profileMiddleware from '../middlewares/profile.middlware.js'
 export const router = Router();
 
 
-router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
-
-//GETS
-// Envio el ID del usuario a buscar, y busco entre todos los perfiles cual tiene.  
 router.get('/organizations', profileController.getOrganizations)
-router.get('/me', authMiddleware.isAuthentified, profileController.getBuyerProfile)
+router.post('/organizations', profileController.createOrganization)
+router.get('/me', authMiddleware.isAuthentified, profileController.getProfileByUser)
 router.get('/me/stats', authMiddleware.isAuthentified, profileController.getProfileStats)    
 router.get('/me/reception-points', authMiddleware.isAuthentified, profileController.getProfilePoints);
 router.delete('/me/reception-points/:id', authMiddleware.isAuthentified, profileController.deleteProfilePoint);
 router.delete('/me/contact/:id', authMiddleware.isAuthentified, profileController.deleteContact);
-router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile)
-
-//UPDATE bank accounts
-//Comerciante
-router.put('/merchant', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
-//Agricultor
-router.put('/farmer', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
-//Asociacion Agricola
-router.put('/assoc-agricultural', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
-//Comerciante Agroquimicos
-router.put('/merchant-agrochemical', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile)
+router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile);
+router.get('/me/:type', authMiddleware.isAuthentified, profileController.getProfileByUser)
+router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile);

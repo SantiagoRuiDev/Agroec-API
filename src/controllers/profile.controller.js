@@ -10,49 +10,99 @@ import * as notificationService from "../services/notification.service.js";
 import * as qualificationModel from "../models/qualification.models.js";
 import * as contactModel from "../models/contact.model.js";
 import * as licitationsModel from "../models/licitations.model.js";
+import * as bankAccountModel from "../models/bankaccount.model.js";
 import { v4 as uuidv4 } from "uuid";
 import * as pointsModel from "../models/points.model.js";
-//importar esquemas
 
 export const updateProfile = async (req, res) => {
   try {
-    const bodyProfile = req.body.profile;
-    const idUser = req.user_id;
+    const profile = req.body.profile;
+    const bank_account = req.body.bank_account;
+    const bank_account_uuid = req.body.bank_account_id;
+    const points = req.body.points;
+    const contacts = req.body.contact;
+    const user_id = req.user_id;
 
-    const buyerUpdated = await profileModel.updateBuyerProfile(
-      idUser,
-      bodyProfile
-    );
+    if (req.body.profile.type == "Comprador") {
+      const rowsUpdated = await profileModel.updateBuyerProfile(
+        user_id,
+        profile
+      );
 
-    if (req.body.points != null || req.body.points != undefined) {
-      for (const point of req.body.points) {
-        if(point.id == ""){
-          await pointsModel.createPoint(uuidv4(), idUser, point);
+      if (points != null || points != undefined) {
+        for (const point of points) {
+          if (point.id == "") {
+            await pointsModel.createPoint(uuidv4(), user_id, point);
+          }
         }
       }
-    }
-    if (req.body.contact != null || req.body.contact != undefined) {
-      for (const contact of req.body.contact) {
-        if(contact.id == ""){
-          await contactModel.createContact(uuidv4(), idUser, contact);
+      if (contacts != null || contacts != undefined) {
+        for (const contact of contacts) {
+          if (contact.id == "") {
+            await contactModel.createContact(uuidv4(), user_id, contact);
+          }
         }
       }
-    }
 
-    if (buyerUpdated) {
-      await conditionModel.updateConditionReceptionRules(req.body.profile.politicas_recepcion, idUser);
-      return res
-        .status(200)
-        .send({ message: "Datos del perfil comprador actualizados" });
+      if (rowsUpdated > 0) {
+        await conditionModel.updateConditionReceptionRules(
+          profile.politicas_recepcion,
+          user_id
+        );
+        return res
+          .status(200)
+          .send({ message: "Datos del perfil comprador actualizados" });
+      }
+    } else {
+      let rowsUpdated = 0;
+      // ACTUALIZAR PARA VENDEDOR
+      switch (req.body.profile.type) {
+        case "Comerciante":
+          rowsUpdated = await profileModel.updateMerchantProfile(
+            user_id,
+            profile
+          );
+          break;
+        case "Agricultor":
+          rowsUpdated = await profileModel.updateFarmerProfile(
+            user_id,
+            profile
+          );
+          break;
+        case "Asociacion Agricola":
+          rowsUpdated = await profileModel.updateAssociationAgriculturalProfile(
+            user_id,
+            profile
+          );
+          break;
+        case "Comerciante Agroquimico":
+          rowsUpdated = await profileModel.updateMerchantAgrochemicalProfile(
+            user_id,
+            profile
+          );
+          break;
+        default:
+          throw new Error("Ingresa un tipo de Perfil Valido");
+      }
+
+      if (rowsUpdated > 0) {
+        await bankAccountModel.updateBankAccount(
+          bank_account_uuid,
+          bank_account
+        );
+        return res
+          .status(200)
+          .send({ message: "Datos del perfil vendedor actualizados" });
+      }
     }
   } catch (error) {
-    console.log(error);
+    return res.status(400).json({ error: error.message });
   }
 };
 
 // GET PROFILE
 
-export const getBuyerProfile = async (req, res) => {
+export const getProfileByUser = async (req, res) => {
   try {
     const user_id = req.user_id;
     const findUser = await authModel.getAccountById(user_id);
@@ -70,9 +120,40 @@ export const getBuyerProfile = async (req, res) => {
         points: reception_points,
         contacts: contacts,
       });
+    } else {
+      let profile = null;
+      switch (req.params.type) {
+        case "Comerciante":
+          profile = await profileModel.getMerchantProfileByUser(user_id);
+          break;
+        case "Agricultor":
+          profile = await profileModel.getFarmerProfileByUser(user_id);
+          break;
+        case "Asociacion":
+          profile = await profileModel.getAssociationAgriculturalProfileByUser(
+            user_id
+          );
+          break;
+        case "Agroquimicos":
+          profile = await profileModel.getMerchantAgrochemicalProfileByUser(
+            user_id
+          );
+          break;
+        default:
+          throw new Error("No tienes un perfil de este tipo");
+      }
+
+      if (profile) {
+        const bank_account = await bankAccountModel.getBankAccount(profile.id_cuenta_bancaria);
+        return res.status(200).json({
+          user: { ...findUser },
+          profile: profile,
+          bank_account: bank_account,
+        });
+      }
     }
 
-    throw new Error("Perfil no encontrado");
+    return res.status(404).json({ error: "Perfil no encontrado" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -266,15 +347,49 @@ export const getOrganizations = async (req, res) => {
   }
 };
 
+export const createOrganization = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (nombre == undefined || nombre == null) {
+      throw new Error("Porfavor completa el campo");
+    }
+    if (String(nombre).trim() == "") {
+      throw new Error("Asegurate de escribir un nombre valido");
+    }
+
+    const affectedRows = await profileModel.createOrganization(
+      uuidv4(),
+      nombre
+    );
+
+    if (affectedRows > 0) {
+      return res
+        .status(200)
+        .json({ message: "Organización añadida correctamente." });
+    }
+
+    throw new Error("No se ha podido crear la organización");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const deleteProfilePoint = async (req, res) => {
   try {
     if (profileChecker.isBuyerProfile(req.user_id)) {
-      const deleteRow = await pointsModel.deletePoint(req.user_id, req.params.id);
+      const deleteRow = await pointsModel.deletePoint(
+        req.user_id,
+        req.params.id
+      );
 
-      if(deleteRow > 0){
-        return res.status(200).json({message: "Punto eliminado correctamente"});
+      if (deleteRow > 0) {
+        return res
+          .status(200)
+          .json({ message: "Punto eliminado correctamente" });
       } else {
-        return res.status(500).json({message: "Error al intentar eliminar el punto"});
+        return res
+          .status(500)
+          .json({ message: "Error al intentar eliminar el punto" });
       }
     }
 
@@ -287,12 +402,19 @@ export const deleteProfilePoint = async (req, res) => {
 export const deleteContact = async (req, res) => {
   try {
     if (profileChecker.isBuyerProfile(req.user_id)) {
-      const deleteRow = await contactModel.deleteContact(req.params.id, req.user_id);
+      const deleteRow = await contactModel.deleteContact(
+        req.params.id,
+        req.user_id
+      );
 
-      if(deleteRow > 0){
-        return res.status(200).json({message: "Contacto eliminado correctamente"});
+      if (deleteRow > 0) {
+        return res
+          .status(200)
+          .json({ message: "Contacto eliminado correctamente" });
       } else {
-        return res.status(500).json({message: "Error al intentar eliminar el contacto"});
+        return res
+          .status(500)
+          .json({ message: "Error al intentar eliminar el contacto" });
       }
     }
 

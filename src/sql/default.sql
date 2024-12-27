@@ -1,3 +1,4 @@
+
 CREATE TABLE `asociacion` (
   `id` varchar(250) NOT NULL,
   `nombre` varchar(100) NOT NULL
@@ -511,7 +512,7 @@ CREATE TABLE `insumos_imagenes` (
 --
 
 INSERT INTO `insumos_imagenes` (`id`, `id_insumo`, `url_imagen`) VALUES
-('08a1ab28-0650-456c-9afa-acb364ff8f7f', '17cbc122-d4e9-47d7-b12d-6a45ad105ad9', 'https://agroec-api.onrender.com/public/images/sales/input-image-1733234084545-356195211.jpeg'),
+('e984d45c-5172-4a76-a659-17996ef1e367', '17cbc122-d4e9-47d7-b12d-6a45ad105ad9', 'https://agroec-api.onrender.com/public/images/sales/input-image-1734739535272-825080148.jpeg'),
 ('x0312034-az18-41b2-8403-c19fa4b443ec', '1a46f557-ace9-453a-a79e-f5f845160639', 'https://imgs.search.brave.com/iHDC8-BzsJvkUJjaeubE393aeux3uI9xxJFrDEqma9Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9ibG9n/LmFlZ3JvLmNvbS5i/ci93cC1jb250ZW50/L3VwbG9hZHMvMjAx/OC8wNy81LWV4dHJh/dG8tcGlyb2xlbmhv/c28tZGVmZW5zaXZv/LW5hdHVyYWwuanBn');
 
 -- --------------------------------------------------------
@@ -578,7 +579,7 @@ INSERT INTO `mensajes` (`id`, `id_remitente`, `id_chat`, `texto`, `fecha`, `leid
 ('4ef23574-8a02-474a-ac5e-c711df400ba8', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e579772f-49e0-4179-b8bb-a2865d24680c', 'Bien te vendo la cantidad deseada a ese precio.', '2024-11-05 22:44:29', 1),
 ('50a9906d-af2c-4603-9766-bba723d5fb10', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '754bd3e1-358d-485b-9bc5-22b02b31ed29', 'Hola que tal, podemos seguir con la venta.', '2024-10-10 13:26:46', 0),
 ('531bceba-7eb0-4b7c-bf07-bac48a764e11', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '2943eaef-834f-42e0-9e9d-0419164e4c24', 'El pago puede realizarlo en sitio?', '2024-11-01 14:33:15', 1),
-('5402c976-2795-4607-8b25-36b4bc26cd5a', 'Sistema', '950506c7-4051-46a5-8073-ba92892254b7', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', '2024-11-25 15:38:04', 1),
+('5402c976-2795-4607-8b25-36b4bc26cd5a', 'Sistema', '950506c7-4051-46a5-8073-ba92892254b7', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', '2024-11-25 15:38:04', 2),
 ('58b05604-f4ee-4d6e-b182-27cc3de58e7c', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '2e19813b-7ffa-4c31-a9d6-f0396b273923', 'Hola, puedo comprarle a ese precio', '2024-11-13 19:53:48', 1),
 ('6466833c-ebae-43a0-9fe1-b8af678e573a', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'f2266c90-e844-4dad-81a1-4108c4d6a35c', 'El precio?', '2024-11-19 13:05:35', 1),
 ('6807db0b-487b-4d36-995a-2f8012718c14', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '34e24bbc-97a8-4340-9507-986b60003879', 'Hola, hazme saber cuando revises mi propuesta!', '2024-09-10 00:00:00', 0),
@@ -867,7 +868,6 @@ CREATE TABLE `perfil_asociacion_agricola` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Asociación Agrícola') NOT NULL DEFAULT 'Asociación Agrícola',
   `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
   `centro_acopio` tinyint(1) DEFAULT NULL,
   `capacidad_secado` decimal(10,0) DEFAULT NULL,
   `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
@@ -889,7 +889,6 @@ CREATE TABLE `perfil_comerciante` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Comerciante') NOT NULL DEFAULT 'Comerciante',
   `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
   `centro_acopio` tinyint(1) DEFAULT NULL,
   `capacidad_secado` decimal(10,0) DEFAULT NULL,
   `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
@@ -901,8 +900,8 @@ CREATE TABLE `perfil_comerciante` (
 -- Volcado de datos para la tabla `perfil_comerciante`
 --
 
-INSERT INTO `perfil_comerciante` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `apellido`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
-('464e5614-230d-4639-aa91-098995c44b91', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e4569839-638b-4f03-92ca-44217c2b0719', 'Comerciante', 'Pedro', 'Ramirez', 5, 4, 1, 7, 1);
+INSERT INTO `perfil_comerciante` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
+('464e5614-230d-4639-aa91-098995c44b91', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e4569839-638b-4f03-92ca-44217c2b0719', 'Comerciante', 'Pedro', 5, 4, 1, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -916,7 +915,6 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Comerciante') NOT NULL DEFAULT 'Comerciante',
   `nombre` varchar(50) NOT NULL,
-  `apellido` varchar(50) NOT NULL,
   `centro_acopio` tinyint(1) DEFAULT NULL,
   `capacidad_secado` decimal(10,0) DEFAULT NULL,
   `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
@@ -928,8 +926,8 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
 -- Volcado de datos para la tabla `perfil_comerciante_agroquimicos`
 --
 
-INSERT INTO `perfil_comerciante_agroquimicos` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `apellido`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
-('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Comerciante', 'Agroquimica Sols', '', 1, 200, 1, 300, 1);
+INSERT INTO `perfil_comerciante_agroquimicos` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
+('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Comerciante', 'Agroquimica Sols', 1, 200, 1, 300, 1);
 
 -- --------------------------------------------------------
 
@@ -1057,8 +1055,8 @@ INSERT INTO `productos_vender_imagenes` (`id`, `id_venta`, `url_imagen`) VALUES
 ('18fbcdf9-64ad-4202-8a95-4380f63c7537', '69aca895-621d-43d7-a7bf-18560f12bbb0', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1729774435678-156375135.webp'),
 ('1a85d2a6-2dd8-425a-aa91-985ee286bc94', '28e4c243-c2e0-4261-80e6-36a8d9464c2e', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1731810997248-741771613.webp'),
 ('73462676-7dfb-42b7-a3f6-babbd4c7aa67', 'ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1724713051475-818296024.webp'),
-('af7572d9-dbbc-4d3d-8c33-a6f82cfb2ba2', 'f68951e7-a6a8-4974-ad49-37c6251fe336', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1730727078767-897971951.webp'),
-('b695e93a-5290-4632-a45b-e0b6828e5d48', 'dab8c78d-421d-4c31-8494-d56004d9e1f9', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1731502807823-495102979.webp');
+('94b938ea-62bd-483c-9b02-358db64cf965', 'dab8c78d-421d-4c31-8494-d56004d9e1f9', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1734738764162-598258432.webp'),
+('af7572d9-dbbc-4d3d-8c33-a6f82cfb2ba2', 'f68951e7-a6a8-4974-ad49-37c6251fe336', 'https://agroec-api.onrender.com/public/images/sales/sale-image-1730727078767-897971951.webp');
 
 -- --------------------------------------------------------
 
@@ -1121,7 +1119,7 @@ INSERT INTO `producto_vender` (`id`, `id_usuario`, `id_producto`, `precio`, `pre
 ('28e4c243-c2e0-4261-80e6-36a8d9464c2e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 2.3, 'KG', 0, 'KG', 'En sacos de 50 libras', '2024-12-01', '2024-11-16', 'Cerrada'),
 ('69aca895-621d-43d7-a7bf-18560f12bbb0', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 3.5, 'KG', 0, 'KG', 'En sacos de 50 libras', '2025-02-02', '2024-11-04', 'Cerrada'),
 ('ce2d0768-7ea3-4ef1-ba7d-5562f5dd39d7', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', 3, 'KG', 150, 'KG', 'En sacos de 50 libras', '2024-10-22', '2024-11-03', 'Cerrada'),
-('dab8c78d-421d-4c31-8494-d56004d9e1f9', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maracuya', 2.4, 'KG', 30, 'KG', 'En bolsas de 100 libras', '2024-11-20', '2024-11-13', 'Abierta'),
+('dab8c78d-421d-4c31-8494-d56004d9e1f9', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maracuya', 2.5, 'KG', 30, 'KG', 'En bolsas de 100 libras', '2024-11-20', '2024-11-13', 'Abierta'),
 ('f68951e7-a6a8-4974-ad49-37c6251fe336', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 3, 'KG', 0, 'KG', 'En sacos de 50 libras', '2024-11-23', '2024-11-05', 'Cerrada');
 
 -- --------------------------------------------------------

@@ -561,7 +561,6 @@ export const getLicitationProposalBySellerAndProduct = async (
         WHERE pv.id_usuario = ? AND pv.id_producto = ? 
         AND NOT (pc.estado_vendedor = "Aceptada" AND pc.estado_comprador = "Aceptada") 
       AND NOT (pc.estado_vendedor = "Rechazada" AND pc.estado_comprador = "Rechazada")
-      AND NOT (pc.estado_vendedor = "Rechazada" OR pc.estado_comprador = "Rechazada")
         GROUP BY pc.id`,
       [user_id, product_id]
     );

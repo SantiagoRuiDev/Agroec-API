@@ -110,7 +110,7 @@ export const getLicitationById = async (licitation_id) => {
 export const getAllLicitations = async () => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado  "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
+      `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
       ORDER BY fecha_publicacion ASC`
     );
 
@@ -166,6 +166,32 @@ export const deleteLicitation = async (user_id, licitation_id) => {
     const [statement] = await connection.query(
       `UPDATE producto_licitar SET estado = "Eliminada" WHERE id_usuario = ? AND id = ?`,
       [user_id, licitation_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const expireLicitationById = async (licitation_id) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_licitar SET estado = "Caducada" WHERE id = ?`,
+      [licitation_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const closeLicitationById = async (licitation_id) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE producto_licitar SET estado = "Cerrada" WHERE id = ?`,
+      [licitation_id]
     );
 
     return statement.affectedRows;

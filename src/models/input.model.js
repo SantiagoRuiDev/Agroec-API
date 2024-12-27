@@ -35,7 +35,6 @@ export const createInput = async (uuid, uuid_user, schema) => {
   }
 };
 
-
 export const insertImage = async (image_id, input_id, url_imagen) => {
   try {
     const [statement] = await connection.query(
@@ -48,7 +47,6 @@ export const insertImage = async (image_id, input_id, url_imagen) => {
     throw new Error(error.message);
   }
 };
-
 
 export const deleteImage = async (image_id, input_id) => {
   try {
@@ -97,10 +95,9 @@ export const updateInput = async (input_id, schema) => {
 
 export const deleteInput = async (input_id) => {
   try {
-    await connection.query(
-      `DELETE FROM insumos_imagenes WHERE id_insumo = ?`,
-      [input_id]
-    );
+    await connection.query(`DELETE FROM insumos_imagenes WHERE id_insumo = ?`, [
+      input_id,
+    ]);
     const [statement] = await connection.query(
       `DELETE FROM insumos WHERE id = ?`,
       [input_id]
@@ -168,9 +165,10 @@ export const getAllInputsByCategory = async (category_id) => {
         WHERE im.id_insumo = i.id 
         ORDER BY im.id ASC 
         LIMIT 1) AS primera_imagen
-            FROM insumos i 
-             WHERE i.categoria_insumo = ?
-            `,
+        FROM insumos i 
+        WHERE i.categoria_insumo = ?
+        ORDER BY i.creado DESC
+      `,
       [category_id]
     );
 
