@@ -7,4 +7,4 @@ export const router = Router();
 
 router.get('/', authMiddleware.isAuthentified, preferencesController.getAllPreferences);
 router.post('/', authMiddleware.isPreAuthentified, preferencesController.createPreferencesByUser);
-router.post('/:id', authMiddleware.isPreAuthentified, upload.single('sheet'), addFileUrl, preferencesController.uploadSheet);
+router.post('/:id', upload.single('sheet'), authMiddleware.isPreAuthentified, addFileUrl, preferencesController.uploadSheet);

@@ -157,6 +157,7 @@ export const isPreAuthentified = async (req, res, next) => {
       } else {
         if(req.body.id){
           next();
+          return;
         }
         throw new Error("Please insert a valid token");
       }
@@ -177,6 +178,7 @@ export const isPreAuthentified = async (req, res, next) => {
     } else {
       if(req.body.id){
         next();
+        return;
       }
       throw new Error("Please insert a valid token");
     }
