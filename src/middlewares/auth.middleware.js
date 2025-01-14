@@ -11,7 +11,6 @@ import { merchantSchema } from "../schemas/merchant.schema.js";
 import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 import { pointsSchemaArray } from "../schemas/points.schema.js";
-import { associationSchema } from "../schemas/association.schema.js";
 import * as multiuserModel from '../models/multiusers.model.js';
 
 export const updateAccount = async (req, res, next) => {
@@ -135,6 +134,59 @@ export const isAuthentified = async (req, res, next) => {
     }
   }
 };
+
+
+export const isPreAuthentified = async (req, res, next) => {
+  try {
+    const multiuser_token = req.headers["x-multiuser-token"]; // Formato esperado: "Bearer <multiuser-token>"
+
+    if (
+      multiuser_token != undefined && multiuser_token != null
+    ) {
+      if (typeof multiuser_token === "string") {
+        const decoded = decodeToken(multiuser_token);
+  
+        if (decoded instanceof Object) {
+          req.user_id = decoded.user;
+          req.multiuser_id = decoded.multiuser;
+        }
+        req.permissions = await multiuserModel.getMultiuserRoleByUser(decoded.multiuser);
+        req.token = decoded;
+        next();
+        return;
+      } else {
+        if(req.body.id){
+          next();
+        }
+        throw new Error("Please insert a valid token");
+      }
+    }
+
+    // Si el usuario se ingreso como multi-usuario, este flujo de abajo no seguira, entonces creamos middleware para cada permiso.
+
+    const token = req.headers["authorization"]?.split(" ")[1];
+
+    if (typeof token === "string") {
+      const decoded = decodeToken(token);
+
+      if (decoded instanceof Object) {
+        req.user_id = decoded.user;
+      }
+      req.token = decoded;
+      next();
+    } else {
+      if(req.body.id){
+        next();
+      }
+      throw new Error("Please insert a valid token");
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
 
 export const isMultiserDashboardAllowed = async (req, res, next) => {
   try {

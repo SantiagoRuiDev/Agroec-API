@@ -1,4 +1,5 @@
 
+
 CREATE TABLE `asociacion` (
   `id` varchar(250) NOT NULL,
   `nombre` varchar(100) NOT NULL
@@ -9,7 +10,12 @@ CREATE TABLE `asociacion` (
 --
 
 INSERT INTO `asociacion` (`id`, `nombre`) VALUES
-('db1b3007-2285-4580-a7e7-106857a17ff0', 'Agricultores SA');
+('db1b3007-2285-4580-a7e7-106857a17ff0', 'Agricultores SA'),
+('94412a30-c621-4089-8b74-694b8546e9fb', 'Asociacion Mapui'),
+('c8ccdb8a-d31e-4b1a-9323-9719dd9c5447', 'Asociacion Mapui'),
+('3a0d914a-d0a4-42a6-b159-fd8dbbfbd29a', 'Aso Mapu'),
+('b059a89a-ed3f-460d-a4ff-8e002f45fe22', 'GlobalX'),
+('8c91f929-125a-4fb5-97d4-62a4aaf2d9b1', 'Devesa');
 
 -- --------------------------------------------------------
 
@@ -31,7 +37,8 @@ INSERT INTO `billetera` (`id`, `id_usuario`, `saldo`) VALUES
 ('0262bee8-fba5-41db-bbe1-66d6abece717', 'e8799658-2fbd-4e90-b2f0-82b62568968b', 0),
 ('4c818dbf-8dfe-40cd-af7c-0283c5e49f14', '196797f5-cad5-4575-a5e0-349f4b0b6e98', 0),
 ('b0572fcd-314b-406b-bcb8-e3710d91c312', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 50),
-('c0532fcd-314b-406b-bcb8-e3710d91c312', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 24);
+('c0532fcd-314b-406b-bcb8-e3710d91c312', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 24),
+('c58f32ca-df42-4061-b1b2-7fd69d2fbd90', '64829989-e673-4e74-947f-ade23ad9adb2', 0);
 
 -- --------------------------------------------------------
 
@@ -277,7 +284,7 @@ CREATE TABLE `cuenta_bancaria` (
   `numero_de_cuenta` int(50) NOT NULL,
   `seleccionar_banco` varchar(40) NOT NULL,
   `tipo_de_documento` varchar(50) NOT NULL,
-  `numero_de_documento` int(50) NOT NULL,
+  `numero_de_documento` varchar(13) NOT NULL,
   `nombre_del_propietario` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -286,10 +293,11 @@ CREATE TABLE `cuenta_bancaria` (
 --
 
 INSERT INTO `cuenta_bancaria` (`id`, `tipo_de_cuenta`, `numero_de_cuenta`, `seleccionar_banco`, `tipo_de_documento`, `numero_de_documento`, `nombre_del_propietario`) VALUES
-('2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Ahorro', 2147483647, 'Banco Pichincha', 'Cédula', 2147483647, 'Edward Lopez'),
-('3b32e7e2-0ee3-49fe-af58-2042d07cc5e4', 'Ahorro', 3321333, 'A', 'RUC', 67567657, 'Ramiro Lopez'),
-('96c7f002-b80b-4bf5-a5c0-767ce530df50', 'Ahorro', 2147483647, 'Banco Guayaquil', 'Cédula', 2147483647, 'Gabriel Diaz'),
-('e4569839-638b-4f03-92ca-44217c2b0719', 'Ahorro', 88889999, 'A', 'RUC', 13435, 'Pedro Ramirez');
+('2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Ahorro', 2147483647, 'Banco Pichincha', 'Cédula', '2147483647', 'Edward Lopez'),
+('3b32e7e2-0ee3-49fe-af58-2042d07cc5e4', 'Ahorro', 3321333, 'A', 'RUC', '67567657', 'Ramiro Lopez'),
+('7d63f627-86b1-449e-b897-a42783fce22d', 'Ahorro', 2147483647, 'Banco Guayaquil', 'Cédula', '2938134723', 'Gabriel Diaz'),
+('96c7f002-b80b-4bf5-a5c0-767ce530df50', 'Ahorro', 2147483647, 'Banco Guayaquil', 'Cédula', '2147483647', 'Gabriel Diaz'),
+('e4569839-638b-4f03-92ca-44217c2b0719', 'Ahorro', 88889999, 'Banco Pichincha', 'RUC', '134355332', 'Pedro Ramirez');
 
 -- --------------------------------------------------------
 
@@ -484,16 +492,17 @@ CREATE TABLE `insumos` (
   `epoca_intervalo` varchar(150) NOT NULL,
   `intervalo_entrada` varchar(250) NOT NULL,
   `link` text NOT NULL,
-  `atencion` text NOT NULL
+  `atencion` text NOT NULL,
+  `creado` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `insumos`
 --
 
-INSERT INTO `insumos` (`id`, `id_usuario`, `categoria_insumo`, `nombre_comercial`, `precio_agroec`, `precio_mas_iva`, `incluido_iva`, `precio_punto_venta`, `stock`, `composicion`, `clase`, `tipo_formula`, `titular`, `clasificacion`, `instrucciones_de_uso`, `epoca_intervalo`, `intervalo_entrada`, `link`, `atencion`) VALUES
-('17cbc122-d4e9-47d7-b12d-6a45ad105ad9', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Fertilizantes', 'Fosfato Monoamónico', 289, 0, 1, 269, 12, 'N 11,1% - P 23,2%, Nitrogeno - Fosforo', 'Fertilizante', 'Granulado', 'YPF Agro', 'Fosfato Monoamónico (MAP)', '100 a 300 kg/ha, dosis general para cereales, past', 'Aplicación al suelo', 'Para todos. Incorporado al suelo cerca de la semil', 'https://www.agrofy.com.ar/fertilizante-fosfato-monoamonico-222193.html', 'https://www.agrofy.com.ar/fertilizante-fosfato-mon'),
-('1a46f557-ace9-453a-a79e-f5f845160639', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Defensivos', '2,4D AMINA CCAB', 4999, 0, 1, 3999, 59, 'Agrx93', 'C', 'dDKkd', 'Agro Ligth', 'Recomendada', 'Aplicar sobre plantas', 'AAA', 'A', 'https:link.fertilizantes', 'Mantener fuera del alcance de los niños');
+INSERT INTO `insumos` (`id`, `id_usuario`, `categoria_insumo`, `nombre_comercial`, `precio_agroec`, `precio_mas_iva`, `incluido_iva`, `precio_punto_venta`, `stock`, `composicion`, `clase`, `tipo_formula`, `titular`, `clasificacion`, `instrucciones_de_uso`, `epoca_intervalo`, `intervalo_entrada`, `link`, `atencion`, `creado`) VALUES
+('11615eea-fd9a-48b6-a321-d8bad5f32833', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Defensivos', 'Fosfato Monoamónico', 243, 1, 0, 212, 15, 'Nitrogeno 3$', 'Fertilizante', 'Granulado', 'YPF Agro', 'Fosfato Monoamónico (MAP)', 'CCC', 'CCC', 'Para todos. Incorporado al suelo cerca de la semilla o voleado en presiembra de acuerdo a cada situación. En mezclas físicas con otros fertilizantes.', 'https://www.agrofy.com.ar/fertilizante-fosfato-monoamonico-222193.html', 'https://www.agrofy.com.ar/fertilizante-fosfato-monoamonico-222193.html', '2024-12-21 11:12:24'),
+('1a46f557-ace9-453a-a79e-f5f845160639', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Defensivos', '2,4D AMINA CCAB', 4999, 0, 1, 3999, 59, 'Agrx93', 'C', 'dDKkd', 'Agro Ligth', 'Recomendada', 'Aplicar sobre plantas', 'AAA', 'A', 'https:link.fertilizantes', 'Mantener fuera del alcance de los niños', '2024-12-10 11:07:26');
 
 -- --------------------------------------------------------
 
@@ -512,7 +521,7 @@ CREATE TABLE `insumos_imagenes` (
 --
 
 INSERT INTO `insumos_imagenes` (`id`, `id_insumo`, `url_imagen`) VALUES
-('e984d45c-5172-4a76-a659-17996ef1e367', '17cbc122-d4e9-47d7-b12d-6a45ad105ad9', 'https://agroec-api.onrender.com/public/images/sales/input-image-1734739535272-825080148.jpeg'),
+('53dcfe01-31e2-405d-8ea5-9f1af97b4d15', '11615eea-fd9a-48b6-a321-d8bad5f32833', 'https://agroec-api.onrender.com/public/images/sales/input-image-1734790344235-686186367.jpeg'),
 ('x0312034-az18-41b2-8403-c19fa4b443ec', '1a46f557-ace9-453a-a79e-f5f845160639', 'https://imgs.search.brave.com/iHDC8-BzsJvkUJjaeubE393aeux3uI9xxJFrDEqma9Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9ibG9n/LmFlZ3JvLmNvbS5i/ci93cC1jb250ZW50/L3VwbG9hZHMvMjAx/OC8wNy81LWV4dHJh/dG8tcGlyb2xlbmhv/c28tZGVmZW5zaXZv/LW5hdHVyYWwuanBn');
 
 -- --------------------------------------------------------
@@ -854,7 +863,7 @@ CREATE TABLE `perfil_agricultor` (
 --
 
 INSERT INTO `perfil_agricultor` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `numero_hectareas`, `cantidad_hectareas_siembras`, `id_asociacion`, `acceso_internet`) VALUES
-('cdcbe710-3e8c-4dac-af9b-970e1a2a651b', '196797f5-cad5-4575-a5e0-349f4b0b6e98', '96c7f002-b80b-4bf5-a5c0-767ce530df50', 'Agricultor', 'Gabriel Diaz Rincon', 300, NULL, 'db1b3007-2285-4580-a7e7-106857a17ff0', 1);
+('cdcbe710-3e8c-4dac-af9b-970e1a2a651b', '196797f5-cad5-4575-a5e0-349f4b0b6e98', '96c7f002-b80b-4bf5-a5c0-767ce530df50', 'Agricultor', 'Gabriel Diaz Rincon', 300, 156, '8c91f929-125a-4fb5-97d4-62a4aaf2d9b1', 0);
 
 -- --------------------------------------------------------
 
@@ -876,6 +885,13 @@ CREATE TABLE `perfil_asociacion_agricola` (
   `cantidad_hectareas_siembras` decimal(10,0) DEFAULT NULL,
   `acceso_internet` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `perfil_asociacion_agricola`
+--
+
+INSERT INTO `perfil_asociacion_agricola` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `numero_hectareas`, `cantidad_hectareas_siembras`, `acceso_internet`) VALUES
+('71a8c477-4722-4a1d-95cf-0f597cb74a3f', '64829989-e673-4e74-947f-ade23ad9adb2', '7d63f627-86b1-449e-b897-a42783fce22d', 'Asociación Agrícola', 'Aso Klin', 1, 200, 1, 600, 2000, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -901,7 +917,7 @@ CREATE TABLE `perfil_comerciante` (
 --
 
 INSERT INTO `perfil_comerciante` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
-('464e5614-230d-4639-aa91-098995c44b91', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e4569839-638b-4f03-92ca-44217c2b0719', 'Comerciante', 'Pedro', 5, 4, 1, 7, 1);
+('464e5614-230d-4639-aa91-098995c44b91', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e4569839-638b-4f03-92ca-44217c2b0719', 'Comerciante', 'Pedro Ramirez', 1, 4, 1, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -927,7 +943,7 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
 --
 
 INSERT INTO `perfil_comerciante_agroquimicos` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
-('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Comerciante', 'Agroquimica Sols', 1, 200, 1, 300, 1);
+('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Comerciante', 'Agroquimica Sols', 1, 200, 1, 3005, 1);
 
 -- --------------------------------------------------------
 
@@ -1084,12 +1100,12 @@ CREATE TABLE `producto_licitar` (
 --
 
 INSERT INTO `producto_licitar` (`id`, `id_usuario`, `id_producto`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `valida_hasta`, `informacion_adicional`, `estado`, `fecha_publicacion`) VALUES
-('187b206f-5604-4e3e-a623-3ac02ec654ac', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.2, 'QQ', 25, 'QQ', 'En sacos de 100 libras', '2024-12-27', 'Precio Negociable', 'Abierta', '2024-12-12 13:55:30'),
+('187b206f-5604-4e3e-a623-3ac02ec654ac', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.2, 'QQ', 25, 'QQ', 'En sacos de 100 libras', '2024-12-27', 'Precio Negociable', 'Cerrada', '2024-12-12 13:55:30'),
 ('275ad1f4-5936-4675-b083-391b596e645e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', 2, 'KG', 0, 'KG', 'En bolsas de 100 libras', '2024-12-10', 'Precio Negociable', 'Cumplida', '2024-11-09 18:48:34'),
 ('48b3ffd8-ae89-4857-969a-0823f8dbb45e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.4, 'QQ', 50, 'QQ', 'En sacos de 100 libras', '2025-02-20', 'Precio Negociable', 'Eliminada', '2024-11-09 18:48:34'),
-('681305b2-8de0-4ccb-b70e-5fd06f691fb3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.5, 'KG', 55, 'KG', 'En sacos de 100 libras', '2024-12-12', 'Precio Negociable', 'Abierta', '2024-12-02 09:52:26'),
+('681305b2-8de0-4ccb-b70e-5fd06f691fb3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.5, 'KG', 55, 'KG', 'En sacos de 100 libras', '2024-12-12', 'Precio Negociable', 'Cerrada', '2024-12-02 09:52:26'),
 ('8f047a8d-ecb0-4157-9131-6a26982e5d52', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Arroz', 2.3, 'KG', 0, 'KG', 'En bolsas de 100 libras', '2024-11-16', 'Precio Negociable', 'Cumplida', '2024-11-13 10:10:53'),
-('a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.5, 'KG', 200, 'KG', 'En sacos de 100 libras', '2024-11-24', 'Precio Negociable', 'Abierta', '2024-11-21 13:41:59');
+('a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.5, 'KG', 200, 'KG', 'En sacos de 100 libras', '2024-11-24', 'Precio Negociable', 'Cerrada', '2024-11-21 13:41:59');
 
 -- --------------------------------------------------------
 
@@ -1450,9 +1466,10 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `tipo_identificacion`, `numero_identificacion`, `correo`, `clave`, `provincia`, `parroquia`, `canton`, `acepto_terminos`, `direccion`, `ubicacion_google_maps`, `telefono`, `estado`, `id_subscripcion`) VALUES
 ('196797f5-cad5-4575-a5e0-349f4b0b6e98', 'Cédula', '2347728432', 'gabrieldiaz@gmail.com', '$2b$10$6yKGr96gK3JIXnBYmFuRF.f3KiEiA7.Vwtke/9kApW.9Ja2DJ4kCe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+54+542281553022', 1, NULL),
-('b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cédula', '2347728422', '360startupec@gmail.com', '$2b$10$UVdlb9qHbN/cQuVocxWmoOHATis1D7mrL5BzatICL19T9NMX376X6', 'Esmeraldas', '', 'Rioverde', 1, 'Calle Jaure 32', 'Avenida Olivos 92831', '+542281553030', 1, '3a1cf02c-a5f9-4f8a-ba95-ddb6b72e7585'),
-('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'pedroramirez@gmail.com', '$2b$10$UVdlb9qHbN/cQuVocxWmoOHATis1D7mrL5BzatICL19T9NMX376X6', 'Bolívar', 'Santo Domingo', 'Guaranda', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1, NULL),
-('e8799658-2fbd-4e90-b2f0-82b62568968b', 'Cédula', '2993813323', 'agroquimica@gmail.com', '$2b$10$Nic0WY1v/oa.FSdD5tbcL.2Eh7cR8LhiRu1dor2FWBAfF4EE38zSm', 'Azuay', 'Gima', 'Sigsig', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+50239981032', 1, NULL),
+('64829989-e673-4e74-947f-ade23ad9adb2', 'Cédula', '2347728434', 'aso@gmail.com', '$2b$10$3uZzUoRFsB4DafAgZRYat.gKmX4tshKnqP9Sc2GzClAh6V7C.aBRe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+5932281553030', 1, NULL),
+('b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cédula', '2347728422', '360startupec@gmail.com', '$2b$10$WMmBwCBkdw0vH/ZALScKkuzmoZlD5y7.PIp8jfkJX0jtxL0Vot40u', 'Esmeraldas', '', 'Rioverde', 1, 'Calle Jaure 32', 'Avenida Olivos 92831', '+542281553030', 1, '3a1cf02c-a5f9-4f8a-ba95-ddb6b72e7585'),
+('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'santiagobanquito72@gmail.com', '$2b$10$OjxsiIMi1IbmqwLH.J2dxeGxmPGNSxafiwILE.hYpvQng8i36wItS', 'Azuay', 'Chordeleg', 'Gualaceo', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1, NULL),
+('e8799658-2fbd-4e90-b2f0-82b62568968b', 'Cédula', '2993813323', 'agroquimica@gmail.com', '$2b$10$Nic0WY1v/oa.FSdD5tbcL.2Eh7cR8LhiRu1dor2FWBAfF4EE38zSm', 'Azuay', 'Gima', 'Sigsig', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '239981032', 1, NULL),
 ('Sistema', 'RUC', '00000000', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data');
 
 -- --------------------------------------------------------

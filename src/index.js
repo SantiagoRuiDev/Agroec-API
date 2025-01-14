@@ -21,6 +21,7 @@ import { router as advertisingRoutes } from "./routes/advertising.routes.js";
 import { router as notificationRoutes } from "./routes/notification.routes.js";
 import { router as multiusersRoutes } from "./routes/multiusers.routes.js";
 import { router as suscriptionRoutes } from "./routes/suscription.routes.js";
+import { router as preferencesRoutes } from "./routes/preferences.routes.js";
 import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
@@ -87,10 +88,12 @@ app.use("/api/v1/advertising", advertisingRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/multiusers", multiusersRoutes);
 app.use("/api/v1/suscription", suscriptionRoutes);
+app.use("/api/v1/preferences", preferencesRoutes);
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));
 app.use("/public/images/sales", express.static("public/images/sales"));
+app.use("/public/sheets", express.static("public/sheets"));
 
 server.listen(APP_SETTINGS.port, async () => {
   console.log("API RUNNING ON PORT: " + APP_SETTINGS.port);

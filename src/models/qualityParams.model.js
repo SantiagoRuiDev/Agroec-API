@@ -40,6 +40,23 @@ export const updateQualityParam = async (param_id, schema) => {
   }
 };
 
+export const createQualityParamForPreference = async (
+  contain_id,
+  param_id,
+  preference_id
+) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO preferencia_contiene_parametros(id, id_parametros, id_preferencia) VALUES (?,?,?)`,
+      [contain_id, param_id, preference_id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const createQualityParamForCondition = async (
   contain_id,
   param_id,

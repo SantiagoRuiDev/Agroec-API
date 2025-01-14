@@ -50,12 +50,12 @@ export const createAccount = async (req, res) => {
       const wallet_id = uuidv4();
       const bodyProfile = req.body.profile;
       const bodyBankAccount = req.body.bank_account;
+      const code = "AGROEC-" + Math.floor(Math.random() * 999);
 
       switch (req.body.profile.type) {
         case "Comprador":
           // AGROEC-0000 : Codigo telefonico enviado.
           const registration_uuid = uuidv4();
-          const code = "AGROEC-" + Math.floor(Math.random() * 999);
           await codesModel.insertCode(registration_uuid, code, uuid);
           await profileModel.createBuyerProfile(
             profile_uuid,
@@ -173,7 +173,7 @@ export const createAccount = async (req, res) => {
           .catch((error) => console.error("Error:", error));*/
 
       return res.status(200).json({
-        message: "Codigo enviado a tu telefono revisalo porfavor",
+        message: "Codigo enviado a tu telefono revisalo porfavor", code: code, id: uuid
       });
     }
   } catch (error) {

@@ -5,6 +5,7 @@ import * as authMiddleware from '../middlewares/auth.middleware.js'
 export const router = Router();
 
 router.get('/', productController.getAllProducts)
+router.get('/all', productController.getAllMarketProducts)
 router.post('/', authMiddleware.isAuthentified, productController.createProduct)
 router.delete('/:id', authMiddleware.isAuthentified, productController.deleteProductById)
 
