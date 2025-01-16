@@ -14,8 +14,12 @@ INSERT INTO `asociacion` (`id`, `nombre`) VALUES
 ('94412a30-c621-4089-8b74-694b8546e9fb', 'Asociacion Mapui'),
 ('c8ccdb8a-d31e-4b1a-9323-9719dd9c5447', 'Asociacion Mapui'),
 ('3a0d914a-d0a4-42a6-b159-fd8dbbfbd29a', 'Aso Mapu'),
+('46688cbe-f2d5-475e-9326-a3e145eac9de', 'aa'),
 ('b059a89a-ed3f-460d-a4ff-8e002f45fe22', 'GlobalX'),
-('8c91f929-125a-4fb5-97d4-62a4aaf2d9b1', 'Devesa');
+('3ee5a37e-1df2-4698-ae3f-ceec2327d4ec', 'Dve'),
+('a61c2ec2-55e2-4618-a536-08ebe4853607', 'DaVe'),
+('8c91f929-125a-4fb5-97d4-62a4aaf2d9b1', 'Devesa'),
+('e964c3f7-632f-4bf6-ab2a-8357584879e6', 'Dvesa');
 
 -- --------------------------------------------------------
 
@@ -37,8 +41,10 @@ INSERT INTO `billetera` (`id`, `id_usuario`, `saldo`) VALUES
 ('0262bee8-fba5-41db-bbe1-66d6abece717', 'e8799658-2fbd-4e90-b2f0-82b62568968b', 0),
 ('4c818dbf-8dfe-40cd-af7c-0283c5e49f14', '196797f5-cad5-4575-a5e0-349f4b0b6e98', 0),
 ('b0572fcd-314b-406b-bcb8-e3710d91c312', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 50),
+('bff09880-6b5d-4b7d-8b80-4e958e6cb859', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 0),
 ('c0532fcd-314b-406b-bcb8-e3710d91c312', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 24),
-('c58f32ca-df42-4061-b1b2-7fd69d2fbd90', '64829989-e673-4e74-947f-ade23ad9adb2', 0);
+('c58f32ca-df42-4061-b1b2-7fd69d2fbd90', '64829989-e673-4e74-947f-ade23ad9adb2', 0),
+('fb19369d-c78f-4e4d-8ffc-35abe1a098d0', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 0);
 
 -- --------------------------------------------------------
 
@@ -159,6 +165,13 @@ CREATE TABLE `codigos_telefonicos` (
   `codigo` varchar(13) NOT NULL,
   `id_usuario` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `codigos_telefonicos`
+--
+
+INSERT INTO `codigos_telefonicos` (`id`, `codigo`, `id_usuario`) VALUES
+('611d7506-7fe8-4235-8c61-132f5e0029cb', 'AGROEC-908', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58');
 
 -- --------------------------------------------------------
 
@@ -824,6 +837,7 @@ INSERT INTO `parametros_calidad` (`id`, `id_usuario`, `nombre`, `min_calidad`, `
 ('54f8b16e-93a4-4841-bb04-dffb81b29c96', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 15),
 ('63af586f-a314-47aa-a939-84d177fc98fe', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 6),
 ('6a2f602c-bf7c-4e82-94b6-d0f8db74f353', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Granulado', 5, 25),
+('7529a255-f090-4cd7-98da-dbe1e93e1827', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 5),
 ('7c7f2221-9277-4174-86e4-ccac77b235bc', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Humedad', 2, 9),
 ('7f2c3737-7141-4c30-9eb4-049dba8e39b3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Almidon', 1, 9),
 ('85a6cba3-3972-4d41-b4d2-db6bb3e4c787', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Granulado', 24, 26),
@@ -968,7 +982,9 @@ CREATE TABLE `perfil_comprador` (
 --
 
 INSERT INTO `perfil_comprador` (`id`, `id_usuario`, `razon_social`, `actividad_economica`, `tipo_negocio`, `consumo_mes_tm`, `consumo_anual`, `presupuesto_mes`, `politicas_recepcion`) VALUES
-('41a2b5e9-3e6e-4cb2-8688-3843f9b3e028', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cerealera los Hermanos', 'Cereales y Productos Agricolas', 'Industrial', 2500, 48000, 5000, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.');
+('41a2b5e9-3e6e-4cb2-8688-3843f9b3e028', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cerealera los Hermanos', 'Cereales y Productos Agricolas', 'Industrial', 2500, 48000, 5000, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
+('c9fc13e4-1853-42a3-ab95-a36794f90208', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Keppe S.A', 'Cereales y Productos Agricolas', 'Industrial', 200, 260, 350, 'Notas'),
+('df6668ab-9b3a-4c36-98fa-ca519617b6d0', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 'CRL AS', 'Cereales y Productos Agricolas', 'Comercial', 125, 250, 150, 'Nada');
 
 -- --------------------------------------------------------
 
@@ -989,6 +1005,52 @@ CREATE TABLE `planes` (
 
 INSERT INTO `planes` (`id`, `nombre`, `meses`, `valor`) VALUES
 ('edf3cf84-bdd0-473a-a9a3-6586d259f6ed', 'Trimestral', 3, 9.99);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `preferencias`
+--
+
+CREATE TABLE `preferencias` (
+  `id` varchar(250) NOT NULL,
+  `id_producto` varchar(250) NOT NULL,
+  `id_usuario` varchar(250) NOT NULL,
+  `url_castigos` varchar(250) DEFAULT NULL,
+  `parametros` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `preferencias`
+--
+
+INSERT INTO `preferencias` (`id`, `id_producto`, `id_usuario`, `url_castigos`, `parametros`) VALUES
+('00ba0f58-b9a1-457e-b523-6f25b4aba18b', 'Cacao', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', '', 1),
+('08daf0c2-77b4-494c-b535-6ea444f20da8', 'Polvillo de Arroz', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'https://agroec-api.onrender.com/public/sheets/sheet-1736777843806-971161436.xlsx', 1),
+('35ba211d-dbf8-4d97-92da-e19cbfe70bab', 'Cacao', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 0),
+('b276aafe-912c-456e-a366-4bcf1be2c439', 'Maracuya', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 'https://agroec-api.onrender.com/public/sheets/sheet-1736881968614-669283245.xlsx', 1),
+('ce9d4ef7-ec15-402b-8d76-e693269d6dec', 'Maiz', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '', 0),
+('e26b2d59-7b4a-4d43-8170-0dee71c2061c', 'Cacao', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'https://agroec-api.onrender.com/public/sheets/sheet-1736777843806-971161436.xlsx', 1),
+('e63201ed-8095-400d-bce8-d090cd763309', 'Tomate', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `preferencia_contiene_parametros`
+--
+
+CREATE TABLE `preferencia_contiene_parametros` (
+  `id` varchar(250) NOT NULL,
+  `id_parametros` varchar(250) NOT NULL,
+  `id_preferencia` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `preferencia_contiene_parametros`
+--
+
+INSERT INTO `preferencia_contiene_parametros` (`id`, `id_parametros`, `id_preferencia`) VALUES
+('7aec7269-90a3-4bbb-8cd3-0415cb83dff3', '7529a255-f090-4cd7-98da-dbe1e93e1827', 'e26b2d59-7b4a-4d43-8170-0dee71c2061c');
 
 -- --------------------------------------------------------
 
@@ -1315,6 +1377,7 @@ CREATE TABLE `puntos_recepcion` (
 --
 
 INSERT INTO `puntos_recepcion` (`id`, `id_usuario`, `nombre`, `ubicacion_google_maps`, `direccion`) VALUES
+('c4edf3f5-432a-4b9f-b56c-bbcf73fb49cf', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Fabrica', 'Av Suipacha 32', 'Av Suipacha 2981, Chillanes, Bolivar'),
 ('de92k121s3212', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Fabrica Primaria', 'Av Liberador de Americas, La Maná, Cotopaxi', 'Av Liberador de Americas 281');
 
 -- --------------------------------------------------------
@@ -1467,8 +1530,10 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `tipo_identificacion`, `numero_identificacion`, `correo`, `clave`, `provincia`, `parroquia`, `canton`, `acepto_terminos`, `direccion`, `ubicacion_google_maps`, `telefono`, `estado`, `id_subscripcion`) VALUES
 ('196797f5-cad5-4575-a5e0-349f4b0b6e98', 'Cédula', '2347728432', 'gabrieldiaz@gmail.com', '$2b$10$6yKGr96gK3JIXnBYmFuRF.f3KiEiA7.Vwtke/9kApW.9Ja2DJ4kCe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+54+542281553022', 1, NULL),
 ('64829989-e673-4e74-947f-ade23ad9adb2', 'Cédula', '2347728434', 'aso@gmail.com', '$2b$10$3uZzUoRFsB4DafAgZRYat.gKmX4tshKnqP9Sc2GzClAh6V7C.aBRe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+5932281553030', 1, NULL),
+('7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Cédula', '2343358402', 'keppe@contacto.com', '$2b$10$kJWHPPTQIh6P9O/zbjD9Qe/K3yD1.wWA6Ed/7wXKKB2bBpgDbVLs6', 'Imbabura', '', 'Ibarra', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+593+593983711133', 0, NULL),
+('a2cca54d-2aa7-47c9-88de-319cc78752dd', 'Cédula', '2347728423', 'crl@mail.com', '$2b$10$3Xd42pB/r8/X4ANzN1W1/e3Tg3OL/5kAe9jf/xv0G5gh5l.BszbeG', 'Azuay', '', 'Girón', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+5932352112', 1, NULL),
 ('b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cédula', '2347728422', '360startupec@gmail.com', '$2b$10$WMmBwCBkdw0vH/ZALScKkuzmoZlD5y7.PIp8jfkJX0jtxL0Vot40u', 'Esmeraldas', '', 'Rioverde', 1, 'Calle Jaure 32', 'Avenida Olivos 92831', '+542281553030', 1, '3a1cf02c-a5f9-4f8a-ba95-ddb6b72e7585'),
-('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'santiagobanquito72@gmail.com', '$2b$10$OjxsiIMi1IbmqwLH.J2dxeGxmPGNSxafiwILE.hYpvQng8i36wItS', 'Azuay', 'Chordeleg', 'Gualaceo', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1, NULL),
+('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'pedroramirez@gmail.com', '$2b$10$OjxsiIMi1IbmqwLH.J2dxeGxmPGNSxafiwILE.hYpvQng8i36wItS', 'Azuay', 'Chordeleg', 'Gualaceo', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1, NULL),
 ('e8799658-2fbd-4e90-b2f0-82b62568968b', 'Cédula', '2993813323', 'agroquimica@gmail.com', '$2b$10$Nic0WY1v/oa.FSdD5tbcL.2Eh7cR8LhiRu1dor2FWBAfF4EE38zSm', 'Azuay', 'Gima', 'Sigsig', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '239981032', 1, NULL),
 ('Sistema', 'RUC', '00000000', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data');
 
@@ -1735,6 +1800,22 @@ ALTER TABLE `perfil_comprador`
 --
 ALTER TABLE `planes`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `preferencias`
+--
+ALTER TABLE `preferencias`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_producto_preferencias` (`id_producto`),
+  ADD KEY `fk_usuario_preferencias` (`id_usuario`);
+
+--
+-- Indices de la tabla `preferencia_contiene_parametros`
+--
+ALTER TABLE `preferencia_contiene_parametros`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_preferencia_parametros` (`id_parametros`),
+  ADD KEY `fk_parametros_preferencia` (`id_preferencia`);
 
 --
 -- Indices de la tabla `productos`
@@ -2058,6 +2139,20 @@ ALTER TABLE `perfil_comerciante`
 --
 ALTER TABLE `perfil_comprador`
   ADD CONSTRAINT `fk_perfil_comprador_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `preferencias`
+--
+ALTER TABLE `preferencias`
+  ADD CONSTRAINT `fk_producto_preferencias` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`),
+  ADD CONSTRAINT `fk_usuario_preferencias` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `preferencia_contiene_parametros`
+--
+ALTER TABLE `preferencia_contiene_parametros`
+  ADD CONSTRAINT `fk_parametros_preferencia` FOREIGN KEY (`id_preferencia`) REFERENCES `preferencias` (`id`),
+  ADD CONSTRAINT `fk_preferencia_parametros` FOREIGN KEY (`id_parametros`) REFERENCES `parametros_calidad` (`id`);
 
 --
 -- Filtros para la tabla `productos_interes`

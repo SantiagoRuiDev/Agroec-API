@@ -14,6 +14,37 @@ export const getPreferencesByUser = async (uuid) => {
 };
 
 
+export const getPreferenceById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM preferencias WHERE id = ?`,
+      [uuid]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const deletePreferenceById = async (uuid) => {
+  try {
+    await connection.query(
+      `DELETE FROM preferencia_contiene_parametros WHERE id_preferencia = ?`,
+      [uuid]
+    );
+    const [statement] = await connection.query(
+      `DELETE FROM preferencias WHERE id = ?`,
+      [uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const uploadSheetByPreference = async (uuid, table_url) => {
   try {
     const [statement] = await connection.query(

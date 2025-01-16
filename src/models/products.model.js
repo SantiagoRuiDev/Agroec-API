@@ -12,7 +12,7 @@ export const getAllProducts = async () => {
 
 export const getProductsByPreferences = async (user_id) => {
   try {
-    const [statement] = await connection.query(`SELECT p.* FROM productos p INNER JOIN preferencias pf ON pf.id_producto = p.id WHERE pf.id_usuario = ?`, [user_id]);
+    const [statement] = await connection.query(`SELECT p.*, pf.id as id_preferencia FROM productos p INNER JOIN preferencias pf ON pf.id_producto = p.id WHERE pf.id_usuario = ?`, [user_id]);
 
     return statement;
   } catch (error) {
