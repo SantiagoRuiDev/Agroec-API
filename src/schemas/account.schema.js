@@ -5,13 +5,13 @@ export const accountSchema = Joi.object({
   numero_identificacion: Joi.string().min(8).max(13).required(),
   correo: Joi.string().email().required(),
   clave: Joi.string().required(),
-  provincia: Joi.string().min(3).required(),
-  canton: Joi.string().min(3).required(),
+  provincia: Joi.string().required(),
+  canton: Joi.string().required(),
   parroquia: Joi.string().min(0),
   acepto_terminos: Joi.bool().required(),
-  direccion: Joi.string().min(3).required(),
-  ubicacion: Joi.string().min(3).required(),
-  telefono: Joi.string().min(3).required(),
+  direccion: Joi.string().required(),
+  ubicacion: Joi.string().required(),
+  telefono: Joi.string().required(),
 });
 
 export const accountUpdateSchema = Joi.object({
