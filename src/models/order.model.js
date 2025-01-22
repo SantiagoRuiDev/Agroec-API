@@ -31,6 +31,7 @@ export const getOrdersByUser = async (user_id) => {
        INNER JOIN productos p ON p.id = cc.id_producto
        WHERE o.id_comprador = ? OR o.id_vendedor = ?
        ORDER BY o.creado DESC
+       GROUP BY o.id
       `,
       [user_id, user_id]
     );
@@ -83,6 +84,7 @@ export const getOrdersByBuyerDelivered = async (user_id) => {
        INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
        WHERE o.id_comprador = ? AND o.estado = "Aceptado" ORDER BY o.creado DESC
+       GROUP o.id
       `,
       [user_id]
     );
@@ -106,6 +108,7 @@ export const getOrdersBySellerUndelivered = async (user_id) => {
        INNER JOIN productos p ON p.id = cc.id_producto
        LEFT JOIN fee f ON f.id_entrega = e.id
        WHERE o.id_vendedor = ? AND (o.estado = "Pendiente de entrega") 
+       GROUP BY o.id
        ORDER BY o.creado DESC
       `,
       [user_id]
@@ -125,6 +128,7 @@ export const getOrdersBySellerUndeliveredBeforeDate = async (user_id, date) => {
 	     FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
        WHERE o.id_vendedor = ? AND o.estado = "Pendiente de entrega" AND e.fecha_entrega < ?
+       GROUP o.id
       `,
       [user_id, date]
     );
@@ -143,6 +147,7 @@ export const getOrdersByBuyerNotReceivedBeforeDate = async (user_id, date) => {
 	     FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
        WHERE o.id_comprador = ? AND o.estado NOT IN ('Rechazado', 'Aceptado') AND e.fecha_entrega < ?
+       GROUP BY o.id
       `,
       [user_id, date]
     );
@@ -207,6 +212,7 @@ export const getOrdersByConditions = async (condition_id) => {
       `SELECT o.id, o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o 
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+       GROUP BY o.id
       WHERE cc.id = ?
       `,
       [condition_id]
