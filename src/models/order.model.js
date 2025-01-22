@@ -30,8 +30,8 @@ export const getOrdersByUser = async (user_id) => {
        INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
        INNER JOIN productos p ON p.id = cc.id_producto
        WHERE o.id_comprador = ? OR o.id_vendedor = ?
-       ORDER BY o.creado DESC
        GROUP BY o.id
+       ORDER BY o.creado DESC
       `,
       [user_id, user_id]
     );
@@ -128,7 +128,7 @@ export const getOrdersBySellerUndeliveredBeforeDate = async (user_id, date) => {
 	     FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id
        WHERE o.id_vendedor = ? AND o.estado = "Pendiente de entrega" AND e.fecha_entrega < ?
-       GROUP o.id
+       GROUP BY o.id
       `,
       [user_id, date]
     );

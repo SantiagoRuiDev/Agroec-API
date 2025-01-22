@@ -287,7 +287,11 @@ export const finishAccount = async (req, res) => {
 export const isAuthentified = async (req, res) => {
   try {
     const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+    const expireTime = req.token.exp; // Tiempo de expiración del token
     const timeRemaining = req.token.exp - currentTime;
+
+    const todayDate = new Date(currentTime * 1000).toISOString();
+    const expireDate = new Date(expireTime * 1000).toISOString();
 
     const SIXTY_DAYS_IN_SECONDS = 60 * 24 * 60 * 60; // 5184000 segundos (60 días)
     if (timeRemaining <= SIXTY_DAYS_IN_SECONDS) {
@@ -308,7 +312,9 @@ export const isAuthentified = async (req, res) => {
           token: refreshToken,
           multiuser_token: refreshMultiuserToken,
           type: "multiuser",
-          profile: req.token.profile
+          profile: req.token.profile,
+          "expire-date": expireDate,
+          "today-date": todayDate
         });
       } else {
         const refreshToken = encodeToken(
@@ -323,6 +329,8 @@ export const isAuthentified = async (req, res) => {
             token: refreshToken,
             type: "user",
             profile: req.token.profile,
+            "expire-date": expireDate,
+            "today-date": todayDate
           });
       }
     }
@@ -333,6 +341,8 @@ export const isAuthentified = async (req, res) => {
       token: null,
       type: "none",
       profile: req.token.profile,
+      "expire-date": expireDate,
+      "today-date": todayDate
     });
   } catch (error) {
     return res.status(400).json({ error: error.message });
