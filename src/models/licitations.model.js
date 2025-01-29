@@ -72,7 +72,23 @@ export const getLicitationsByUser = async (user_id) => {
 export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl 
+      `SELECT pl.*, p.nombre, p.imagen, COALESCE(
+          (SELECT SUM(cc.precio * cc.cantidad) / NULLIF(SUM(cc.cantidad), 0)
+          FROM condiciones_compra cc
+          INNER JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
+          INNER JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta
+          WHERE pv.id_licitacion = pl.id 
+            AND (pv.estado_vendedor = 'Aceptada' AND pv.estado_comprador = 'Aceptada')
+          ), 0) AS precio_promedio_venta,
+        COALESCE(
+          (SELECT SUM(cc.cantidad)
+          FROM condiciones_compra cc
+          INNER JOIN propuesta_venta_contiene_condicion pvcc ON pvcc.id_condicion = cc.id
+          INNER JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta
+          WHERE pv.id_licitacion = pl.id 
+            AND (pv.estado_vendedor = 'Aceptada' AND pv.estado_comprador = 'Aceptada')
+          ), 0) AS cantidades_negociadas
+      FROM producto_licitar pl 
       INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.id_producto = ? AND pl.estado != "Eliminada"
       ORDER BY pl.fecha_publicacion ASC`,
       [user_id, product_id]
@@ -102,6 +118,19 @@ export const getLicitationById = async (licitation_id) => {
       ...statement[0],
       quality_params,
     };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getAllLicitationsNotExpired = async () => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM producto_licitar WHERE estado != "Caducada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
+      ORDER BY fecha_publicacion ASC`
+    );
+
+    return statement;
   } catch (error) {
     throw new Error(error.message);
   }
