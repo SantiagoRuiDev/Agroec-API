@@ -16,7 +16,7 @@ export function getOrderTemplate(order) {
     <div class="order-template" style="width: 100%; font-family: 'Arial', sans-serif;">
 
         <img src="https://i.imgur.com/NDDmRCB.png" class="order-image">
-        <h1 style="color: #333333; text-align: center;">Orden de ${ order.order.producto }
+        <h1 style="color: #333333; text-align: center; margin: 0px auto;">Orden de ${ order.order.producto }
         </h1>
 
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
@@ -34,7 +34,7 @@ export function getOrderTemplate(order) {
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                             <th style="background-color: #f2f2f2; padding: 10px;">Nombre y Apellido:</th>
-                            <td style="border: 1px solid #dddddd; padding: 10px;">${ order.order.vendedor_nombre } ${order.order.vendedor_apellido}</td>
+                            <td style="border: 1px solid #dddddd; padding: 10px;">${ order.order.vendedor_nombre }</td>
                         </tr>
                     </table>
                 </td>
@@ -56,7 +56,7 @@ export function getOrderTemplate(order) {
                         </tr>
                         <tr>
                             <th style="background-color: #f2f2f2; padding: 10px;">Precio por unidad:</th>
-                            <td style="border: 1px solid #dddddd; padding: 10px;">${ order.order.precio } ${order.order.precio_unidad}</td>
+                            <td style="border: 1px solid #dddddd; padding: 10px;">${ order.order.precio } USD x ${order.order.precio_unidad}</td>
                         </tr>
                         <tr>
                             <th style="background-color: #f2f2f2; padding: 10px;">Subtotal:</th>
@@ -112,6 +112,7 @@ export function getOrderTemplate(order) {
 <style>
     .order-template {
         display: grid;
+        place-content: center;
         justify-content: center;
     }
     * {
@@ -123,6 +124,7 @@ export function getOrderTemplate(order) {
     .order-image {
         max-height: 250px;
         top: 72px;
+        justify-self: center;
         margin: 0px auto;
     }
 

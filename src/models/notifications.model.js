@@ -65,6 +65,19 @@ export const markNotificationsAsRead = async (uuid_user) => {
 };
 
 
+export const setUserOneSignalMobileSubscription = async (uuid_user, uuid_subscription) => {
+  try {
+    const [statement] = await connection.query(
+      "UPDATE usuarios SET id_subscripcion_movil = ? WHERE id = ?",
+      [uuid_subscription, uuid_user]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const setUserOneSignalSubscription = async (uuid_user, uuid_subscription) => {
   try {
     const [statement] = await connection.query(

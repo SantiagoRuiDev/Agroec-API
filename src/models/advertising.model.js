@@ -14,7 +14,7 @@ export const createAdvertising = async (uuid_ads, schema) => {
 export const getAllAdvertisings = async () => {
     try {
 
-        const [statement] = await connection.query('SELECT * FROM publicidades');
+        const [statement] = await connection.query('SELECT * FROM publicidades GROUP BY id');
         return statement;
     } catch (error) {
         throw new Error(error.message);

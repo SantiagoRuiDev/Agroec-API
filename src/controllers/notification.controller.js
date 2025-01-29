@@ -31,3 +31,24 @@ export const setUserOneSignalSubscription = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+
+export const setUserOneSignalMobileSuscription = async (req, res) => {
+  try {
+    const notifications =
+      await notificationService.setUserOneSignalMobileSubscription(
+        req.user_id,
+        req.params.id
+      );
+
+    if (notifications > 0) {
+      return res
+        .status(200)
+        .send({ message: "Identificador de subscripcion actualizado" });
+    }
+
+    throw new Error("Error al actualizar el identificador de subscripcion");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};

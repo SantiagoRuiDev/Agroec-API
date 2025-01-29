@@ -107,7 +107,7 @@ export const createWarranty = async (req, res) => {
         await notificationService.sendPushNotification(
           "Pago de garantía",
           "El comprador ha realizado el pago de $" + total.toFixed(2),
-          user.id_subscripcion
+          [user.id_subscripcion, user.id_subscripcion_movil]
         );
       }
 

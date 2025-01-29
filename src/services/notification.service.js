@@ -33,6 +33,16 @@ export const createNotification = async (uuid_user, uuid_product, message, title
     }
 }
 
+export const setUserOneSignalMobileSubscription = async (uuid_user, uuid_subscription) => {
+    try {
+        const updatedRowResult = await notificationModel.setUserOneSignalMobileSubscription(uuid_user, uuid_subscription) 
+        
+        return updatedRowResult;
+    } catch (error) {
+        throw new Error("Error al actualizar el identificador de la subscripcion: " + error.message);
+    }
+}
+
 export const setUserOneSignalSubscription = async (uuid_user, uuid_subscription) => {
     try {
         const updatedRowResult = await notificationModel.setUserOneSignalSubscription(uuid_user, uuid_subscription) 
@@ -43,13 +53,13 @@ export const setUserOneSignalSubscription = async (uuid_user, uuid_subscription)
     }
 }
 
-export const sendPushNotification = async (title, message, player_id, url) => {
+export const sendPushNotification = async (title, message, player_uuids, url) => {
     const appId = 'aac4070e-a56e-47fb-b3c6-7a197cccb349'; // Reemplaza con tu App ID
     const apiKey = 'Mjk3ZWUzMTEtNTViYy00ZTk5LTk5NTEtN2JhMGU1NWFmN2E5'; // Reemplaza con tu REST API Key
 
     const payload = {
         app_id: appId,
-        include_player_ids: [player_id], // IDs de los usuarios que recibirán la notificación
+        include_player_ids: player_uuids, // IDs de los usuarios que recibirán la notificación
         headings: { en: title },
         contents: { en: message },
         url: url

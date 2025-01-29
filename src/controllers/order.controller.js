@@ -88,7 +88,7 @@ export const setOrderShippedStatus = async (req, res) => {
       await notificationService.sendPushNotification(
         "Tu orden esta en camino",
         "El vendedor marco la orden como despachada",
-        user.id_subscripcion
+        [user.id_subscripcion, user.id_subscripcion_movil]
       );
     }
 
@@ -130,7 +130,7 @@ export const setOrderDeliveredStatus = async (req, res) => {
         "La orden fue entregada",
         "El vendedor indico que recibiste la orden #" +
           String(order_id).slice(0, 8),
-        user.id_subscripcion
+          [user.id_subscripcion, user.id_subscripcion_movil]
       );
     }
 
@@ -179,7 +179,7 @@ export const setOrderReceivedStatus = async (req, res) => {
           await notificationService.sendPushNotification(
             "La orden fue recibida",
             "El comprador ha recibido la orden " + String(order_id).slice(0, 8),
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
         await orderModel.updateOrderStatus(order_id, "Recibido");
@@ -244,7 +244,7 @@ export const setOrderRejectedStatus = async (req, res) => {
             "La orden fue rechazada",
             "El comprador ha rechazado la orden " +
               String(order_id).slice(0, 8),
-            user.id_subscripcion
+              [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
 
@@ -333,7 +333,7 @@ export const setOrderDeliveryDate = async (req, res) => {
               "La orden fue recibida",
               "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
                 req.body.fecha,
-              user.id_subscripcion
+                [user.id_subscripcion, user.id_subscripcion_movil]
             );
           }
         }

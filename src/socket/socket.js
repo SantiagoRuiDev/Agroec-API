@@ -71,7 +71,7 @@ export function initializeSocket(io){
             await notificationService.sendPushNotification(
               "Nuevo mensaje",
               "Has recibido un nuevo mensaje en la negociación",
-              user.id_subscripcion
+              [user.id_subscripcion, user.id_subscripcion_movil]
             );
           }
         }

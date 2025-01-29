@@ -102,7 +102,7 @@ export const createSaleProposal = async (req, res) => {
           await notificationService.sendPushNotification(
             "Nueva propuesta de venta",
             "Te han enviado una propuesta de " + fetchLicitation.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
 
@@ -296,7 +296,7 @@ export const createLicitationProposal = async (req, res) => {
           await notificationService.sendPushNotification(
             "Nueva propuesta de compra",
             "Te han enviado una propuesta de " + fetchSale.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
         await chatModel.createChat(
@@ -441,10 +441,13 @@ export const updateCondition = async (req, res) => {
             "Condición Actualizada",
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
+          const user = await authModel.getAccountById(
+            proposal.proposal.id_vendedor
+          );
           await notificationService.sendPushNotification(
             "Condición Actualizada",
             "Las condiciones han sido actualizadas, visita dando click en boton condiciones",
-            proposal.proposal.id_vendedor,
+            [user.id_subscripcion, user.id_subscripcion_movil],
             ""
           );
         }
@@ -576,7 +579,7 @@ export const acceptProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue aceptada",
             "El comprador ha aceptado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
       } else {
@@ -599,7 +602,7 @@ export const acceptProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue aceptada",
             "El vendedor ha aceptado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
         await proposalModel.updateSaleProposalStateBySeller(
@@ -630,7 +633,7 @@ export const acceptProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue aceptada",
             "El comprador ha aceptado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
       } else {
@@ -653,7 +656,7 @@ export const acceptProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue aceptada",
             "El vendedor ha aceptado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
 
@@ -776,7 +779,7 @@ export const rejectProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue rechazada",
             "El comprador ha rechazado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
       } else {
@@ -799,7 +802,7 @@ export const rejectProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue rechazada",
             "El vendedor ha rechazado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
         await proposalModel.updateSaleProposalStateBySeller(
@@ -830,7 +833,7 @@ export const rejectProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue rechazada",
             "El comprador ha rechazada la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
       } else {
@@ -853,7 +856,7 @@ export const rejectProposalByConditions = async (req, res) => {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue rechazada",
             "El vendedor ha rechazado la propuesta " + conditions.id_producto,
-            user.id_subscripcion
+            [user.id_subscripcion, user.id_subscripcion_movil]
           );
         }
 
