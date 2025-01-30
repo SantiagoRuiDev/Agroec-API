@@ -19,7 +19,7 @@ const storageTemp = multer.diskStorage({
         cb(null, 'public/temp'); // Carpeta temporal para archivos XLSX
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        cb(null, Date.now() + '-' + String(file.originalname).trim());
     }
 });
 
