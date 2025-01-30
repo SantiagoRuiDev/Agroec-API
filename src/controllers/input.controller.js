@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as profileChecker from "../libs/checker.js";
 import fs from "fs";
 import XLSX from "xlsx";
-import { inputMultipleSchemaArray } from "../schemas/input.schema.js";
+import { inputMultipleSchema } from "../schemas/input.schema.js";
 import { validateSchemas } from "../libs/schema.js";
 
 export const createMultipleInput = async (req, res) => {
@@ -25,18 +25,17 @@ export const createMultipleInput = async (req, res) => {
     const sheetName = workbook.SheetNames[0];
     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    try {
-      validateSchemas(data, inputMultipleSchemaArray);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-      fs.unlinkSync(filePath); // Elimina el archivo después de procesarlo
-      return;
-    }
-
     const categories = await inputModel.getInputCategories();
 
     // Aquí puedes iterar sobre cada fila e insertarla en la base de datos
     data.forEach(async (row) => {
+      try {
+        validateSchemas(row, inputMultipleSchema);
+      } catch (error) {
+        res.status(400).json({ error: error.message });
+        fs.unlinkSync(filePath); // Elimina el archivo después de procesarlo
+        return;
+      }
       const uuid_table = uuidv4();
       const keepImage = row.imagen;
       const inputSchema = row;
