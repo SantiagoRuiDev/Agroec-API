@@ -17,7 +17,7 @@ export const inputSchema = Joi.object({
   modo_aplicacion: Joi.string().min(1).required(),
   intervalo_entrada: Joi.string().min(1).required(),
   link: Joi.string().min(1).required(),
-  atencion: Joi.string().min(1).required(),
+  atencion: Joi.string().min(1).required().strict(false),
 });
 
 export const inputMultipleSchema = Joi.object({
@@ -37,7 +37,7 @@ export const inputMultipleSchema = Joi.object({
   modo_aplicacion: Joi.string().min(1).required(),
   intervalo_entrada: Joi.string().min(1).required(),
   link: Joi.string().min(1).required(),
-  atencion: Joi.string().min(1).required(),
+  atencion: Joi.number().min(1).required().strict(false),
   imagen: Joi.string().min(1).required()
 });
 

@@ -1,10 +1,11 @@
 export const validateSchemas = (InputBuffer, Schema) => {
   const { error } = Schema.validate(InputBuffer, {
+    errors: { wrap: { label: false } }, // Evita mostrar índices en errores de arrays
     messages: {
-      "string.base": "{{#label}} debe ser de tipo texto",
-      "string.empty": "{{#label}} no puede estar vacio",
-      "string.min": "{{#label}} debe ser de al menos {{#limit}} caracteres",
-      "number.min": "{{#label}} debe ser mayor o igual que {{#limit}}",
+      "string.base": "El campo {{#label}} debe ser de tipo texto",
+      "string.empty": "El campo {{#label}} no puede estar vacio",
+      "string.min": "El campo {{#label}} debe ser de al menos {{#limit}} caracteres",
+      "number.min": "El campo {{#label}} debe ser mayor o igual que {{#limit}}",
       "string.email": "Ingresa un email valido",
       "string.pattern.base":
         "Tu contraseña debe contener al menos una mayuscula",
@@ -12,6 +13,9 @@ export const validateSchemas = (InputBuffer, Schema) => {
     },
   });
   if (error) {
-    throw new Error(error.details[0].message);
+    // Eliminar índices de los errores en arrays
+    const cleanMessage = error.details[0].message.replace(/\[\d+\]\./, "");
+
+    throw new Error(cleanMessage);
   }
 };
