@@ -4,7 +4,7 @@ export const createInput = async (uuid, uuid_user, schema) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO insumos
-      (id, id_usuario,categoria_insumo, nombre_comercial, precio_agroec	,precio_mas_iva ,incluido_iva ,precio_punto_venta, stock ,composicion ,clase ,tipo_formula	 ,titular ,clasificacion	 ,instrucciones_de_uso ,epoca_intervalo ,intervalo_entrada, link, atencion) 
+      (id, id_usuario,categoria_insumo, nombre_comercial, precio_agroec, precio_mas_iva, incluido_iva ,precio_punto_venta, stock ,composicion ,clase ,tipo_formula	 ,titular ,clasificacion	 ,instrucciones_de_uso ,epoca_intervalo ,intervalo_entrada, link, atencion) 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         uuid,

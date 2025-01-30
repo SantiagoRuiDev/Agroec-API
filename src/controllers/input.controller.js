@@ -41,14 +41,14 @@ export const createMultipleInput = async (req, res) => {
       const keepImage = row.imagen;
       const inputSchema = row;
       if(categories.filter(category => category.id == row.categoria_insumo).length > 0){
-        row.incluido_iva = (String(row.incluido_iva).toLowerCase() == "si") ? "true" : "false";
-        row.precio_mas_iva = (String(row.precio_mas_iva).toLowerCase() == "si") ? "true" : "false";
-        if(row.incluido_iva == "true") {
-          row.precio_mas_iva = "0";
-          row.incluido_iva == "1"
+        row.incluido_iva = (String(row.incluido_iva).toLowerCase() == "si") ? 1 : 0;
+        row.precio_mas_iva = (String(row.precio_mas_iva).toLowerCase() == "si") ? 1 : 0;
+        if(row.incluido_iva == 1) {
+          row.precio_mas_iva = 0;
+          row.incluido_iva == 1;
         } else {
-          row.precio_mas_iva = "1";
-          row.incluido_iva == "0"
+          row.precio_mas_iva = 1;
+          row.incluido_iva == 0;
         }
         if(keepImage){
           delete row.imagen;
