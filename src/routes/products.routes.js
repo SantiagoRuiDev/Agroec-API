@@ -4,7 +4,7 @@ import * as authMiddleware from '../middlewares/auth.middleware.js'
 
 export const router = Router();
 
-router.get('/data', productController.getMarketData)
+router.get('/price-analytics/:id', productController.getPriceAnalyticByProduct)
 router.get('/', productController.getAllProducts)
 router.get('/all', productController.getAllMarketProducts)
 router.post('/', authMiddleware.isAuthentified, productController.createProduct)

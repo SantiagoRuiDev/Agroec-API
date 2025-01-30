@@ -16,15 +16,15 @@ export const getAllMarketProducts = async (req, res) => {
   }
 };
 
-export const getMarketData = async (req, res) => {
+export const getPriceAnalyticByProduct = async (req, res) => {
   try {
-    const products = await productModel.getAllProducts();
+    const data = await productModel.getPriceAnalyticByProduct(req.params.id);
 
-    if (!products) {
-      res.status(404).send({ message: `No hay productos para mostrar` });
+    if (!data) {
+      res.status(404).send({ message: `No hay datos para mostrar` });
     }
 
-    res.status(200).send(products);
+    res.status(200).send(data);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

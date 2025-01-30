@@ -1,6 +1,70 @@
 import * as inputModel from "../models/input.model.js";
 import { v4 as uuidv4 } from "uuid";
 import * as profileChecker from "../libs/checker.js";
+import fs from "fs";
+import XLSX from "xlsx";
+import { inputMultipleSchemaArray } from "../schemas/input.schema.js";
+import { validateSchemas } from "../libs/schema.js";
+
+export const createMultipleInput = async (req, res) => {
+  try {
+    const uuid_user = req.user_id;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No se ha subido ningún archivo" });
+    }
+
+    if ((await profileChecker.isMerchantAgrochemical(uuid_user))) {
+      throw new Error(
+        "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
+      );
+    }
+
+    const filePath = req.file.path;
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    try {
+      validateSchemas(data, inputMultipleSchemaArray);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+      fs.unlinkSync(filePath); // Elimina el archivo después de procesarlo
+      return;
+    }
+
+    const categories = await inputModel.getInputCategories();
+
+    // Aquí puedes iterar sobre cada fila e insertarla en la base de datos
+    data.forEach(async (row) => {
+      const uuid_table = uuidv4();
+      const keepImage = row.imagen;
+      const inputSchema = row;
+      if(categories.filter(category => category.id == row.categoria_insumo).length > 0){
+        row.incluido_iva = (String(row.incluido_iva).toLowerCase() == "si") ? "true" : "false";
+        row.precio_mas_iva = (String(row.precio_mas_iva).toLowerCase() == "si") ? "true" : "false";
+        if(row.incluido_iva == "true") {
+          row.precio_mas_iva = "false";
+        } else {
+          row.precio_mas_iva = "true";
+          row.incluido_iva == "false"
+        }
+        if(keepImage){
+          delete row.imagen;
+        }
+        await inputModel.createInput(uuid_table, uuid_user, inputSchema);
+        await inputModel.insertImage(uuidv4(), uuid_table, keepImage);
+      }
+    });
+
+    fs.unlinkSync(filePath); // Elimina el archivo después de procesarlo
+    res
+      .status(200)
+      .send({ message: "Subida masiva exitosa" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 
 export const createInput = async (req, res) => {
   try {
@@ -8,8 +72,10 @@ export const createInput = async (req, res) => {
     const uuid_table = uuidv4();
     const inputSchema = req.body;
 
-    if(!await profileChecker.isMerchantAgrochemical(uuid_user)){
-      throw new Error("Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos")
+    if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
+      throw new Error(
+        "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
+      );
     }
 
     const createInput = await inputModel.createInput(
@@ -21,7 +87,9 @@ export const createInput = async (req, res) => {
       res.status(404).send({ message: "Error al crear el insumo" });
     }
 
-    res.status(200).send({ message: "Insumo creado correctamente", uuid: uuid_table });
+    res
+      .status(200)
+      .send({ message: "Insumo creado correctamente", uuid: uuid_table });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -29,42 +97,46 @@ export const createInput = async (req, res) => {
 
 export const deleteImage = async (req, res) => {
   try {
-      const input_id = req.params.input_id
+    const input_id = req.params.input_id;
 
-      const input = await inputModel.getInputById(input_id);
+    const input = await inputModel.getInputById(input_id);
 
-      if(input.images.length == 1){
-          throw new Error("Debes tener al menos dos imagenes para eliminar una");
-      }
+    if (input.images.length == 1) {
+      throw new Error("Debes tener al menos dos imagenes para eliminar una");
+    }
 
-      const deletedRow = await inputModel.deleteImage(req.params.id, input_id);
+    const deletedRow = await inputModel.deleteImage(req.params.id, input_id);
 
-      if(deletedRow > 0) {
-          return res.status(200).json({message: "Imagen eliminada correctamente"});
-      }
+    if (deletedRow > 0) {
+      return res
+        .status(200)
+        .json({ message: "Imagen eliminada correctamente" });
+    }
 
-      throw new Error("La eliminación de la imagen ha fallado, intenta nuevamente")
+    throw new Error(
+      "La eliminación de la imagen ha fallado, intenta nuevamente"
+    );
   } catch (error) {
-      return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
-}
+};
 
 export const insertImageInput = async (req, res) => {
   try {
-      const input_id = req.params.input_id;
+    const input_id = req.params.input_id;
 
-      if(req.images_urls){
-          for(const image of req.images_urls){
-              await inputModel.insertImage(uuidv4(), input_id, image);
-          }
-          return res.status(200).json({message: "Imagenes subidas con exito"});
+    if (req.images_urls) {
+      for (const image of req.images_urls) {
+        await inputModel.insertImage(uuidv4(), input_id, image);
       }
+      return res.status(200).json({ message: "Imagenes subidas con exito" });
+    }
 
-      throw new Error("La subida de la imagen ha fallado, intenta nuevamente")
+    throw new Error("La subida de la imagen ha fallado, intenta nuevamente");
   } catch (error) {
-      return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
-}
+};
 
 export const updateInput = async (req, res) => {
   try {
@@ -117,70 +189,74 @@ export const insertInputImage = async (req, res) => {
 };
 
 export const getInputById = async (req, res) => {
-  try{
+  try {
     const input_id = req.params.input_id;
 
     const input = await inputModel.getInputById(input_id);
-  
+
     if (!input) {
-      return res.status(404).send({ message: 'Error al obtener el insumo por id' });
+      return res
+        .status(404)
+        .send({ message: "Error al obtener el insumo por id" });
     }
-  
+
     return res.status(200).send(input);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 };
 
 export const getInputByCreatorId = async (req, res) => {
-  try{
-
+  try {
     const creatorUserId = req.user_id;
 
     const inputCreator = await inputModel.getInputByCreatorId(creatorUserId);
-  
+
     if (!inputCreator) {
-      return res.status(404).send({ message: 'Error al obtener el insumo del creador' });
+      return res
+        .status(404)
+        .send({ message: "Error al obtener el insumo del creador" });
     }
-  
-   return res.status(200).send({ message: `Insumo obtenido correctamente del creador con id: ${creatorUserId}`, inputCreator });
+
+    return res
+      .status(200)
+      .send({
+        message: `Insumo obtenido correctamente del creador con id: ${creatorUserId}`,
+        inputCreator,
+      });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 };
 
 export const getInputCategories = async (req, res) => {
-  try{
+  try {
     const categories = await inputModel.getInputCategories();
-  
+
     if (!categories) {
-      return res.status(404).send({ message: 'Error al obtener las categorias' });
+      return res
+        .status(404)
+        .send({ message: "Error al obtener las categorias" });
     }
-  
-   return res.status(200).send(categories);
+
+    return res.status(200).send(categories);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 };
 
 export const getAllInputs = async (req, res) => {
-  try{
+  try {
+    const getAllInputs = await inputModel.getAllInputsByCategory(
+      req.params.category
+    );
 
-    const getAllInputs = await inputModel.getAllInputsByCategory(req.params.category);
-  
     if (!getAllInputs) {
-      return res.status(404).send({ message: 'Error al obtener los insumos' });
+      return res.status(404).send({ message: "Error al obtener los insumos" });
     }
-  
-   return res.status(200).send(getAllInputs);
+
+    return res.status(200).send(getAllInputs);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 };
-
-
-

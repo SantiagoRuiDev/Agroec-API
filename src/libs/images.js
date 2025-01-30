@@ -14,6 +14,32 @@ const storage = multer.diskStorage({
     }
 });
 
+const storageTemp = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/temp'); // Carpeta temporal para archivos XLSX
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const uploadTemp = multer({
+    storage: storageTemp,
+    limits: { fileSize: 1024 * 1024 * 10 }, // 10MB límite
+    fileFilter: (req, file, cb) => {
+        const filetypes = /xlsx|xls/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+        if (mimetype || extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Error: Solo archivos Excel (xlsx, xls) son permitidos!'));
+        }
+    }
+});
+
+
 const upload = multer({
     storage: storage,
     limits: {
@@ -50,4 +76,4 @@ const addFileUrls = (req, res, next) => {
 };
 
 
-export { upload, addFileUrl, addFileUrls };
+export { upload, addFileUrl, addFileUrls, uploadTemp };
