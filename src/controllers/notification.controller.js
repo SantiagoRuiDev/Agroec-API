@@ -40,7 +40,7 @@ export const setUserOneSignalMobileSuscription = async (req, res) => {
         req.user_id,
         req.params.id
       );
-
+      console.log(req.params.id, "Usuario movil ha suscribido a notificaciones")
     if (notifications > 0) {
       return res
         .status(200)
