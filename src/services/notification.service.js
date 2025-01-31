@@ -1,6 +1,7 @@
 import * as notificationModel from '../models/notifications.model.js';
 import { v4 as uuidv4 } from "uuid";
 import axios from 'axios';
+import { APP_SETTINGS } from '../libs/config.js';
 
 export const getNotificationsAndRead = async (uuid_user) => {
     try {
@@ -54,8 +55,8 @@ export const setUserOneSignalSubscription = async (uuid_user, uuid_subscription)
 }
 
 export const sendPushNotification = async (title, message, player_uuids, url) => {
-    const appId = 'aac4070e-a56e-47fb-b3c6-7a197cccb349'; // Reemplaza con tu App ID
-    const apiKey = 'Mjk3ZWUzMTEtNTViYy00ZTk5LTk5NTEtN2JhMGU1NWFmN2E5'; // Reemplaza con tu REST API Key
+    const appId = APP_SETTINGS.onesignal_app_id; // Reemplaza con tu App ID
+    const apiKey = APP_SETTINGS.onesignal_api_key; // Reemplaza con tu REST API Key
 
     const payload = {
         app_id: appId,
@@ -72,15 +73,14 @@ export const sendPushNotification = async (title, message, player_uuids, url) =>
                 Authorization: `Basic ${apiKey}`,
             },
         });
-        console.log('Notificación enviada:', response.data);
     } catch (error) {
         console.error('Error enviando notificación:', error.response.data);
     }
 };
 
 export const sendPushNotificationToAll = async (title, message, url) => {
-    const appId = 'aac4070e-a56e-47fb-b3c6-7a197cccb349'; // Reemplaza con tu App ID
-    const apiKey = 'Mjk3ZWUzMTEtNTViYy00ZTk5LTk5NTEtN2JhMGU1NWFmN2E5'; // Reemplaza con tu REST API Key
+    const appId = APP_SETTINGS.onesignal_app_id; // Reemplaza con tu App ID
+    const apiKey = APP_SETTINGS.onesignal_api_key; // Reemplaza con tu REST API Key
 
     const payload = {
         app_id: appId,
@@ -97,7 +97,6 @@ export const sendPushNotificationToAll = async (title, message, url) => {
                 Authorization: `Basic ${apiKey}`,
             },
         });
-        console.log('Notificación enviada a todos:', response.data);
     } catch (error) {
         console.error('Error enviando notificación:', error);
     }

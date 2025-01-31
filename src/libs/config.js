@@ -26,5 +26,7 @@ export const APP_SETTINGS = {
     secure: process.env.SECURE,
     max_pending_orders: process.env.MAX_PENDING_ORDERS,
     max_unreceived_orders: process.env.MAX_UNRECEIVED_ORDERS,
+    onesignal_api_key: process.env.ONESIGNAL_API_KEY,
+    onesignal_app_id: process.env.ONESIGNAL_APP_ID,
     production: (process.env.PRODUCTION == 'true') ? true : false
 }

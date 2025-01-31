@@ -1520,7 +1520,8 @@ CREATE TABLE `usuarios` (
   `ubicacion_google_maps` text DEFAULT NULL,
   `telefono` varchar(50) DEFAULT NULL,
   `estado` int(11) DEFAULT 0,
-  `id_subscripcion` varchar(250) DEFAULT NULL
+  `id_subscripcion` varchar(250) DEFAULT NULL,
+  `id_subscripcion_movil` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
