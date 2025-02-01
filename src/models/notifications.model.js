@@ -1,5 +1,49 @@
 import { connection } from "../index.js";
 
+export const createNotificationReceptor = async (
+  uuid,
+  uuid_user,
+  uuid_onesignal
+) => {
+  try {
+    const [receptorExist] = await connection.query(
+      `SELECT * FROM notificaciones_receptores WHERE id_usuario = ? AND id_onesignal = ?`,
+      [uuid_user, uuid_onesignal]
+    );
+    if(receptorExist.length > 0){
+      return 0;
+    }
+
+    const [insert] = await connection.query(
+      `INSERT INTO notificaciones_receptores
+      (id, id_usuario, id_onesignal) 
+      VALUES(?,?,?)`,
+      [uuid, uuid_user, uuid_onesignal]
+    );
+
+    return insert.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getReceptorsByUser = async (uuid_user) => {
+  try {
+    const [statement] = await connection.query(
+      `
+      SELECT id_onesignal
+      FROM notificaciones_receptores
+      WHERE id_usuario = ?`,
+      [uuid_user]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const createNotification = async (
   uuid_notification,
   uuid_user,

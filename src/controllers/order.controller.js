@@ -84,11 +84,13 @@ export const setOrderShippedStatus = async (req, res) => {
 
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "En camino");
-      const user = await authModel.getAccountById(orderDetails.id_comprador);
       await notificationService.sendPushNotification(
         "Tu orden esta en camino",
         "El vendedor marco la orden como despachada",
-        [user.id_subscripcion, user.id_subscripcion_movil]
+        await notificationService.getNotificationsReceptors(
+          orderDetails.id_comprador
+        ),
+        "/order/" + order_id // FALTA ID CHAT
       );
     }
 
@@ -125,12 +127,14 @@ export const setOrderDeliveredStatus = async (req, res) => {
 
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "Entregada");
-      const user = await authModel.getAccountById(orderDetails.id_comprador);
       await notificationService.sendPushNotification(
         "La orden fue entregada",
         "El vendedor indico que recibiste la orden #" +
           String(order_id).slice(0, 8),
-          [user.id_subscripcion, user.id_subscripcion_movil]
+        await notificationService.getNotificationsReceptors(
+          orderDetails.id_comprador
+        ),
+        "/order/" + order_id // FALTA ID CHAT
       );
     }
 
@@ -157,8 +161,10 @@ export const setOrderReceivedStatus = async (req, res) => {
 
       let order = false;
 
-      if(!await orderModel.checkDeliveredStatus(order_id)){
-        throw new Error("Debes esperar al que vendedor indique que recibiste la orden");
+      if (!(await orderModel.checkDeliveredStatus(order_id))) {
+        throw new Error(
+          "Debes esperar al que vendedor indique que recibiste la orden"
+        );
       }
 
       order = await orderModel.createReceivedStatus(uuidv4(), order_id);
@@ -169,17 +175,19 @@ export const setOrderReceivedStatus = async (req, res) => {
         const notification = await notificationService.createNotification(
           orderDetails.id_vendedor,
           orderDetails.id_producto,
-            "El comprador marco la orden como recibida",
-            "Orden de " + orderDetails.id_producto,
-            "/order/" + order_id // FALTA ID CHAT
+          "El comprador marco la orden como recibida",
+          "Orden de " + orderDetails.id_producto,
+          "/order/" + order_id // FALTA ID CHAT
         );
 
         if (notification) {
-          const user = await authModel.getAccountById(orderDetails.id_vendedor);
           await notificationService.sendPushNotification(
             "La orden fue recibida",
             "El comprador ha recibido la orden " + String(order_id).slice(0, 8),
-            [user.id_subscripcion, user.id_subscripcion_movil]
+            await notificationService.getNotificationsReceptors(
+              orderDetails.id_vendedor
+            ),
+            "/order/" + order_id // FALTA ID CHAT
           );
         }
         await orderModel.updateOrderStatus(order_id, "Recibido");
@@ -215,8 +223,10 @@ export const setOrderRejectedStatus = async (req, res) => {
     if (await profileChecker.isBuyerProfile(req.user_id)) {
       let order = false;
 
-      if(!await orderModel.checkDeliveredStatus(order_id)){
-        throw new Error("Debes esperar al que vendedor indique que recibiste la orden")
+      if (!(await orderModel.checkDeliveredStatus(order_id))) {
+        throw new Error(
+          "Debes esperar al que vendedor indique que recibiste la orden"
+        );
       }
 
       order = await orderModel.createRejectedStatus(
@@ -239,12 +249,14 @@ export const setOrderRejectedStatus = async (req, res) => {
         );
 
         if (notification) {
-          const user = await authModel.getAccountById(orderDetails.id_vendedor);
           await notificationService.sendPushNotification(
             "La orden fue rechazada",
             "El comprador ha rechazado la orden " +
               String(order_id).slice(0, 8),
-              [user.id_subscripcion, user.id_subscripcion_movil]
+            await notificationService.getNotificationsReceptors(
+              orderDetails.id_vendedor
+            ),
+            "/order/" + order_id // FALTA ID CHAT
           );
         }
 
@@ -302,7 +314,9 @@ export const setOrderDeliveryDate = async (req, res) => {
       let order = true;
 
       if (!(await orderModel.checkDeliveredStatus(order_id))) {
-        throw new Error("Debes esperar al que vendedor indique que recibiste la orden");
+        throw new Error(
+          "Debes esperar al que vendedor indique que recibiste la orden"
+        );
       }
       if (await orderModel.checkRevisionStatus(order_id)) {
         throw new Error("Ya has marcado anteriormente un periodo de revisión");
@@ -320,20 +334,20 @@ export const setOrderDeliveryDate = async (req, res) => {
             orderDetails.id_vendedor,
             orderDetails.id_producto,
             "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
-                req.body.fecha,
+              req.body.fecha,
             "Orden de " + orderDetails.id_producto,
             "/order/" + order_id // FALTA ID CHAT
           );
 
           if (notification) {
-            const user = await authModel.getAccountById(
-              orderDetails.id_vendedor
-            );
             await notificationService.sendPushNotification(
               "La orden fue recibida",
               "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
                 req.body.fecha,
-                [user.id_subscripcion, user.id_subscripcion_movil]
+              await notificationService.getNotificationsReceptors(
+                orderDetails.id_vendedor
+              ),
+              "/order/" + order_id // FALTA ID CHAT
             );
           }
         }

@@ -24,6 +24,16 @@ export const getNotificationsUnreadedByUser = async (uuid_user) => {
     }
 }
 
+export const getNotificationsReceptors = async (uuid_user) => {
+    try {
+        const notifications = await notificationModel.getReceptorsByUser(uuid_user);
+        
+        return notifications;
+    } catch (error) {
+        throw new Error("Error al leer los receptores: " + error.message);
+    }
+}
+
 export const createNotification = async (uuid_user, uuid_product, message, title, redirection) => {
     try {
         const notification = await  notificationModel.createNotification(uuidv4(), uuid_user, uuid_product, message, title, redirection);
@@ -34,21 +44,11 @@ export const createNotification = async (uuid_user, uuid_product, message, title
     }
 }
 
-export const setUserOneSignalMobileSubscription = async (uuid_user, uuid_subscription) => {
+export const createNotificationReceptor = async (uuid_user, uuid_subscription) => {
     try {
-        const updatedRowResult = await notificationModel.setUserOneSignalMobileSubscription(uuid_user, uuid_subscription) 
+        const insertedRowResult = await notificationModel.createNotificationReceptor(uuidv4(), uuid_user, uuid_subscription) 
         
-        return updatedRowResult;
-    } catch (error) {
-        throw new Error("Error al actualizar el identificador de la subscripcion: " + error.message);
-    }
-}
-
-export const setUserOneSignalSubscription = async (uuid_user, uuid_subscription) => {
-    try {
-        const updatedRowResult = await notificationModel.setUserOneSignalSubscription(uuid_user, uuid_subscription) 
-        
-        return updatedRowResult;
+        return insertedRowResult;
     } catch (error) {
         throw new Error("Error al actualizar el identificador de la subscripcion: " + error.message);
     }

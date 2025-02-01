@@ -12,35 +12,14 @@ export const getNotificationsAndRead = async (req, res) => {
   }
 };
 
-export const setUserOneSignalSubscription = async (req, res) => {
+export const createNotificationReceptor = async (req, res) => {
   try {
     const notifications =
-      await notificationService.setUserOneSignalSubscription(
+      await notificationService.createNotificationReceptor(
         req.user_id,
         req.params.id
       );
 
-    if (notifications > 0) {
-      return res
-        .status(200)
-        .send({ message: "Identificador de subscripcion actualizado" });
-    }
-
-    throw new Error("Error al actualizar el identificador de subscripcion");
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-};
-
-
-export const setUserOneSignalMobileSuscription = async (req, res) => {
-  try {
-    const notifications =
-      await notificationService.setUserOneSignalMobileSubscription(
-        req.user_id,
-        req.params.id
-      );
-      console.log(req.params.id, "Usuario movil ha suscribido a notificaciones")
     if (notifications > 0) {
       return res
         .status(200)
