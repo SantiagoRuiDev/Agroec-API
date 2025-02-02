@@ -39,6 +39,8 @@ CREATE TABLE `billetera` (
 
 INSERT INTO `billetera` (`id`, `id_usuario`, `saldo`) VALUES
 ('0262bee8-fba5-41db-bbe1-66d6abece717', 'e8799658-2fbd-4e90-b2f0-82b62568968b', 0),
+('0629111f-ac9a-4882-8a24-965ed959b269', '7a37783c-e001-4d4f-8cd4-104122d33044', 0),
+('327fdf45-b665-4ee4-901b-db4fd9a218eb', '94a0909b-f61a-48e2-9ddc-504a0f1b4356', 0),
 ('4c818dbf-8dfe-40cd-af7c-0283c5e49f14', '196797f5-cad5-4575-a5e0-349f4b0b6e98', 0),
 ('b0572fcd-314b-406b-bcb8-e3710d91c312', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 50),
 ('bff09880-6b5d-4b7d-8b80-4e958e6cb859', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 0),
@@ -144,10 +146,12 @@ INSERT INTO `chat` (`id`, `id_comprador`, `id_vendedor`, `id_condiciones`) VALUE
 ('754bd3e1-358d-485b-9bc5-22b02b31ed29', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'db47147f-2b21-4b94-914b-de32238b1c2c'),
 ('7602d7bb-9bc7-47c1-bfcd-98d022d4721a', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '2dbdf34a-6068-4b65-a165-b099a0c3aecb'),
 ('80e8cab9-d960-4efd-9000-878374a32730', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '25ae36a3-f96d-4e0d-8d72-c47b61fbb527'),
+('8808084a-3eae-4278-9ec1-1ec80ae326c5', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '77877c7c-cfac-4c8d-8b30-9821d2704ff1'),
 ('8f561883-2514-4524-ade6-b6bc5f940945', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'd62ecc78-6424-44c1-8cfa-c30cfc90476e'),
 ('950506c7-4051-46a5-8073-ba92892254b7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'fc25d3e8-dd66-432f-ba01-88bb117791d0'),
 ('d2046d86-f8ad-473f-b123-1ad94c71532a', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '802acdfe-af6a-420d-a93e-2a1f88181683'),
 ('d549b828-cf24-454a-a765-b88ede384139', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '7d3721cd-1ee9-4aab-ac44-a0f6b014586e'),
+('d8707c7f-a80c-4361-bf87-0d64d8d3c6d7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'c3fb6ee2-ae1e-4934-b4eb-0485dc15e758'),
 ('dba19580-6a8a-4b1f-99dd-a01ddf362bbc', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '0977de59-5156-4b48-97d3-348e9aa3f738'),
 ('ddd56dd0-b178-4d42-a21b-bca852185de3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '02b4e9d0-8ecb-49b8-859c-d454aff20f6a'),
 ('e579772f-49e0-4179-b8bb-a2865d24680c', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'fadf7488-6951-4376-8c81-77606f4c60d2'),
@@ -226,12 +230,14 @@ INSERT INTO `condiciones_compra` (`id`, `id_producto`, `precio`, `precio_unidad`
 ('5cee8d60-1a09-4a5d-9e46-0d677b4412e2', 'Cacao', 2, 'KG', 60, 'KG', 'Modo Garantía', 30, 'Pago en sitio', 70, 'Nada que agregar.', 1, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('648fb6e6-d02a-4c93-9257-b6b386a5a2c4', 'Maiz', 2.3, 'KG', 25, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('73751a53-ff26-496c-95df-f78062822468', 'Tomate', 250, 'KG', 200, 'KG', 'Modo Garantía', 20, 'Pago en sitio', 80, '', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
+('77877c7c-cfac-4c8d-8b30-9821d2704ff1', 'Maiz', 1.8, 'QQ', 15, 'QQ', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('7a663566-3126-4f27-850a-a56f7f46d136', 'Maiz', 2.1, 'KG', 25, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('7d3721cd-1ee9-4aab-ac44-a0f6b014586e', 'Maiz', 2.4, 'KG', 45, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('802acdfe-af6a-420d-a93e-2a1f88181683', 'Maracuya', 2.3, 'KG', 20, 'KG', 'Modo Garantía', 20, 'Pago en sitio', 80, 'Nada adicional.', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('86e50ddb-eb69-4714-b663-d1e7b9e9a61b', 'Cacao', 2.4, 'KG', 25, 'KG', 'Modo Garantía', 50, 'Pago en sitio', 50, 'Nada que agregar', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('b75501ae-fe6a-49a2-9c28-c40283bcf2d4', 'Maiz', 13, 'QQ', 150, 'QQ', 'Pago en sitio', 0, 'Pago en sitio', 0, 'Cumplir condiciones de compra', 1, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('bc5cec82-e0bf-4d8d-a070-5288b5147280', 'Tomate', 0, 'KG', 0, 'KG', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
+('c3fb6ee2-ae1e-4934-b4eb-0485dc15e758', 'Maiz', 2.1, 'QQ', 10, 'QQ', 'Modo Garantía', 0, 'Pago en sitio', 0, '\'\'', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('c6e697d5-90fc-412d-a262-1f25172e4ea1', 'Tomate', 2, 'QQ', 85, 'QQ', 'Modo Garantía', 70, 'Pago en sitio', 30, 'Nada que agregar', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('d16254f4-b830-4408-8a7c-647112af31a1', 'Arroz', 2.2, 'KG', 35, 'KG', 'Pago en sitio', 0, 'Pago en sitio', 0, 'Nada que agregar', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
 ('d62ecc78-6424-44c1-8cfa-c30cfc90476e', 'Maiz', 2.3, 'KG', 25, 'KG', 'Pago a crédito', 0, 'Pago en sitio', 0, 'Nada', 0, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
@@ -306,6 +312,7 @@ CREATE TABLE `cuenta_bancaria` (
 --
 
 INSERT INTO `cuenta_bancaria` (`id`, `tipo_de_cuenta`, `numero_de_cuenta`, `seleccionar_banco`, `tipo_de_documento`, `numero_de_documento`, `nombre_del_propietario`) VALUES
+('206e3ced-75cd-48a0-8841-fda116e4fe5e', 'Ahorro', 2832323, 'Banco Guayaquil', 'Cédula', '1343566431', 'Pedro Ramirez'),
 ('2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Ahorro', 2147483647, 'Banco Pichincha', 'Cédula', '2147483647', 'Edward Lopez'),
 ('3b32e7e2-0ee3-49fe-af58-2042d07cc5e4', 'Ahorro', 3321333, 'A', 'RUC', '67567657', 'Ramiro Lopez'),
 ('7d63f627-86b1-449e-b897-a42783fce22d', 'Ahorro', 2147483647, 'Banco Guayaquil', 'Cédula', '2938134723', 'Gabriel Diaz'),
@@ -690,13 +697,14 @@ CREATE TABLE `notificaciones` (
 
 INSERT INTO `notificaciones` (`id`, `id_notificado`, `id_producto`, `mensaje`, `titulo`, `redireccion`, `fecha`, `vista`) VALUES
 ('001e36b0-e6de-40a4-ba98-078ce71a3b74', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 'Nueva propuesta de venta de Maiz', 'Propuesta de venta', '/chat/licitacion/Maiz/d549b828-cf24-454a-a765-b88ede384139', '2024-11-21 14:20:09', 1),
+('017978c7-dccc-48d4-a066-542ebb86a61d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 'Nueva propuesta de venta de Maiz', 'Propuesta de venta', '/chat/licitacion/Maiz/8808084a-3eae-4278-9ec1-1ec80ae326c5', '2025-01-29 09:06:15', 1),
 ('05e08c64-369e-4992-8803-0e9540166342', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/chat/licitacion/Cacao/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 13:36:12', 1),
-('274c54bc-e2ec-4b77-b10f-ac06db9d5409', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha completado el pago de garantía de $31.50', 'Pago de garantía', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:02', 0),
+('274c54bc-e2ec-4b77-b10f-ac06db9d5409', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha completado el pago de garantía de $31.50', 'Pago de garantía', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:02', 1),
 ('3b2fe932-e37b-4f9b-8e69-b8f3647469e1', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Nueva propuesta de compra de Cacao', 'Propuesta de compra', '/app/chat/oferta/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 08:00:00', 1),
 ('3cabe8bd-ea3d-43c1-a650-4e9a20f0e02e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Nueva propuesta de compra de Cacao', 'Propuesta de compra', '/app/chat/oferta/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 13:36:04', 1),
 ('3de44174-2a62-4dd0-a711-130d0eb8a909', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 17:14:37', 1),
 ('3e6409b1-decb-4640-9210-5b5ca1c3cf2d', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 17:14:28', 1),
-('3f6dffc4-39e3-4e98-9ffb-ff07e6a4e870', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha aceptado la propuesta', 'Propuesta de compra', '/app/chat/oferta/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:55:09', 0),
+('3f6dffc4-39e3-4e98-9ffb-ff07e6a4e870', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha aceptado la propuesta', 'Propuesta de compra', '/app/chat/oferta/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:55:09', 1),
 ('40921923-5634-4a24-a8b1-a296e31039a3', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha aceptado la propuesta', 'Propuesta de compra', '/app/chat/oferta/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 13:38:15', 1),
 ('430f8267-52d0-4ed0-8733-99be4a66c61c', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 17:16:01', 1),
 ('48c009e4-53d2-40c0-a9ba-f767c8edf24a', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/chat/licitacion/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 10:00:00', 1),
@@ -708,9 +716,9 @@ INSERT INTO `notificaciones` (`id`, `id_notificado`, `id_producto`, `mensaje`, `
 ('5d4b828b-701e-4b0b-aa37-eb4a32e92327', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 22:32:56', 1),
 ('5ddac855-0817-45f0-8668-976c9a594ca4', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 'Nueva propuesta de venta de Maiz', 'Propuesta de venta', '/chat/licitacion/Maiz/1e23dd74-1866-435b-81ec-48e36ac5c773', '2024-11-21 14:04:19', 1),
 ('5ed0ed0d-0c45-4a4e-9885-7c05784d145f', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor marco la orden como despachada', 'Orden de Cacao', '/order/28e74cec-913f-4fc7-989a-7cea5538461f', '2024-11-18 14:00:00', 1),
-('6167107d-a58f-46bf-b772-949fb31cd712', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor indico que recibiste la orden', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:53', 0),
+('6167107d-a58f-46bf-b772-949fb31cd712', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor indico que recibiste la orden', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:53', 1),
 ('6ec06bf4-25ac-4e1a-8254-ebc5115cbd8b', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/chat/licitacion/Cacao/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 14:01:28', 1),
-('72a89a1c-0531-4fb2-965d-5026450dadf0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:54:53', 0),
+('72a89a1c-0531-4fb2-965d-5026450dadf0', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:54:53', 1),
 ('75ab0014-94d4-41ca-a856-b9a145912503', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador ha aceptado la propuesta', 'Propuesta de compra', '/app/chat/oferta/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-21 13:34:39', 1),
 ('8204c464-f446-488c-9efc-5efa3e505dbf', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 16:59:14', 1),
 ('8419212f-2ba1-480f-80ec-cbb1ba342cfc', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 13:38:01', 1),
@@ -718,7 +726,7 @@ INSERT INTO `notificaciones` (`id`, `id_notificado`, `id_producto`, `mensaje`, `
 ('94b805b4-9293-4f46-b53c-e6f7cfb1b544', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Nueva propuesta de compra de Cacao', 'Propuesta de compra', '/app/chat/oferta/8e5df4ce-978e-4077-9616-fa74f423cc09', '2024-12-02 11:05:31', 1),
 ('96dacd9c-4e28-497c-a32a-31dab73b0f63', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maiz', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/8f561883-2514-4524-ade6-b6bc5f940945', '2024-11-25 15:27:30', 1),
 ('97aa5461-49ef-419b-a0f2-851e118c2d0d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/dba19580-6a8a-4b1f-99dd-a01ddf362bbc', '2024-11-21 14:03:32', 1),
-('9adcea3f-5d42-4acd-a776-03d4a20fb5f4', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:54:38', 0),
+('9adcea3f-5d42-4acd-a776-03d4a20fb5f4', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-16 09:54:38', 1),
 ('a80f2120-adf3-4ac2-add8-48954ec3f71c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Nueva propuesta de compra de Cacao', 'Propuesta de compra', '/app/chat/oferta/7602d7bb-9bc7-47c1-bfcd-98d022d4721a', '2024-12-02 11:05:33', 1),
 ('b6b0a405-e96c-4a65-8025-e8abdef56e90', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maracuya', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/950506c7-4051-46a5-8073-ba92892254b7', '2024-11-25 15:38:04', 1),
 ('bba279d3-b0a5-4412-b591-dce1b144eaae', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor indico que recibiste la orden', 'Orden de Cacao', '/order/28e74cec-913f-4fc7-989a-7cea5538461f', '2024-11-19 17:45:20', 1),
@@ -727,14 +735,34 @@ INSERT INTO `notificaciones` (`id`, `id_notificado`, `id_producto`, `mensaje`, `
 ('ccfbb16d-30fa-473b-9959-c7ca748f06d1', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Nueva propuesta de compra de Cacao', 'Propuesta de compra', '/app/chat/oferta/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 17:31:34', 1),
 ('ce74ec63-6933-4796-aeb6-41da8be15171', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/chat/licitacion/Cacao/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 22:02:58', 1),
 ('d93ccc74-107e-4edf-833e-38529266d3a7', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 21:58:15', 1),
-('d976be5e-fe87-454b-963c-ffe873c76bb7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor marco la orden como despachada', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:48', 0),
+('d976be5e-fe87-454b-963c-ffe873c76bb7', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor marco la orden como despachada', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:13:48', 1),
 ('e0d78ff4-e490-4906-8829-4fcc101bacef', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Maracuya', 'Nueva propuesta de compra de Maracuya', 'Propuesta de compra', '/app/chat/oferta/950506c7-4051-46a5-8073-ba92892254b7', '2024-11-25 15:37:24', 1),
 ('e641840e-2ed5-48c9-ba48-1cf305811b4e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'El vendedor ha aceptado la propuesta', 'Propuesta de compra', '/chat/licitacion/Cacao/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 22:41:00', 1),
 ('e7c12989-bd52-436b-83d7-37a44b6987ad', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Las condiciones han sido actualizadas. Visita dando click en el botón condiciones y tanto comprador como vendedor deben aceptar la oferta.', 'Condición Actualizada', '/app/chat/oferta/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 13:10:39', 1),
 ('ed502cca-33ff-4b56-a6dd-689e85df4467', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador marco la orden como recibida', 'Orden de Cacao', '/order/28e74cec-913f-4fc7-989a-7cea5538461f', '2024-11-19 17:45:29', 1),
 ('f16a74bd-5d1d-4843-bca4-b2085fdfe812', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/chat/licitacion/Cacao/80e8cab9-d960-4efd-9000-878374a32730', '2024-11-19 22:40:56', 1),
-('f1bc75f4-f0d4-4842-81da-0246f5ef2a8c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador marco la orden como recibida', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:16:23', 0),
+('f1bc75f4-f0d4-4842-81da-0246f5ef2a8c', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'El comprador marco la orden como recibida', 'Orden de Cacao', '/order/a562595f-9bdb-4053-bb1e-b95a2ef54798', '2024-12-12 10:16:23', 1),
+('f2215a94-cf11-4268-9702-5f539d95c55d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 'Nueva propuesta de venta de Maiz', 'Propuesta de venta', '/chat/licitacion/Maiz/d8707c7f-a80c-4361-bf87-0d64d8d3c6d7', '2025-01-29 08:44:13', 1),
 ('f4770378-3ae7-4849-bbd3-7eb11e9f1f96', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cacao', 'Has recibido un mensaje en la negociación', 'Mensaje Recibido', '/app/chat/licitacion/f2266c90-e844-4dad-81a1-4108c4d6a35c', '2024-11-19 09:00:00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificaciones_receptores`
+--
+
+CREATE TABLE `notificaciones_receptores` (
+  `id` varchar(250) NOT NULL,
+  `id_usuario` varchar(250) NOT NULL,
+  `id_onesignal` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `notificaciones_receptores`
+--
+
+INSERT INTO `notificaciones_receptores` (`id`, `id_usuario`, `id_onesignal`) VALUES
+('a18c7244-4464-48c7-ae9a-e7787063ce46', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '3a1cf02c-a5f9-4f8a-ba95-ddb6b72e7585');
 
 -- --------------------------------------------------------
 
@@ -931,6 +959,7 @@ CREATE TABLE `perfil_comerciante` (
 --
 
 INSERT INTO `perfil_comerciante` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
+('30056457-d922-4e66-8f2d-e1f672fec450', '7a37783c-e001-4d4f-8cd4-104122d33044', '206e3ced-75cd-48a0-8841-fda116e4fe5e', 'Comerciante', 'Expoagro', 1, 200, 1, 200, 1),
 ('464e5614-230d-4639-aa91-098995c44b91', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e4569839-638b-4f03-92ca-44217c2b0719', 'Comerciante', 'Pedro Ramirez', 1, 4, 1, 7, 1);
 
 -- --------------------------------------------------------
@@ -983,6 +1012,7 @@ CREATE TABLE `perfil_comprador` (
 
 INSERT INTO `perfil_comprador` (`id`, `id_usuario`, `razon_social`, `actividad_economica`, `tipo_negocio`, `consumo_mes_tm`, `consumo_anual`, `presupuesto_mes`, `politicas_recepcion`) VALUES
 ('41a2b5e9-3e6e-4cb2-8688-3843f9b3e028', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cerealera los Hermanos', 'Cereales y Productos Agricolas', 'Industrial', 2500, 48000, 5000, 'Somos una empresa seria, que necesita de stock para producir, por favor respeta los tiempos.'),
+('4e68181b-085c-416d-9e94-90f46fdb9b99', '94a0909b-f61a-48e2-9ddc-504a0f1b4356', 'AgroSA', 'Cereales y Productos Agricolas', 'Industrial', 200, 200, 200, 'Nada'),
 ('c9fc13e4-1853-42a3-ab95-a36794f90208', '7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Keppe S.A', 'Cereales y Productos Agricolas', 'Industrial', 200, 260, 350, 'Notas'),
 ('df6668ab-9b3a-4c36-98fa-ca519617b6d0', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 'CRL AS', 'Cereales y Productos Agricolas', 'Comercial', 125, 250, 150, 'Nada');
 
@@ -1027,11 +1057,18 @@ CREATE TABLE `preferencias` (
 INSERT INTO `preferencias` (`id`, `id_producto`, `id_usuario`, `url_castigos`, `parametros`) VALUES
 ('00ba0f58-b9a1-457e-b523-6f25b4aba18b', 'Cacao', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', '', 1),
 ('08daf0c2-77b4-494c-b535-6ea444f20da8', 'Polvillo de Arroz', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'https://agroec-api.onrender.com/public/sheets/sheet-1736777843806-971161436.xlsx', 1),
-('35ba211d-dbf8-4d97-92da-e19cbfe70bab', 'Cacao', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 0),
+('1825f26d-e602-4dfd-bfc7-6009858d4096', 'Cacao', '94a0909b-f61a-48e2-9ddc-504a0f1b4356', '', 0),
+('1c40ffad-a2df-4e11-a7a8-c69e73d14e85', 'Maiz', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 1),
+('3d7e3f97-f357-44cf-a1b4-2a075ae9c3e4', 'Cacao', '7a37783c-e001-4d4f-8cd4-104122d33044', '', 0),
+('46f24056-810a-47a5-8056-f7e2898df196', 'Cacao', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'https://agroec-api.onrender.com/public/sheets/sheet-1737213214242-631948133.xlsx', 1),
+('70683c8d-ccb4-4e72-8a16-b6261adf62db', 'Arroz', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 0),
+('7bd8bd52-5d3b-4f1c-b94a-4d5c0c4be68b', 'Maracuya', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '', 0),
+('89c169a6-67e7-497d-9b98-cf2f8c80c40d', 'Maiz', '94a0909b-f61a-48e2-9ddc-504a0f1b4356', 'https://agroec-api.onrender.com/public/sheets/sheet-1737387024896-838439004.xlsx', 1),
+('99487dd1-5856-4041-8838-44c048c895de', 'Maiz', '7a37783c-e001-4d4f-8cd4-104122d33044', '', 0),
 ('b276aafe-912c-456e-a366-4bcf1be2c439', 'Maracuya', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 'https://agroec-api.onrender.com/public/sheets/sheet-1736881968614-669283245.xlsx', 1),
 ('ce9d4ef7-ec15-402b-8d76-e693269d6dec', 'Maiz', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '', 0),
-('e26b2d59-7b4a-4d43-8170-0dee71c2061c', 'Cacao', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'https://agroec-api.onrender.com/public/sheets/sheet-1736777843806-971161436.xlsx', 1),
-('e63201ed-8095-400d-bce8-d090cd763309', 'Tomate', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', '', 0);
+('e73b1c16-ba8f-4f1e-bc61-5d59ff257cbb', 'Cacao', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 1),
+('f39c3aac-4290-4f2d-addb-7e7082634aa9', 'Maracuya', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '', 0);
 
 -- --------------------------------------------------------
 
@@ -1044,13 +1081,6 @@ CREATE TABLE `preferencia_contiene_parametros` (
   `id_parametros` varchar(250) NOT NULL,
   `id_preferencia` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `preferencia_contiene_parametros`
---
-
-INSERT INTO `preferencia_contiene_parametros` (`id`, `id_parametros`, `id_preferencia`) VALUES
-('7aec7269-90a3-4bbb-8cd3-0415cb83dff3', '7529a255-f090-4cd7-98da-dbe1e93e1827', 'e26b2d59-7b4a-4d43-8170-0dee71c2061c');
 
 -- --------------------------------------------------------
 
@@ -1162,12 +1192,14 @@ CREATE TABLE `producto_licitar` (
 --
 
 INSERT INTO `producto_licitar` (`id`, `id_usuario`, `id_producto`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `valida_hasta`, `informacion_adicional`, `estado`, `fecha_publicacion`) VALUES
-('187b206f-5604-4e3e-a623-3ac02ec654ac', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.2, 'QQ', 25, 'QQ', 'En sacos de 100 libras', '2024-12-27', 'Precio Negociable', 'Cerrada', '2024-12-12 13:55:30'),
+('035e8493-37c3-4288-ac3a-d62556498c0b', 'a2cca54d-2aa7-47c9-88de-319cc78752dd', 'Maracuya', 2.7, 'QQ', 50, 'QQ', 'En sacos de 100 libras', '2025-01-31', 'Precio Negociable', 'Caducada', '2025-01-30 10:05:52'),
+('187b206f-5604-4e3e-a623-3ac02ec654ac', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.2, 'QQ', 25, 'QQ', 'En sacos de 100 libras', '2025-01-31', 'Precio Negociable', 'Caducada', '2025-01-31 13:55:30'),
 ('275ad1f4-5936-4675-b083-391b596e645e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Tomate', 2, 'KG', 0, 'KG', 'En bolsas de 100 libras', '2024-12-10', 'Precio Negociable', 'Cumplida', '2024-11-09 18:48:34'),
 ('48b3ffd8-ae89-4857-969a-0823f8dbb45e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.4, 'QQ', 50, 'QQ', 'En sacos de 100 libras', '2025-02-20', 'Precio Negociable', 'Eliminada', '2024-11-09 18:48:34'),
 ('681305b2-8de0-4ccb-b70e-5fd06f691fb3', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.5, 'KG', 55, 'KG', 'En sacos de 100 libras', '2024-12-12', 'Precio Negociable', 'Cerrada', '2024-12-02 09:52:26'),
 ('8f047a8d-ecb0-4157-9131-6a26982e5d52', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Arroz', 2.3, 'KG', 0, 'KG', 'En bolsas de 100 libras', '2024-11-16', 'Precio Negociable', 'Cumplida', '2024-11-13 10:10:53'),
-('a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.5, 'KG', 200, 'KG', 'En sacos de 100 libras', '2024-11-24', 'Precio Negociable', 'Cerrada', '2024-11-21 13:41:59');
+('92353c2c-f754-411a-85ca-30e1afd62477', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maracuya', 2.3, 'QQ', 20, 'QQ', 'En sacos de 100 libras', '2025-01-31', 'Precio Negociable', 'Caducada', '2025-01-30 10:02:45'),
+('a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Maiz', 2.5, 'KG', 200, 'KG', 'En sacos de 100 libras', '2024-11-24', 'Precio Negociable', 'Caducada', '2024-11-21 13:41:59');
 
 -- --------------------------------------------------------
 
@@ -1297,7 +1329,8 @@ CREATE TABLE `propuesta_venta` (
 --
 
 INSERT INTO `propuesta_venta` (`id`, `id_licitacion`, `id_vendedor`, `precio`, `precio_unidad`, `cantidad`, `cantidad_unidad`, `presentacion_entrega`, `fecha_entrega`, `informacion_adicional`, `estado_comprador`, `estado_vendedor`) VALUES
-('49ca6eb3-9cca-48be-9f79-bfec48732848', 'a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.4, 'KG', 45, 'KG', 'En sacos de 100 libras', '2024-11-23', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
+('3900effe-da7a-4109-b4ca-a0128813ef15', '187b206f-5604-4e3e-a623-3ac02ec654ac', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.2, 'QQ', 10, 'QQ', 'En sacos de 100 libras', '2025-02-02', 'Podemos entregar en tiempo y forma.', 'Aceptada', 'Aceptada'),
+('49ca6eb3-9cca-48be-9f79-bfec48732848', '681305b2-8de0-4ccb-b70e-5fd06f691fb3', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.4, 'KG', 45, 'KG', 'En sacos de 100 libras', '2024-11-23', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
 ('53522c1c-f1f8-4e2d-9a05-0e38e3ac9386', '8f047a8d-ecb0-4157-9131-6a26982e5d52', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.2, 'KG', 35, 'KG', 'En sacos de 100 libras', '2024-11-22', 'Podemos entregar en tiempo y forma.', 'Aceptada', 'Aceptada'),
 ('5a8866e2-8e10-4f94-9002-8c0e74b4e664', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 14.8, 'KG', 250, 'KG', 'En sacos de 100 libras', '2024-10-23', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
 ('5a8a702d-f4a6-4bf1-85a1-2aa133d2b87c', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 13, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2024-10-12', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada'),
@@ -1305,6 +1338,7 @@ INSERT INTO `propuesta_venta` (`id`, `id_licitacion`, `id_vendedor`, `precio`, `
 ('963f7ba0-eea0-4202-be4a-3facd594684d', 'a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.3, 'KG', 25, 'KG', 'En sacos de 100 libras', '2024-11-28', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
 ('9a5a320a-2895-4baf-ad8f-4a4d6286ec4e', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 24.8, 'QQ', 650, 'QQ', 'En sacos de 50 libras', '2024-10-27', 'Es importante cumplir con los tiempos', 'Rechazada', 'Recibida'),
 ('bf7be359-4abb-4b62-98aa-4390eff6fb6d', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 19, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2025-05-22', 'Podemos entregar en tiempo y forma.', 'Aceptada', 'Aceptada'),
+('ca4dc07d-5951-478f-8a27-822a5e65ef1c', '187b206f-5604-4e3e-a623-3ac02ec654ac', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 1.8, 'QQ', 15, 'QQ', 'En sacos de 100 libras', '2025-02-02', 'Podemos entregar en tiempo y forma.', 'Aceptada', 'Aceptada'),
 ('ce5f816e-8496-40c8-b9d9-16ec0751bef3', 'a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.3, 'KG', 25, 'KG', 'En sacos de 100 libras', '2024-11-28', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
 ('e88c43a8-8fbf-45ea-8884-4f836b539c1b', 'a4a0c59e-d46e-4ed3-bb87-b599dd6ddafe', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 2.1, 'KG', 25, 'KG', 'En bolsas de 50 libras', '2024-11-24', 'Podemos entregar en tiempo y forma.', 'Recibida', 'Recibida'),
 ('ff8b5b14-09eb-4552-9ad4-0e2458b6d02c', '275ad1f4-5936-4675-b083-391b596e645e', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 13, 'QQ', 150, 'QQ', 'En sacos de 100 libras', '2024-10-12', 'Es importante cumplir con los tiempos', 'Aceptada', 'Aceptada');
@@ -1331,10 +1365,12 @@ INSERT INTO `propuesta_venta_contiene_condicion` (`id`, `id_propuesta`, `id_cond
 ('110a64a7-2865-4503-bc69-f3b95a839049', 'e88c43a8-8fbf-45ea-8884-4f836b539c1b', '7a663566-3126-4f27-850a-a56f7f46d136'),
 ('1172966d-b94f-4ab4-b436-881f970d4944', '5a8866e2-8e10-4f94-9002-8c0e74b4e664', 'db47147f-2b21-4b94-914b-de32238b1c2c'),
 ('384cdfb0-25a7-4ed3-800b-4544f0ac2dbd', '49ca6eb3-9cca-48be-9f79-bfec48732848', '7d3721cd-1ee9-4aab-ac44-a0f6b014586e'),
+('3c35c019-e042-4660-bcf2-a27bd1ee2fdb', 'ca4dc07d-5951-478f-8a27-822a5e65ef1c', '77877c7c-cfac-4c8d-8b30-9821d2704ff1'),
 ('61bfc9b8-6bb3-489b-b697-212143721989', '53522c1c-f1f8-4e2d-9a05-0e38e3ac9386', 'd16254f4-b830-4408-8a7c-647112af31a1'),
 ('6ebb1fdd-86b2-4bfc-9676-ab7092412e55', 'ff8b5b14-09eb-4552-9ad4-0e2458b6d02c', '73751a53-ff26-496c-95df-f78062822468'),
 ('9c8efaca-8fbd-413c-9e43-f445bf679a6c', 'ce5f816e-8496-40c8-b9d9-16ec0751bef3', '648fb6e6-d02a-4c93-9257-b6b386a5a2c4'),
 ('b5eb0e15-72e8-429a-9b45-703cca06bdb8', 'bf7be359-4abb-4b62-98aa-4390eff6fb6d', '02b4e9d0-8ecb-49b8-859c-d454aff20f6a'),
+('e7829ab0-c049-41e8-a778-fe2fa4284b9c', '3900effe-da7a-4109-b4ca-a0128813ef15', 'c3fb6ee2-ae1e-4934-b4eb-0485dc15e758'),
 ('fd35a452-93f8-4248-bee7-589fbabce1c6', '9387c739-f768-4f22-99d6-0858aae8ce35', 'c6e697d5-90fc-412d-a262-1f25172e4ea1');
 
 -- --------------------------------------------------------
@@ -1519,24 +1555,24 @@ CREATE TABLE `usuarios` (
   `direccion` text NOT NULL,
   `ubicacion_google_maps` text DEFAULT NULL,
   `telefono` varchar(50) DEFAULT NULL,
-  `estado` int(11) DEFAULT 0,
-  `id_subscripcion` varchar(250) DEFAULT NULL,
-  `id_subscripcion_movil` varchar(250) DEFAULT NULL
+  `estado` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `tipo_identificacion`, `numero_identificacion`, `correo`, `clave`, `provincia`, `parroquia`, `canton`, `acepto_terminos`, `direccion`, `ubicacion_google_maps`, `telefono`, `estado`, `id_subscripcion`) VALUES
-('196797f5-cad5-4575-a5e0-349f4b0b6e98', 'Cédula', '2347728432', 'gabrieldiaz@gmail.com', '$2b$10$6yKGr96gK3JIXnBYmFuRF.f3KiEiA7.Vwtke/9kApW.9Ja2DJ4kCe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+54+542281553022', 1, NULL),
-('64829989-e673-4e74-947f-ade23ad9adb2', 'Cédula', '2347728434', 'aso@gmail.com', '$2b$10$3uZzUoRFsB4DafAgZRYat.gKmX4tshKnqP9Sc2GzClAh6V7C.aBRe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+5932281553030', 1, NULL),
-('7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Cédula', '2343358402', 'keppe@contacto.com', '$2b$10$kJWHPPTQIh6P9O/zbjD9Qe/K3yD1.wWA6Ed/7wXKKB2bBpgDbVLs6', 'Imbabura', '', 'Ibarra', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+593+593983711133', 0, NULL),
-('a2cca54d-2aa7-47c9-88de-319cc78752dd', 'Cédula', '2347728423', 'crl@mail.com', '$2b$10$3Xd42pB/r8/X4ANzN1W1/e3Tg3OL/5kAe9jf/xv0G5gh5l.BszbeG', 'Azuay', '', 'Girón', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+5932352112', 1, NULL),
-('b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cédula', '2347728422', '360startupec@gmail.com', '$2b$10$WMmBwCBkdw0vH/ZALScKkuzmoZlD5y7.PIp8jfkJX0jtxL0Vot40u', 'Esmeraldas', '', 'Rioverde', 1, 'Calle Jaure 32', 'Avenida Olivos 92831', '+542281553030', 1, '3a1cf02c-a5f9-4f8a-ba95-ddb6b72e7585'),
-('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'pedroramirez@gmail.com', '$2b$10$OjxsiIMi1IbmqwLH.J2dxeGxmPGNSxafiwILE.hYpvQng8i36wItS', 'Azuay', 'Chordeleg', 'Gualaceo', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1, NULL),
-('e8799658-2fbd-4e90-b2f0-82b62568968b', 'Cédula', '2993813323', 'agroquimica@gmail.com', '$2b$10$Nic0WY1v/oa.FSdD5tbcL.2Eh7cR8LhiRu1dor2FWBAfF4EE38zSm', 'Azuay', 'Gima', 'Sigsig', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '239981032', 1, NULL),
-('Sistema', 'RUC', '00000000', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data');
+INSERT INTO `usuarios` (`id`, `tipo_identificacion`, `numero_identificacion`, `correo`, `clave`, `provincia`, `parroquia`, `canton`, `acepto_terminos`, `direccion`, `ubicacion_google_maps`, `telefono`, `estado`) VALUES
+('196797f5-cad5-4575-a5e0-349f4b0b6e98', 'Cédula', '2347728432', 'gabrieldiaz@gmail.com', '$2b$10$6yKGr96gK3JIXnBYmFuRF.f3KiEiA7.Vwtke/9kApW.9Ja2DJ4kCe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+54+542281553022', 1),
+('64829989-e673-4e74-947f-ade23ad9adb2', 'Cédula', '2347728434', 'aso@gmail.com', '$2b$10$3uZzUoRFsB4DafAgZRYat.gKmX4tshKnqP9Sc2GzClAh6V7C.aBRe', 'Azuay', 'Pucará', 'Pucara', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+5932281553030', 1),
+('7a37783c-e001-4d4f-8cd4-104122d33044', 'Cédula', '2347728435', 'expo@mail.com', '$2b$10$6/ukh6gkAzSvUemiauRu1.3PvAxA8sty8o//PCLLM84sIuLVIvcU6', 'Azuay', 'San felipe de oña cabecera cantonal', 'Oña', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '+5932281553030', 1),
+('7ea5c4fd-a3f0-4d07-a633-8e7590514a58', 'Cédula', '2343358402', 'keppe@contacto.com', '$2b$10$kJWHPPTQIh6P9O/zbjD9Qe/K3yD1.wWA6Ed/7wXKKB2bBpgDbVLs6', 'Imbabura', '', 'Ibarra', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+593+593983711133', 0),
+('94a0909b-f61a-48e2-9ddc-504a0f1b4356', 'Cédula', '2391829324', 'agrosa@gmail.com', '$2b$10$W/24dTMSxAL/JMN4po0o3.8lstuaFcHyDaGWxoZOaWUOMgkFmW7IS', 'Bolívar', '', 'Chimbo', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+5932243124345', 1),
+('a2cca54d-2aa7-47c9-88de-319cc78752dd', 'Cédula', '2347728423', 'crl@mail.com', '$2b$10$3Xd42pB/r8/X4ANzN1W1/e3Tg3OL/5kAe9jf/xv0G5gh5l.BszbeG', 'Azuay', '', 'Girón', 1, 'Av Suipacha 32', 'Av Liberador de Amerca, La Maná, Cotopaxi', '+5932352112', 1),
+('b308a85b-1f31-4082-b9e2-4d2a9483923f', 'Cédula', '2347728422', '360startupec@gmail.com', '$2b$10$WMmBwCBkdw0vH/ZALScKkuzmoZlD5y7.PIp8jfkJX0jtxL0Vot40u', 'Esmeraldas', '', 'Rioverde', 1, 'Calle Jaure 32', 'Avenida Olivos 92831', '+542281553030', 2),
+('e16f5f10-7a05-4805-9336-c15dac53eaed', 'Cédula', '2343358400', 'santiagobanquito72@gmail.com', '$2b$10$OjxsiIMi1IbmqwLH.J2dxeGxmPGNSxafiwILE.hYpvQng8i36wItS', 'Azuay', 'Chordeleg', 'Gualaceo', 1, 'Av Libertad 2814', 'Av Libertad, Cuenca, Azuay', '+542281553030', 1),
+('e8799658-2fbd-4e90-b2f0-82b62568968b', 'Cédula', '2993813323', 'agroquimica@gmail.com', '$2b$10$Nic0WY1v/oa.FSdD5tbcL.2Eh7cR8LhiRu1dor2FWBAfF4EE38zSm', 'Azuay', 'Gima', 'Sigsig', 1, 'Av Suipacha 32', 'Av Suipacha, Cochapata, Nabon, Azuay', '239981032', 1),
+('Sistema', 'RUC', '00000000', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 'No-Data', 0, 'No-Data', 'No-Data', 'No-Data', 0);
 
 -- --------------------------------------------------------
 
@@ -1733,6 +1769,13 @@ ALTER TABLE `notificaciones`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_notificacion_producto` (`id_producto`),
   ADD KEY `fk_notificacion_usuario` (`id_notificado`);
+
+--
+-- Indices de la tabla `notificaciones_receptores`
+--
+ALTER TABLE `notificaciones_receptores`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_usuario_receptores` (`id_usuario`);
 
 --
 -- Indices de la tabla `ordenes`
@@ -2093,6 +2136,12 @@ ALTER TABLE `multiusuarios`
 ALTER TABLE `notificaciones`
   ADD CONSTRAINT `fk_notificacion_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`),
   ADD CONSTRAINT `fk_notificacion_usuario` FOREIGN KEY (`id_notificado`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `notificaciones_receptores`
+--
+ALTER TABLE `notificaciones_receptores`
+  ADD CONSTRAINT `fk_usuario_receptores` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
 
 --
 -- Filtros para la tabla `ordenes`

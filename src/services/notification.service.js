@@ -26,9 +26,9 @@ export const getNotificationsUnreadedByUser = async (uuid_user) => {
 
 export const getNotificationsReceptors = async (uuid_user) => {
     try {
-        const notifications = await notificationModel.getReceptorsByUser(uuid_user);
+        const receptors = await notificationModel.getReceptorsByUser(uuid_user);
         
-        return notifications;
+        return receptors;
     } catch (error) {
         throw new Error("Error al leer los receptores: " + error.message);
     }

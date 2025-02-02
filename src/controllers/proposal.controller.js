@@ -95,11 +95,15 @@ export const createSaleProposal = async (req, res) => {
           "/chat/licitacion/" + fetchLicitation.id_producto + "/" + chat_uuid
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          fetchLicitation.id_usuario
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Nueva propuesta de venta",
             "Te han enviado una propuesta de " + fetchLicitation.id_producto,
-            await notificationService.getNotificationsReceptors(fetchLicitation.id_usuario)
+            receptors,
+            "/chat/licitacion/" + fetchLicitation.id_producto + "/" + chat_uuid
           );
         }
 
@@ -288,11 +292,15 @@ export const createLicitationProposal = async (req, res) => {
           "/app/chat/oferta/" + chat_uuid
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          fetchSale.id_usuario
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Nueva propuesta de compra",
             "Te han enviado una propuesta de " + fetchSale.id_producto,
-            await notificationService.getNotificationsReceptors(fetchSale.id_usuario)
+            receptors,
+            "/app/chat/oferta/" + chat_uuid
           );
         }
         await chatModel.createChat(
@@ -437,10 +445,14 @@ export const updateCondition = async (req, res) => {
             "Condición Actualizada",
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
+
+          const receptors = await notificationService.getNotificationsReceptors(
+            proposal.proposal.id_vendedor
+          );
           await notificationService.sendPushNotification(
             "Condición Actualizada",
             "Las condiciones han sido actualizadas, visita dando click en boton condiciones",
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_vendedor),
+            receptors,
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
         }
@@ -565,11 +577,14 @@ export const acceptProposalByConditions = async (req, res) => {
           "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue aceptada",
             "El comprador ha aceptado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_vendedor),
+            receptors,
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
         }
@@ -583,11 +598,14 @@ export const acceptProposalByConditions = async (req, res) => {
           "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_comprador
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue aceptada",
             "El vendedor ha aceptado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_comprador),
+            receptors,
             "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
           );
         }
@@ -612,11 +630,14 @@ export const acceptProposalByConditions = async (req, res) => {
           "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue aceptada",
             "El comprador ha aceptado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_vendedor),
+            receptors,
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
         }
@@ -630,11 +651,14 @@ export const acceptProposalByConditions = async (req, res) => {
           "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_comprador
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue aceptada",
             "El vendedor ha aceptado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_comprador),
+            receptors,
             "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
           );
         }
@@ -751,11 +775,14 @@ export const rejectProposalByConditions = async (req, res) => {
           "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue rechazada",
             "El comprador ha rechazado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_vendedor),
+            receptors,
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
         }
@@ -769,11 +796,14 @@ export const rejectProposalByConditions = async (req, res) => {
           "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_comprador
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de venta fue rechazada",
             "El vendedor ha rechazado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_comprador),
+            receptors,
             "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
           );
         }
@@ -798,11 +828,14 @@ export const rejectProposalByConditions = async (req, res) => {
           "/app/chat/oferta/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue rechazada",
             "El comprador ha rechazada la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_vendedor),
+            receptors,
             "/app/chat/oferta/" + proposal.proposal.id_chat
           );
         }
@@ -816,11 +849,14 @@ export const rejectProposalByConditions = async (req, res) => {
           "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          proposal.proposal.id_comprador
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "Una propuesta de compra fue rechazada",
             "El vendedor ha rechazado la propuesta " + conditions.id_producto,
-            await notificationService.getNotificationsReceptors(proposal.proposal.id_comprador),
+            receptors,
             "/chat/licitacion/" + conditions.id_producto + "/" + proposal.proposal.id_chat
           );
         }

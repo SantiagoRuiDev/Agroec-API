@@ -81,15 +81,15 @@ export const setOrderShippedStatus = async (req, res) => {
       "Orden de " + orderDetails.id_producto,
       "/order/" + order_id // FALTA ID CHAT
     );
-
+    const receptors = await notificationService.getNotificationsReceptors(
+      orderDetails.id_comprador
+    );
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "En camino");
       await notificationService.sendPushNotification(
         "Tu orden esta en camino",
         "El vendedor marco la orden como despachada",
-        await notificationService.getNotificationsReceptors(
-          orderDetails.id_comprador
-        ),
+        receptors,
         "/order/" + order_id // FALTA ID CHAT
       );
     }
@@ -125,15 +125,16 @@ export const setOrderDeliveredStatus = async (req, res) => {
       "/order/" + order_id // FALTA ID CHAT
     );
 
+    const receptors = await notificationService.getNotificationsReceptors(
+      orderDetails.id_comprador
+    );
     if (notification) {
       await orderModel.updateOrderStatus(order_id, "Entregada");
       await notificationService.sendPushNotification(
         "La orden fue entregada",
         "El vendedor indico que recibiste la orden #" +
           String(order_id).slice(0, 8),
-        await notificationService.getNotificationsReceptors(
-          orderDetails.id_comprador
-        ),
+        receptors,
         "/order/" + order_id // FALTA ID CHAT
       );
     }
@@ -180,13 +181,14 @@ export const setOrderReceivedStatus = async (req, res) => {
           "/order/" + order_id // FALTA ID CHAT
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          orderDetails.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "La orden fue recibida",
             "El comprador ha recibido la orden " + String(order_id).slice(0, 8),
-            await notificationService.getNotificationsReceptors(
-              orderDetails.id_vendedor
-            ),
+            receptors,
             "/order/" + order_id // FALTA ID CHAT
           );
         }
@@ -248,14 +250,15 @@ export const setOrderRejectedStatus = async (req, res) => {
           "/order/" + order_id // FALTA ID CHAT
         );
 
+        const receptors = await notificationService.getNotificationsReceptors(
+          orderDetails.id_vendedor
+        );
         if (notification) {
           await notificationService.sendPushNotification(
             "La orden fue rechazada",
             "El comprador ha rechazado la orden " +
               String(order_id).slice(0, 8),
-            await notificationService.getNotificationsReceptors(
-              orderDetails.id_vendedor
-            ),
+            receptors,
             "/order/" + order_id // FALTA ID CHAT
           );
         }
@@ -338,15 +341,15 @@ export const setOrderDeliveryDate = async (req, res) => {
             "Orden de " + orderDetails.id_producto,
             "/order/" + order_id // FALTA ID CHAT
           );
-
+          const receptors = await notificationService.getNotificationsReceptors(
+            orderDetails.id_vendedor
+          );
           if (notification) {
             await notificationService.sendPushNotification(
               "La orden fue recibida",
               "El comprador ha recibido la orden y estableció el tiempo de revisión hasta: " +
                 req.body.fecha,
-              await notificationService.getNotificationsReceptors(
-                orderDetails.id_vendedor
-              ),
+              receptors,
               "/order/" + order_id // FALTA ID CHAT
             );
           }

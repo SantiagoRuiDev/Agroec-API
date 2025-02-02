@@ -66,12 +66,15 @@ export function initializeSocket(io){
             "/chat/licitacion/" + chat.chat.id_producto + "/" + room
           );
     
+          const receptors = await notificationService.getNotificationsReceptors(
+            notifiedUser
+          );
           if (notification) {
-            const user = await authModel.getAccountById(notifiedUser);
             await notificationService.sendPushNotification(
               "Nuevo mensaje",
               "Has recibido un nuevo mensaje en la negociación",
-              [user.id_subscripcion, user.id_subscripcion_movil]
+              receptors,
+              "/chat/licitacion/" + chat.chat.id_producto + "/" + room
             );
           }
         }
