@@ -65,15 +65,13 @@ export function initializeSocket(io){
             "Mensaje Recibido",
             "/chat/licitacion/" + chat.chat.id_producto + "/" + room
           );
-    
-          const receptors = await notificationService.getNotificationsReceptors(
-            notifiedUser
-          );
-          if (notification) {
+          if (notification > 0) {
             await notificationService.sendPushNotification(
               "Nuevo mensaje",
               "Has recibido un nuevo mensaje en la negociación",
-              receptors,
+              await notificationService.getNotificationsReceptors(
+                notifiedUser
+              ),
               "/chat/licitacion/" + chat.chat.id_producto + "/" + room
             );
           }

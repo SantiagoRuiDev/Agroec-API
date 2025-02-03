@@ -212,7 +212,6 @@ export const getOrdersByConditions = async (condition_id) => {
       `SELECT o.id, o.id_comprador, o.id_vendedor, cc.id_producto FROM ordenes o 
       INNER JOIN entregas e ON e.id = o.id_entrega
       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
-       GROUP BY o.id
       WHERE cc.id = ?
       `,
       [condition_id]

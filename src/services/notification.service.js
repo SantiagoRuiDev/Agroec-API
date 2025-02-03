@@ -57,7 +57,6 @@ export const createNotificationReceptor = async (uuid_user, uuid_subscription) =
 export const sendPushNotification = async (title, message, player_uuids, url) => {
     const appId = APP_SETTINGS.onesignal_app_id; // Reemplaza con tu App ID
     const apiKey = APP_SETTINGS.onesignal_api_key; // Reemplaza con tu REST API Key
-
     const payload = {
         app_id: appId,
         include_player_ids: player_uuids, // IDs de los usuarios que recibirán la notificación

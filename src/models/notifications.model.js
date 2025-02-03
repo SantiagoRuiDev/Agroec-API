@@ -38,7 +38,9 @@ export const getReceptorsByUser = async (uuid_user) => {
       [uuid_user]
     );
 
-    return statement;
+    return statement.map(row => {
+      return row.id_onesignal;
+    });
   } catch (error) {
     throw new Error(error.message);
   }
