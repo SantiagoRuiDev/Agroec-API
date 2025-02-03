@@ -10,6 +10,7 @@ router.get('/organizations', profileController.getOrganizations)
 router.post('/organizations', profileController.createOrganization)
 router.get('/me', authMiddleware.isAuthentified, profileController.getProfileByUser)
 router.get('/me/stats', authMiddleware.isAuthentified, profileController.getProfileStats)    
+router.post('/me/reception-points', authMiddleware.isAuthentified, profileController.createReceptionPoint);
 router.get('/me/reception-points', authMiddleware.isAuthentified, profileController.getProfilePoints);
 router.delete('/me/reception-points/:id', authMiddleware.isAuthentified, profileController.deleteProfilePoint);
 router.delete('/me/contact/:id', authMiddleware.isAuthentified, profileController.deleteContact);

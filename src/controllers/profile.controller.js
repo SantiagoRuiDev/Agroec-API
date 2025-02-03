@@ -13,6 +13,8 @@ import * as licitationsModel from "../models/licitations.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
 import { v4 as uuidv4 } from "uuid";
 import * as pointsModel from "../models/points.model.js";
+import { pointsSchema } from "../schemas/points.schema.js";
+import { validateSchemas } from "../libs/schema.js";
 
 export const updateProfile = async (req, res) => {
   try {
@@ -318,12 +320,30 @@ export const getProfileStats = async (req, res) => {
       });
     }
 
-    throw new Error("Perfil no encontrado");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 };
 
+export const createReceptionPoint = async (req, res) => {
+  try {
+    validateSchemas(req.body, pointsSchema)
+    if (profileChecker.isBuyerProfile(req.user_id)) {
+      const uuid = uuidv4()
+      const inserted_row = await pointsModel.createPoint(uuid, req.user_id, req.body);
+
+      if(inserted_row > 0){
+        return res.status(200).json({"message": "Punto de recepción añadido correctamente", "id": uuid});
+      } else {
+        throw new Error("No ha sido posible crear este punto de recepción");
+      }
+    }
+
+    throw new Error("No ha sido posible crear un punto de recepción");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 export const getProfilePoints = async (req, res) => {
   try {
     if (profileChecker.isBuyerProfile(req.user_id)) {
