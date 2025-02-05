@@ -15,5 +15,4 @@ router.get('/me/reception-points', authMiddleware.isAuthentified, profileControl
 router.delete('/me/reception-points/:id', authMiddleware.isAuthentified, profileController.deleteProfilePoint);
 router.delete('/me/contact/:id', authMiddleware.isAuthentified, profileController.deleteContact);
 router.get('/:id', authMiddleware.isAuthentified, profileController.getProfile);
-router.get('/me/:type', authMiddleware.isAuthentified, profileController.getProfileByUser)
 router.put('/', authMiddleware.isAuthentified, profileMiddleware.updateProfile, profileController.updateProfile);

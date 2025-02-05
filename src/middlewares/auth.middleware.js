@@ -130,7 +130,7 @@ export const isAuthentified = async (req, res, next) => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
+      return res.status(401).json({ error: error.message });
     }
   }
 };

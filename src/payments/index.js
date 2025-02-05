@@ -34,7 +34,7 @@ export const tokenizateCard = async (document, name, email, phone, address) => {
 
 export const getTokenizatedCards = async (document) => {
   try {
-    const { data } = await axios.get(//2343358400
+    const { data } = await axios.get(
       API + "/cards?integration=true&document=" + document,
       {
         headers: {
@@ -42,7 +42,6 @@ export const getTokenizatedCards = async (document) => {
         },
       }
     );
-
     return data;
   } catch (error) {
     throw new Error(error.message);

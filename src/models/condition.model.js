@@ -135,7 +135,7 @@ export const getConditionByChat = async (chat_id) => {
       WHERE ch.id = ?`,
       [chat_id]
     );
-
+    
     const [deliveries] = await connection.query(
       `SELECT e.*, o.id as id_orden, o.estado, pr.nombre, pr.ubicacion_google_maps, pr.id as id_punto, pr.direccion
       FROM entregas e 

@@ -123,8 +123,9 @@ export const getProfileByUser = async (req, res) => {
         contacts: contacts,
       });
     } else {
-      let profile = null;
-      switch (req.params.type) {
+      let profile = await profileChecker.getType(user_id);
+      let type = profile;
+      switch (profile) {
         case "Comerciante":
           profile = await profileModel.getMerchantProfileByUser(user_id);
           break;
@@ -150,6 +151,7 @@ export const getProfileByUser = async (req, res) => {
         return res.status(200).json({
           user: { ...findUser },
           profile: profile,
+          type: type,
           bank_account: bank_account,
         });
       }
