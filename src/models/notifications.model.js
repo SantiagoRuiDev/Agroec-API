@@ -11,7 +11,7 @@ export const createNotificationReceptor = async (
       [uuid_user, uuid_onesignal]
     );
     if(receptorExist.length > 0){
-      return 0;
+      return 2;
     }
 
     const [insert] = await connection.query(

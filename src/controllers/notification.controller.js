@@ -20,10 +20,14 @@ export const createNotificationReceptor = async (req, res) => {
         req.params.id
       );
 
-    if (notifications > 0) {
+    if (notifications == 2) {
       return res
         .status(200)
-        .send({ message: "Identificador de subscripcion actualizado" });
+        .send({ message: "Ya tiene una suscripción con este identificador" });
+    } else if(notifications > 0){
+      return res
+        .status(200)
+        .send({ message: "Suscripción a notificaciones exitosa" });
     }
 
     throw new Error("Error al actualizar el identificador de subscripcion");
