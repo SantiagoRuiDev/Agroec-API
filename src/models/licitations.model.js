@@ -59,7 +59,7 @@ export const getLicitationsByUser = async (user_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.estado != "Eliminada" AND pl.estado != "Cumplida"
-      ORDER BY pl.fecha_publicacion ASC`,
+      ORDER BY pl.fecha_publicacion DESC`,
       [user_id]
     );
 
@@ -90,7 +90,7 @@ export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
           ), 0) AS cantidades_negociadas
       FROM producto_licitar pl 
       INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.id_producto = ? AND pl.estado != "Eliminada"
-      ORDER BY pl.fecha_publicacion ASC`,
+      ORDER BY pl.fecha_publicacion DESC`,
       [user_id, product_id]
     );
 
@@ -127,7 +127,7 @@ export const getAllLicitationsNotExpired = async () => {
   try {
     const [statement] = await connection.query(
       `SELECT * FROM producto_licitar WHERE estado != "Caducada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
-      ORDER BY fecha_publicacion ASC`
+      ORDER BY fecha_publicacion DESC`
     );
 
     return statement;
@@ -140,7 +140,7 @@ export const getAllLicitations = async () => {
   try {
     const [statement] = await connection.query(
       `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
-      ORDER BY fecha_publicacion ASC`
+      ORDER BY fecha_publicacion DESC`
     );
 
     return statement;
@@ -180,7 +180,7 @@ export const getAllLicitationsByProduct = async (product_id, user_id) => {
       LEFT JOIN calificacion c ON c.id_calificado = pl.id_usuario
       WHERE pl.id_producto = ? AND NOT (pl.estado = "Cerrada" OR pl.estado = "Eliminada" OR pl.estado = "Cumplida")
       GROUP BY pl.id
-      ORDER BY pl.fecha_publicacion ASC`,
+      ORDER BY pl.fecha_publicacion DESC`,
       [product_id, user_id]
     );
 

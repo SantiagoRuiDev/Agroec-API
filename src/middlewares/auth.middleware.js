@@ -1,6 +1,9 @@
 import { validateSchemas } from "../libs/schema.js";
 import { decodeToken } from "../libs/token.js";
-import { accountSchema, accountUpdateSchema } from "../schemas/account.schema.js";
+import {
+  accountSchema,
+  accountUpdateSchema,
+} from "../schemas/account.schema.js";
 import { authSchema } from "../schemas/auth.schema.js";
 import { codeSchema } from "../schemas/code.schema.js";
 import { buyerSchema } from "../schemas/buyer.schema.js";
@@ -11,7 +14,7 @@ import { merchantSchema } from "../schemas/merchant.schema.js";
 import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 import { pointsSchemaArray } from "../schemas/points.schema.js";
-import * as multiuserModel from '../models/multiusers.model.js';
+import * as multiuserModel from "../models/multiusers.model.js";
 
 export const updateAccount = async (req, res, next) => {
   try {
@@ -62,8 +65,15 @@ export const createAccount = async (req, res, next) => {
 
     if (req.body.bank_account) {
       validateSchemas(req.body.bank_account, bankAccount);
+      if (!/^\d+$/.test(req.body.bank_account.numero_de_cuenta)) {
+        return res
+          .status(400)
+          .json({
+            error: "El campo numero de cuenta solo debe contener números",
+          });
+      }
     }
-    
+
     next();
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -94,17 +104,17 @@ export const isAuthentified = async (req, res, next) => {
   try {
     const multiuser_token = req.headers["x-multiuser-token"]; // Formato esperado: "Bearer <multiuser-token>"
 
-    if (
-      multiuser_token != undefined && multiuser_token != null
-    ) {
+    if (multiuser_token != undefined && multiuser_token != null) {
       if (typeof multiuser_token === "string") {
         const decoded = decodeToken(multiuser_token);
-  
+
         if (decoded instanceof Object) {
           req.user_id = decoded.user;
           req.multiuser_id = decoded.multiuser;
         }
-        req.permissions = await multiuserModel.getMultiuserRoleByUser(decoded.multiuser);
+        req.permissions = await multiuserModel.getMultiuserRoleByUser(
+          decoded.multiuser
+        );
         req.token = decoded;
         next();
         return;
@@ -135,27 +145,26 @@ export const isAuthentified = async (req, res, next) => {
   }
 };
 
-
 export const isPreAuthentified = async (req, res, next) => {
   try {
     const multiuser_token = req.headers["x-multiuser-token"]; // Formato esperado: "Bearer <multiuser-token>"
 
-    if (
-      multiuser_token != undefined && multiuser_token != null
-    ) {
+    if (multiuser_token != undefined && multiuser_token != null) {
       if (typeof multiuser_token === "string") {
         const decoded = decodeToken(multiuser_token);
-  
+
         if (decoded instanceof Object) {
           req.user_id = decoded.user;
           req.multiuser_id = decoded.multiuser;
         }
-        req.permissions = await multiuserModel.getMultiuserRoleByUser(decoded.multiuser);
+        req.permissions = await multiuserModel.getMultiuserRoleByUser(
+          decoded.multiuser
+        );
         req.token = decoded;
         next();
         return;
       } else {
-        if(req.body.id){
+        if (req.body.id) {
           next();
           return;
         }
@@ -176,7 +185,7 @@ export const isPreAuthentified = async (req, res, next) => {
       req.token = decoded;
       next();
     } else {
-      if(req.body.id){
+      if (req.body.id) {
         next();
         return;
       }
@@ -189,15 +198,14 @@ export const isPreAuthentified = async (req, res, next) => {
   }
 };
 
-
 export const isMultiserDashboardAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_dashboard > 0){
+
+    if (req.permissions.permiso_dashboard > 0) {
       next();
       return;
     }
@@ -210,15 +218,14 @@ export const isMultiserDashboardAllowed = async (req, res, next) => {
   }
 };
 
-
 export const isMultiserTalksAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_negociaciones > 0){
+
+    if (req.permissions.permiso_negociaciones > 0) {
       next();
       return;
     }
@@ -233,12 +240,12 @@ export const isMultiserTalksAllowed = async (req, res, next) => {
 
 export const isMultiserLicitationsAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_licitaciones > 0){
+
+    if (req.permissions.permiso_licitaciones > 0) {
       next();
       return;
     }
@@ -253,12 +260,12 @@ export const isMultiserLicitationsAllowed = async (req, res, next) => {
 
 export const isMultiserAcceptOrdersAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_aceptar_pedido > 0){
+
+    if (req.permissions.permiso_aceptar_pedido > 0) {
       next();
       return;
     }
@@ -273,12 +280,12 @@ export const isMultiserAcceptOrdersAllowed = async (req, res, next) => {
 
 export const isMultiserReceiveOrdersAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_recibir_pedido > 0){
+
+    if (req.permissions.permiso_recibir_pedido > 0) {
       next();
       return;
     }
@@ -290,17 +297,15 @@ export const isMultiserReceiveOrdersAllowed = async (req, res, next) => {
     }
   }
 };
-
-
 
 export const isMultiserRejectOrdersAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_rechazar_pedido > 0){
+
+    if (req.permissions.permiso_rechazar_pedido > 0) {
       next();
       return;
     }
@@ -312,17 +317,15 @@ export const isMultiserRejectOrdersAllowed = async (req, res, next) => {
     }
   }
 };
-
-
 
 export const isMultiserPaymentAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if(req.permissions.permiso_pagar > 0){
+    if (req.permissions.permiso_pagar > 0) {
       next();
       return;
     }
@@ -334,17 +337,15 @@ export const isMultiserPaymentAllowed = async (req, res, next) => {
     }
   }
 };
-
-
 
 export const isMultiserWalletAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if(req.permissions.permiso_billetera > 0){
+    if (req.permissions.permiso_billetera > 0) {
       next();
       return;
     }
@@ -357,15 +358,14 @@ export const isMultiserWalletAllowed = async (req, res, next) => {
   }
 };
 
-
 export const isMultiserManagmentAllowed = async (req, res, next) => {
   try {
-    if(req.permissions == undefined || req.permissions == null){
+    if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
-    
-    if(req.permissions.permiso_usuarios > 0){
+
+    if (req.permissions.permiso_usuarios > 0) {
       next();
       return;
     }

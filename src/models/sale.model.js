@@ -82,7 +82,7 @@ export const getSalesByProduct = async (product_id, user_id) => {
       LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
       WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") 
       GROUP BY pv.id
-      ORDER BY pv.fecha_publicacion ASC`,
+      ORDER BY pv.fecha_publicacion DESC`,
       [product_id, user_id]
     );
 
@@ -98,7 +98,7 @@ export const getSalesByUser = async (user_id) => {
       `SELECT pv.*, p.nombre, p.imagen, 
         (SELECT url_imagen FROM productos_vender_imagenes WHERE id_venta = pv.id LIMIT 1) AS producto_imagen
         FROM producto_vender pv 
-       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ? ORDER BY pv.fecha_publicacion ASC`,
+       INNER JOIN productos p ON p.id = pv.id_producto WHERE id_usuario = ? ORDER BY pv.fecha_publicacion DESC`,
       [user_id]
     );
 
@@ -172,7 +172,7 @@ export const getSalesById = async (sale_id) => {
   try {
     const [statement] = await connection.query(
       `SELECT pv.*, p.nombre, p.imagen, p.id as id_producto FROM producto_vender pv 
-      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ? ORDER BY pv.fecha_publicacion ASC`,
+      INNER JOIN productos p ON p.id = pv.id_producto WHERE pv.id = ?`,
       [sale_id]
     );
 
@@ -185,7 +185,7 @@ export const getSalesById = async (sale_id) => {
 export const getAllSales = async () => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM producto_vender LIMIT 30`
+      `SELECT * FROM producto_vender ORDER BY fecha_publicacion DESC`
     );
 
     return statement;

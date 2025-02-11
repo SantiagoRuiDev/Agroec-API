@@ -300,9 +300,9 @@ CREATE TABLE `contactos` (
 CREATE TABLE `cuenta_bancaria` (
   `id` varchar(250) NOT NULL,
   `tipo_de_cuenta` varchar(20) NOT NULL,
-  `numero_de_cuenta` int(50) NOT NULL,
+  `numero_de_cuenta` varchar(35) NOT NULL,
   `seleccionar_banco` varchar(40) NOT NULL,
-  `tipo_de_documento` varchar(50) NOT NULL,
+  `tipo_de_documento` varchar(35) NOT NULL,
   `numero_de_documento` varchar(13) NOT NULL,
   `nombre_del_propietario` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -361,25 +361,18 @@ CREATE TABLE `entregas` (
 
 INSERT INTO `entregas` (`id`, `id_punto`, `id_condicion`, `cantidad`, `cantidad_unidad`, `fecha_entrega`, `hora_entrega`) VALUES
 ('04682d73-a107-4d77-85ac-425e52d5b736', 'de92k121s3212', 'fc25d3e8-dd66-432f-ba01-88bb117791d0', 15, 'KG', '2024-11-29', '20:39:00'),
-('05049e56-f8ca-420f-97d8-5b3e89e39be6', 'de92k121s3212', '2dbdf34a-6068-4b65-a165-b099a0c3aecb', 13, 'KG', '2024-12-26', '14:58:00'),
-('050a772b-c8e2-4acf-adbd-cc96404cac79', 'de92k121s3212', '73751a53-ff26-496c-95df-f78062822468', 250, 'KG', '2024-03-19', '05:30:00'),
 ('0f708c1a-02a7-431d-a4e5-03c4676a2adb', 'de92k121s3212', 'd16254f4-b830-4408-8a7c-647112af31a1', 35, 'KG', '2024-11-22', '13:40:00'),
 ('163dc5bd-9757-48c3-b290-78f9ca5cfe45', 'de92k121s3212', 'b75501ae-fe6a-49a2-9c28-c40283bcf2d4', 150, 'QQ', '2024-09-25', '20:30:00'),
 ('16a0f30b-e07d-4632-930b-12ff59d287e7', 'de92k121s3212', 'ff6d9dd4-01fd-4220-85df-1ac00a199a6e', 250, 'KG', '2025-10-20', '10:30:00'),
-('1dd394be-05bd-484e-9d4a-2c6c39eb1c45', 'de92k121s3212', '2dbdf34a-6068-4b65-a165-b099a0c3aecb', 13, 'KG', '2024-12-26', '14:58:00'),
 ('201ccee8-40ff-4e5c-96a3-022345385f26', 'de92k121s3212', '802acdfe-af6a-420d-a93e-2a1f88181683', 20, 'KG', '2024-11-14', '12:46:00'),
 ('3832ebe6-d26c-4de9-b6a6-d66fc468557c', 'de92k121s3212', 'd62ecc78-6424-44c1-8cfa-c30cfc90476e', 25, 'KG', '2024-11-30', '16:30:00'),
 ('3f49c076-6a77-4d87-904f-6448d9019082', 'de92k121s3212', '02b4e9d0-8ecb-49b8-859c-d454aff20f6a', 65, 'KG', '2024-11-02', '03:50:00'),
-('48a229f5-506b-473a-894e-7ee01c1c16d9', 'de92k121s3212', '2dbdf34a-6068-4b65-a165-b099a0c3aecb', 13, 'KG', '2024-12-26', '14:58:00'),
 ('60c83288-7e63-4f4d-a0f3-1ed07cec8f7a', 'de92k121s3212', '25ae36a3-f96d-4e0d-8d72-c47b61fbb527', 15, 'KG', '2024-11-22', '11:00:00'),
 ('8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-18', '10:45:00'),
 ('8f165f37-d276-4fb0-a32e-d67c3f8f97ad', 'de92k121s3212', 'da29d7c6-201e-4af7-a7b6-b4b04b18198b', 25, 'KG', '2024-11-21', '03:00:00'),
 ('9de6a422-3663-406d-bd58-59d731886ed5', 'de92k121s3212', 'db47147f-2b21-4b94-914b-de32238b1c2c', 50, 'KG', '2024-11-09', '10:45:00'),
-('aa1c27f0-7519-4368-95f3-bbb7904af2b4', 'de92k121s3212', '86e50ddb-eb69-4714-b663-d1e7b9e9a61b', 25, 'KG', '2024-11-21', '16:30:00'),
-('c5b7ac9d-7637-46b1-8790-7e097f548d19', 'de92k121s3212', '2dbdf34a-6068-4b65-a165-b099a0c3aecb', 13, 'KG', '2024-12-26', '14:58:00'),
 ('e8d4b15b-5f4e-4968-9fdf-37d1c18cc6be', 'de92k121s3212', 'c6e697d5-90fc-412d-a262-1f25172e4ea1', 85, 'QQ', '2024-11-17', '15:30:00'),
-('e9cd7f91-308f-4bf0-b3df-3bd79e2acec4', 'de92k121s3212', '5cee8d60-1a09-4a5d-9e46-0d677b4412e2', 60, 'KG', '2024-11-11', '20:30:00'),
-('ed22e054-89b4-4908-96fe-06b15d2b7f3c', 'de92k121s3212', '0977de59-5156-4b48-97d3-348e9aa3f738', 25, 'KG', '2024-11-23', '20:30:00');
+('e9cd7f91-308f-4bf0-b3df-3bd79e2acec4', 'de92k121s3212', '5cee8d60-1a09-4a5d-9e46-0d677b4412e2', 60, 'KG', '2024-11-11', '20:30:00');
 
 -- --------------------------------------------------------
 
@@ -786,22 +779,15 @@ CREATE TABLE `ordenes` (
 
 INSERT INTO `ordenes` (`id`, `id_comprador`, `id_vendedor`, `id_entrega`, `estado`, `cantidad_recibida`, `creado`) VALUES
 ('28e74cec-913f-4fc7-989a-7cea5538461f', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '8f165f37-d276-4fb0-a32e-d67c3f8f97ad', 'Aceptado', 25, '2024-11-19 11:37:05'),
-('30259de2-4997-46de-8ea0-ec60b4b71b82', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '050a772b-c8e2-4acf-adbd-cc96404cac79', 'Aceptado', 200, '2024-09-21 19:30:58'),
 ('38fb3c3d-8054-4b21-97a9-b565a1113016', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '16a0f30b-e07d-4632-930b-12ff59d287e7', 'Rechazado', 250, '2024-11-02 10:09:49'),
-('3f25e670-9b38-4aa9-81e4-f7136cc9b373', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '48a229f5-506b-473a-894e-7ee01c1c16d9', 'Pendiente de entrega', 0, '2024-12-16 09:55:10'),
 ('40ae9141-1a7f-4237-8a45-3e5e4d87e741', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e8d4b15b-5f4e-4968-9fdf-37d1c18cc6be', 'Recibido', 85, '2024-11-07 13:42:04'),
-('5670dc73-1699-4de1-8097-3321b3c9e56d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'c5b7ac9d-7637-46b1-8790-7e097f548d19', 'Pendiente de entrega', 0, '2024-12-16 09:55:10'),
 ('58764ab9-d5a1-48fd-8798-a22bd3dffdeb', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '9de6a422-3663-406d-bd58-59d731886ed5', 'Aceptado', 100, '2024-11-01 08:45:01'),
-('5e67c192-2faa-4589-bac1-ddf016f1232e', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '1dd394be-05bd-484e-9d4a-2c6c39eb1c45', 'Pendiente de entrega', 0, '2024-12-16 09:55:10'),
-('6bc1823b-e30b-4135-b5ad-41b38553fdb9', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '05049e56-f8ca-420f-97d8-5b3e89e39be6', 'Pendiente de entrega', 0, '2024-12-16 09:55:10'),
 ('746d7b5f-73b2-400a-9b11-c650c8a69e91', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '0f708c1a-02a7-431d-a4e5-03c4676a2adb', 'Aceptado', 35, '2024-11-13 19:56:23'),
 ('8c97c004-bf68-421a-a3d8-bf4dd1b13338', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '3f49c076-6a77-4d87-904f-6448d9019082', 'Aceptado', 65, '2024-11-10 11:46:08'),
-('a562595f-9bdb-4053-bb1e-b95a2ef54798', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'ed22e054-89b4-4908-96fe-06b15d2b7f3c', 'Recibido', 25, '2024-11-21 14:03:32'),
 ('aa6ad266-003b-4475-bdfc-c3e3d756800d', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '201ccee8-40ff-4e5c-96a3-022345385f26', 'Aceptado', 20, '2024-11-13 20:37:14'),
 ('cb38f5fd-e1d2-48b5-9920-a491cd78e666', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '163dc5bd-9757-48c3-b290-78f9ca5cfe45', 'Rechazado', 0, '2024-09-20 23:49:29'),
 ('ccff96df-ea55-4f44-951e-f073e40bc3ca', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'e9cd7f91-308f-4bf0-b3df-3bd79e2acec4', 'Rechazado', 0, '2024-11-10 11:36:40'),
-('d5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'Aceptado', 100, '2024-11-01 08:45:01'),
-('ed81e7f3-ee77-448f-bfcf-eadcf81a4243', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', 'aa1c27f0-7519-4368-95f3-bbb7904af2b4', 'Pago en garantia', 0, '2024-11-19 17:16:02');
+('d5a8aedc-5a76-4db5-9347-4d59ccc8dfd2', 'b308a85b-1f31-4082-b9e2-4d2a9483923f', 'e16f5f10-7a05-4805-9336-c15dac53eaed', '8e95cd24-eac8-4419-b79c-bc82a7ac228e', 'Aceptado', 100, '2024-11-01 08:45:01');
 
 -- --------------------------------------------------------
 

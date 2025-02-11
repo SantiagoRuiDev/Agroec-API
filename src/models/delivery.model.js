@@ -44,7 +44,7 @@ export const getDeliveryById = async (uuid) => {
 export const getDelivery = async (condition_id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT * FROM entregas WHERE id_condicion = ?`,
+      `SELECT * FROM entregas WHERE id_condicion = ? ORDER BY fecha_entrega DESC`,
       [condition_id]
     );
 

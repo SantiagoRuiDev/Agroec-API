@@ -141,7 +141,7 @@ export const getConditionByChat = async (chat_id) => {
       FROM entregas e 
       INNER JOIN puntos_recepcion pr ON pr.id = e.id_punto
       LEFT JOIN ordenes o ON o.id_entrega = e.id
-      WHERE e.id_condicion = ?`,
+      WHERE e.id_condicion = ? ORDER BY e.fecha_entrega DESC`,
       [statement[0].id]
     );
 
