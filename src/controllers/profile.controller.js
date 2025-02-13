@@ -132,7 +132,7 @@ export const getProfileByUser = async (req, res) => {
         case "Agricultor":
           profile = await profileModel.getFarmerProfileByUser(user_id);
           break;
-        case "Asociacion":
+        case "Asociación Agrícola":
           profile = await profileModel.getAssociationAgriculturalProfileByUser(
             user_id
           );

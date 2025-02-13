@@ -496,14 +496,14 @@ export const getMerchantAgrochemicalProfileByUser = async (id) => {
 export const getProfileType = async (id) => {
   try {
     const [statement] = await connection.query(
-      `SELECT COALESCE(pc.tipo_perfil, pca.tipo_perfil, pcc.tipo_perfil, pa.tipo_perfil, paa.tipo_perfil) as tipo_perfil
+      `SELECT COALESCE(pc.tipo_perfil, pca.tipo_perfil, pcc.razon_social, pa.tipo_perfil, paa.tipo_perfil) as tipo_perfil
         FROM usuarios u
         LEFT JOIN perfil_comerciante pc ON pc.id_usuario = u.id
         LEFT JOIN perfil_comerciante_agroquimicos pca ON pca.id_usuario = u.id
         LEFT JOIN perfil_comprador pcc ON pcc.id_usuario = u.id
         LEFT JOIN perfil_agricultor pa ON pa.id_usuario = u.id
         LEFT JOIN perfil_asociacion_agricola paa ON paa.id_usuario = u.id
-        WHERE u.id_usuario = ?;
+        WHERE u.id = ?;
     `,
       [id]
     );

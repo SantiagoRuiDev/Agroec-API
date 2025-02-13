@@ -958,7 +958,7 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
   `id` varchar(250) NOT NULL,
   `id_usuario` varchar(250) NOT NULL,
   `id_cuenta_bancaria` varchar(250) NOT NULL,
-  `tipo_perfil` enum('Comerciante') NOT NULL DEFAULT 'Comerciante',
+  `tipo_perfil` enum('Agroquimicos') NOT NULL DEFAULT 'Agroquimicos',
   `nombre` varchar(50) NOT NULL,
   `centro_acopio` tinyint(1) DEFAULT NULL,
   `capacidad_secado` decimal(10,0) DEFAULT NULL,
@@ -972,7 +972,7 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
 --
 
 INSERT INTO `perfil_comerciante_agroquimicos` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `acceso_internet`) VALUES
-('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Comerciante', 'Agroquimica Sols', 1, 200, 1, 3005, 1);
+('8a846551-2588-46bc-a43a-7075f03db937', 'e8799658-2fbd-4e90-b2f0-82b62568968b', '2ec2791b-647e-436c-a4c9-02d5b3f85eaa', 'Agroquimicos', 'Agroquimica Sols', 1, 200, 1, 3005, 1);
 
 -- --------------------------------------------------------
 

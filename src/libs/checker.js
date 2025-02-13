@@ -79,6 +79,6 @@ export const getType = async (uuid) => {
       return profile.tipo_perfil
     }
   } catch (error) {
-    return "Comerciante";
+    return "Comprador";
   }
 }
