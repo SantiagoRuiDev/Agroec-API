@@ -158,7 +158,6 @@ export const createAccount = async (req, res) => {
         });
       }
 
-      /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
@@ -166,11 +165,11 @@ export const createAccount = async (req, res) => {
         client.messages
           .create({
             body: "[AGROEC] Código de confirmación de Registro: " + code,
-            from: "+15624576355",
+            from: APP_SETTINGS.sms_number_twilio,
             to: req.body.user.telefono,
           })
           .then()
-          .catch((error) => console.error("Error:", error));*/
+          .catch((error) => console.error("Error:", error));
 
       return res.status(200).json({
         message: "Codigo enviado a tu telefono revisalo porfavor", code: code, id: uuid

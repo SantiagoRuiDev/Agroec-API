@@ -905,13 +905,13 @@ CREATE TABLE `perfil_asociacion_agricola` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Asociación Agrícola') NOT NULL DEFAULT 'Asociación Agrícola',
   `nombre` varchar(50) NOT NULL,
-  `centro_acopio` tinyint(1) DEFAULT NULL,
-  `capacidad_secado` decimal(10,0) DEFAULT NULL,
-  `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
-  `capacidad` decimal(10,0) DEFAULT NULL,
-  `numero_hectareas` decimal(10,0) DEFAULT NULL,
-  `cantidad_hectareas_siembras` decimal(10,0) DEFAULT NULL,
-  `acceso_internet` tinyint(1) DEFAULT NULL
+  `centro_acopio` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad_secado` decimal(10,0) NOT NULL DEFAULT 0,
+  `capacidad_almacenamiento` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad` decimal(10,0) NOT NULL DEFAULT 0,
+  `numero_hectareas` decimal(10,0) NOT NULL DEFAULT 0,
+  `cantidad_hectareas_siembras` decimal(10,0) NOT NULL DEFAULT 0,
+  `acceso_internet` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

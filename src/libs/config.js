@@ -21,6 +21,7 @@ export const APP_SETTINGS = {
     smtp_port: process.env.SMTP_PORT,
     smtp_pass: process.env.SMTP_PASS,
     auth_token_twilio: process.env.AUTH_TOKEN_TWILIO,
+    sms_number_twilio: process.env.SMS_NUMBER_TWILIO,
     account_sid_twilio: process.env.ACCOUNT_SID_TWILIO,
     payment_token: process.env.PAGOMEDIOS_TOKEN,
     secure: process.env.SECURE,
