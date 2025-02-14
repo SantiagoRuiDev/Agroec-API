@@ -7,7 +7,6 @@ import { merchantSchema } from "../schemas/merchant.schema.js";
 import { assocAgriculturalSchema } from "../schemas/assoc_agricultural.js";
 import { merchantAgrochemicalSchema } from "../schemas/merchant_agrochemical.js";
 import { pointsDeliverySchemaArray } from "../schemas/points.schema.js";
-import { associationSchema } from "../schemas/association.schema.js";
 
 export const updateProfile = async (req, res, next) => {
   try {
@@ -21,10 +20,10 @@ export const updateProfile = async (req, res, next) => {
       case "Agricultor":
         validateSchemas(req.body.profile, farmerSchema);
         break;
-      case "Asociacion Agricola":
+      case "Asociación Agrícola":
         validateSchemas(req.body.profile, assocAgriculturalSchema);
         break;
-      case "Comerciante Agroquimico":
+      case "Agroquimicos":
         validateSchemas(req.body.profile, merchantAgrochemicalSchema);
         break;
       default:

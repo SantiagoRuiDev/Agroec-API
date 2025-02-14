@@ -71,13 +71,13 @@ export const updateProfile = async (req, res) => {
             profile
           );
           break;
-        case "Asociacion Agricola":
+        case "Asociación Agrícola":
           rowsUpdated = await profileModel.updateAssociationAgriculturalProfile(
             user_id,
             profile
           );
           break;
-        case "Comerciante Agroquimico":
+        case "Agroquimicos":
           rowsUpdated = await profileModel.updateMerchantAgrochemicalProfile(
             user_id,
             profile

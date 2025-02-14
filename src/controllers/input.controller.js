@@ -14,7 +14,7 @@ export const createMultipleInput = async (req, res) => {
       return res.status(400).json({ error: "No se ha subido ningún archivo" });
     }
 
-    if ((await profileChecker.isMerchantAgrochemical(uuid_user))) {
+    if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
       throw new Error(
         "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
       );
