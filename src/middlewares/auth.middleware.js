@@ -44,10 +44,10 @@ export const createAccount = async (req, res, next) => {
       case "Agricultor":
         validateSchemas(req.body.profile, farmerSchema);
         break;
-      case "Asociacion Agricola":
+      case "Asociación Agrícola":
         validateSchemas(req.body.profile, assocAgriculturalSchema);
         break;
-      case "Comerciante Agroquimico":
+      case "Agroquimicos":
         validateSchemas(req.body.profile, merchantAgrochemicalSchema);
         break;
 

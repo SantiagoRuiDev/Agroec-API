@@ -106,7 +106,7 @@ export const createAccount = async (req, res) => {
           );
           await walletModel.createWallet(wallet_id, uuid);
           break;
-        case "Asociacion Agricola":
+        case "Asociación Agrícola":
           await bankAccountModel.createBankAccount(
             bankAccount_uuid,
             bodyBankAccount
@@ -124,7 +124,7 @@ export const createAccount = async (req, res) => {
           );
           await walletModel.createWallet(wallet_id, uuid);
           break;
-        case "Comerciante Agroquimico":
+        case "Agroquimicos":
           await bankAccountModel.createBankAccount(
             bankAccount_uuid,
             bodyBankAccount
