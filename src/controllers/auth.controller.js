@@ -353,7 +353,7 @@ export const logoutAccount = async (req, res) => {
     const notification_id = req.body.notification_id;
     
     if(notification_id != null || notification_id != undefined){
-      const result = await notificationService.deleteNotificationReceptor(notification_id);
+      const result = await notificationService.deleteNotificationReceptor(req.user_id, notification_id);
   
       if(result){
         return res.status(200).json({ message: "Logout successful" });
