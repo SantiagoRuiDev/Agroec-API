@@ -11,4 +11,4 @@ router.post('/session/seller', authMiddleware.loginAccount, authController.login
 router.post('/session', authMiddleware.loginAccount, authController.loginAccount);
 router.get('/check', authMiddleware.isAuthentified, authController.isAuthentified);
 router.post('/finish', authMiddleware.finishAccount, authController.finishAccount);
-router.post('/logout', authController.logoutAccount);
+router.post('/logout', authMiddleware.isAuthentified, authController.logoutAccount);
