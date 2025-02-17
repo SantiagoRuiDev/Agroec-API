@@ -29,5 +29,6 @@ export const APP_SETTINGS = {
     max_unreceived_orders: process.env.MAX_UNRECEIVED_ORDERS,
     onesignal_api_key: process.env.ONESIGNAL_API_KEY,
     onesignal_app_id: process.env.ONESIGNAL_APP_ID,
+    frontend_domain: process.env.FRONTEND_DOMAIN,
     production: (process.env.PRODUCTION == 'true') ? true : false
 }

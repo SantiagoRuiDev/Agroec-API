@@ -4,7 +4,7 @@ import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
 import * as contactModel from "../models/contact.model.js";
 import * as pointsModel from "../models/points.model.js";
-import * as associationModel from "../models/association.model.js";
+import * as notificationService from "../services/notification.service.js";
 import * as walletModel from "../models/wallet.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
@@ -350,19 +350,19 @@ export const isAuthentified = async (req, res) => {
 
 export const logoutAccount = async (req, res) => {
   try {
-    res.clearCookie("multiuser-token", {
-      path: "/",
-      httpOnly: true,
-      secure: APP_SETTINGS.secure,
-      sameSite: "none",
-    });
-    res.clearCookie("auth-token", {
-      path: "/",
-      httpOnly: true,
-      secure: APP_SETTINGS.secure,
-      sameSite: "none",
-    });
-    res.status(200).json({ message: "Logout successful, token removed" });
+    const notification_id = req.body.notification_id;
+    
+    if(notification_id != null || notification_id != undefined){
+      const result = await notificationService.deleteNotificationReceptor(notification_id);
+  
+      if(result){
+        return res.status(200).json({ message: "Logout successful" });
+      }else {
+        throw new Error("Error while triying to logout")
+      }
+    }
+    
+    return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

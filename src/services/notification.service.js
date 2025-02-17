@@ -3,6 +3,21 @@ import { v4 as uuidv4 } from "uuid";
 import axios from 'axios';
 import { APP_SETTINGS } from '../libs/config.js';
 
+
+export const deleteNotificationReceptor = async (uuid_user, uuid_receptor) => {
+    try {
+        const deleted_row = await notificationModel.deleteNotificationReceptor(uuid_user, uuid_receptor);
+        
+        if(deleted_row > 0){
+            return true;
+        }else {
+            return false;
+        }
+    } catch (error) {
+        throw new Error("Error al leer las notificaciónes: " + error.message);
+    }
+}
+
 export const getNotificationsAndRead = async (uuid_user) => {
     try {
         const notifications = await notificationModel.getNotifications(uuid_user);

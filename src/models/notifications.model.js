@@ -68,6 +68,20 @@ export const createNotification = async (
   }
 };
 
+export const deleteNotificationReceptor = async (uuid_user, uuid_receptor) => {
+  try {
+    const [statement] = await connection.query(
+      "DELETE FROM notificaciones_receptores WHERE id_usuario = ? AND id_onesignal = ?",
+      [uuid_user, uuid_receptor]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const getUnreadedNotifications = async (uuid_user) => {
   try {
     const [statement] = await connection.query(

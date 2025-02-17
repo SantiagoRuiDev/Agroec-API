@@ -16,7 +16,7 @@ export const tokenizateCard = async (document, name, email, phone, address) => {
         address: address,
         type: "Individual",
       },
-      notify_url: null,
+      notify_url: APP_SETTINGS.frontend_domain + "/app/billetera",
       custom_value: null,
     };
 
