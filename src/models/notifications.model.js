@@ -75,7 +75,7 @@ export const deleteNotificationReceptor = async (uuid_user, uuid_receptor) => {
       [uuid_user, uuid_receptor]
     );
 
-    return statement;
+    return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
   }
