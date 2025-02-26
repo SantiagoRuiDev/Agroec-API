@@ -1,5 +1,3 @@
-
-
 CREATE TABLE `asociacion` (
   `id` varchar(250) NOT NULL,
   `nombre` varchar(100) NOT NULL
@@ -880,10 +878,10 @@ CREATE TABLE `perfil_agricultor` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Agricultor') NOT NULL DEFAULT 'Agricultor',
   `nombre` varchar(50) NOT NULL,
-  `numero_hectareas` decimal(10,0) DEFAULT NULL,
-  `cantidad_hectareas_siembras` decimal(10,0) DEFAULT NULL,
+  `numero_hectareas` decimal(10,0) NOT NULL DEFAULT 0,
+  `cantidad_hectareas_siembras` decimal(10,0) NOT NULL DEFAULT 0,
   `id_asociacion` varchar(100) DEFAULT NULL,
-  `acceso_internet` tinyint(1) DEFAULT NULL
+  `acceso_internet` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -919,7 +917,7 @@ CREATE TABLE `perfil_asociacion_agricola` (
 --
 
 INSERT INTO `perfil_asociacion_agricola` (`id`, `id_usuario`, `id_cuenta_bancaria`, `tipo_perfil`, `nombre`, `centro_acopio`, `capacidad_secado`, `capacidad_almacenamiento`, `capacidad`, `numero_hectareas`, `cantidad_hectareas_siembras`, `acceso_internet`) VALUES
-('71a8c477-4722-4a1d-95cf-0f597cb74a3f', '64829989-e673-4e74-947f-ade23ad9adb2', '7d63f627-86b1-449e-b897-a42783fce22d', 'Asociación Agrícola', 'Aso Klin', 1, 200, 1, 600, 2000, NULL, 1);
+('71a8c477-4722-4a1d-95cf-0f597cb74a3f', '64829989-e673-4e74-947f-ade23ad9adb2', '7d63f627-86b1-449e-b897-a42783fce22d', 'Asociación Agrícola', 'Aso Klin', 1, 200, 1, 600, 2000, 25, 1);
 
 -- --------------------------------------------------------
 
@@ -933,11 +931,11 @@ CREATE TABLE `perfil_comerciante` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Comerciante') NOT NULL DEFAULT 'Comerciante',
   `nombre` varchar(50) NOT NULL,
-  `centro_acopio` tinyint(1) DEFAULT NULL,
-  `capacidad_secado` decimal(10,0) DEFAULT NULL,
-  `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
-  `capacidad` decimal(10,0) DEFAULT NULL,
-  `acceso_internet` tinyint(1) DEFAULT NULL
+  `centro_acopio` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad_secado` decimal(10,0) NOT NULL DEFAULT 0,
+  `capacidad_almacenamiento` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad` decimal(10,0) NOT NULL DEFAULT 0,
+  `acceso_internet` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -960,11 +958,11 @@ CREATE TABLE `perfil_comerciante_agroquimicos` (
   `id_cuenta_bancaria` varchar(250) NOT NULL,
   `tipo_perfil` enum('Agroquimicos') NOT NULL DEFAULT 'Agroquimicos',
   `nombre` varchar(50) NOT NULL,
-  `centro_acopio` tinyint(1) DEFAULT NULL,
-  `capacidad_secado` decimal(10,0) DEFAULT NULL,
-  `capacidad_almacenamiento` tinyint(1) DEFAULT NULL,
-  `capacidad` decimal(10,0) DEFAULT NULL,
-  `acceso_internet` tinyint(1) DEFAULT NULL
+  `centro_acopio` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad_secado` decimal(10,0) NOT NULL DEFAULT 0,
+  `capacidad_almacenamiento` tinyint(1) NOT NULL DEFAULT 1,
+  `capacidad` decimal(10,0) NOT NULL DEFAULT 0,
+  `acceso_internet` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -985,10 +983,10 @@ CREATE TABLE `perfil_comprador` (
   `id_usuario` varchar(250) NOT NULL,
   `razon_social` varchar(50) NOT NULL,
   `actividad_economica` text DEFAULT NULL,
-  `tipo_negocio` enum('Industrial','Comercial','Intermediario') DEFAULT NULL,
-  `consumo_mes_tm` decimal(10,0) DEFAULT NULL,
-  `consumo_anual` decimal(10,0) DEFAULT NULL,
-  `presupuesto_mes` decimal(10,0) DEFAULT NULL,
+  `tipo_negocio` enum('Industrial','Comercial','Intermediario') DEFAULT 'Industrial',
+  `consumo_mes_tm` decimal(10,0) NOT NULL DEFAULT 0,
+  `consumo_anual` decimal(10,0) NOT NULL DEFAULT 0,
+  `presupuesto_mes` decimal(10,0) NOT NULL DEFAULT 0,
   `politicas_recepcion` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

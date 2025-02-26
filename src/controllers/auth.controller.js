@@ -409,12 +409,12 @@ export const resetPassword = async (req, res) => {
 
     const plainPassword = generateRandomPassword();
     const randomGeneratedPassword = await hashPassword(plainPassword);
-    console.log(plainPassword)/*
+    
     await sendMail(
       "Agroec - Cambio de contraseña ✔",
       formatPasswordMail({correo: email, clave: plainPassword}),
       email
-    );*/
+    );
 
     const updateRow = await authModel.updateAccountPassword(userData.id, randomGeneratedPassword);
     if (updateRow > 0) {
