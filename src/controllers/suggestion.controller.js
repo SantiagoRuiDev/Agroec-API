@@ -47,9 +47,25 @@ export const getProducts = async (req, res) => {
 
     if (!products) {
       res.status(404).send({ message: "No hay productos para mostrar" });
+      return;
     }
 
     return res.status(200).json(products);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const disableProductById = async (req, res) => {
+  try {
+    const modifiedRows = await suggestionModel.disableProductById(req.params.id);
+
+    if (modifiedRows == 0) {
+      res.status(404).send({ message: "No se pudo deshabilitar este producto" });
+      return;
+    }
+
+    return res.status(200).json({message: "Producto deshabilitado correctamente"});
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

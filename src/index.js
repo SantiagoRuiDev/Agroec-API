@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { router as authRoutes } from "./routes/auth.routes.js";
 import { router as tutorialRoutes } from "./routes/tutorials.routes.js";
+import { router as categoriesRoutes } from "./routes/categories.routes.js";
 import { router as suggestionRoutes } from "./routes/suggestion.routes.js";
 import { router as productsRoutes } from "./routes/products.routes.js";
 import { router as profilesRoutes } from "./routes/profiles.routes.js";
@@ -22,6 +23,7 @@ import { router as notificationRoutes } from "./routes/notification.routes.js";
 import { router as multiusersRoutes } from "./routes/multiusers.routes.js";
 import { router as suscriptionRoutes } from "./routes/suscription.routes.js";
 import { router as preferencesRoutes } from "./routes/preferences.routes.js";
+import { router as settingsRoutes } from "./routes/settings.routes.js";
 import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
@@ -71,7 +73,7 @@ initializeSocket(io); // Inicia el socket, y lo envia a otra función para que c
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/tutorials", tutorialRoutes);
-app.use("/api/v1/category", tutorialRoutes);
+app.use("/api/v1/category", categoriesRoutes);
 app.use("/api/v1/suggestion", suggestionRoutes);
 app.use("/api/v1/products", productsRoutes);
 app.use("/api/v1/profile", profilesRoutes);
@@ -89,6 +91,7 @@ app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/multiusers", multiusersRoutes);
 app.use("/api/v1/suscription", suscriptionRoutes);
 app.use("/api/v1/preferences", preferencesRoutes);
+app.use("/api/v1/settings", settingsRoutes);
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));

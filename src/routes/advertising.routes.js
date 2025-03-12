@@ -23,4 +23,6 @@ router.get('/', authMiddleware.isAuthentified, advertisingController.getAllAdver
 
 router.put('/set-image/:id', authMiddleware.isAuthentified, upload.single('image'), addFileUrl, advertisingController.updateImageById);
 
+router.delete('/:id', authMiddleware.isAuthentified, advertisingController.deleteAdvertisingById);
+
 //Agregarla a Index al final.

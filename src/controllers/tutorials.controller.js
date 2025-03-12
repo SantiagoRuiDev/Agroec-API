@@ -4,7 +4,6 @@ import * as notificationService from "../services/notification.service.js";
 
 export const getAllCategories = async (req, res) => {
     try {
-
         const categories = await tutorialModel.getAllCategories();
 
         if(!categories){
@@ -46,7 +45,7 @@ export const createTutorial = async (req, res) => {
 
         if(tutorial > 0){
             const url = "http://localhost:5173/app/tutorials/" + category
-            await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);
+            //await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);
             return res.status(200).send({message: `Tutorial creado exitosamente`});
         }
 
@@ -56,3 +55,57 @@ export const createTutorial = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 }
+
+export const deleteTutorial = async (req, res) => {
+    try {
+        const uuid = req.params.id;
+
+        const deletedRow = await tutorialModel.deleteTutorial(uuid);
+
+        if(deletedRow > 0){
+            return res.status(200).send({message: `Tutorial eliminado exitosamente`});
+        }
+
+        throw new Error("Error al intentar eliminar el tutorial.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+
+export const createCategory = async (req, res) => {
+    try {
+        const uuid = uuidv4();
+
+        const category = await tutorialModel.createCategory(uuid, req.body.titulo);
+
+        if(category > 0){
+            return res.status(200).send({message: `Categoria creada exitosamente`});
+        }
+
+        throw new Error("Error al intentar crear la categoria.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+
+
+export const setCategoryImage = async (req, res) => {
+    try {
+        const updatedRow = await tutorialModel.setCategoryImage(req.params.id, req.image_url);
+
+        if(updatedRow > 0){
+            return res.status(200).send({message: `Categoria actualizada exitosamente`});
+        }
+
+        throw new Error("Error al intentar actualizar la categoria.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+

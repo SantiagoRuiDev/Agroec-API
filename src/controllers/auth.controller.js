@@ -262,6 +262,33 @@ export const loginSellerAccount = async (req, res) => {
   }
 };
 
+
+export const loginAdminAccount = async (req, res) => {
+  try {
+    const fetchUser = await authModel.getAccountByEmail(req.body.correo);
+
+    if (!fetchUser) {
+      throw new Error("No hemos podido encontrar una cuenta con ese correo.");
+    }
+
+    if (fetchUser.id != "Sistema") {
+      throw new Error("No puedes ingresar con una cuenta de comprador o vendedor");
+    }
+
+    if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
+      throw new Error("Clave Incorrecta");
+    }
+
+    const token = encodeToken(fetchUser.id, "admin", "1d");
+
+    return res
+      .status(200)
+      .json({ message: "Sesion iniciada correctamente", token: token });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const finishAccount = async (req, res) => {
   try {
     const code = req.body.codigo;
@@ -316,11 +343,20 @@ export const isAuthentified = async (req, res) => {
           "today-date": todayDate
         });
       } else {
-        const refreshToken = encodeToken(
-          req.token.user,
-          req.token.profile,
-          "360d"
-        );
+        let refreshToken = null
+        if(req.token.profile == "admin"){
+          refreshToken = encodeToken(
+            req.token.user,
+            req.token.profile,
+            "1d"
+          );
+        } else {
+          refreshToken = encodeToken(
+            req.token.user,
+            req.token.profile,
+            "360d"
+          );
+        }
         return res
           .status(200)
           .json({

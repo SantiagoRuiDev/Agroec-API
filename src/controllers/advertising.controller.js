@@ -17,7 +17,7 @@ export const createAdvertising = async (req, res) => {
 
     return res
       .status(200)
-      .send({ message: "Publicacion creada correctamente" });
+      .send({ uuid: uuid_ads, message: "Publicacion creada correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -33,17 +33,38 @@ export const updateImageById = async (req, res) => {
       uuidImage
     );
 
-    if (!updateImageById) {
-      res.status(404).send({ message: "No se actualizar la imagen" });
+    if (updateImageById == 0) {
+      res.status(404).send({ message: "No se pudo actualizar la imagen" });
     }
 
     return res
       .status(200)
-      .send({ message: "Imagen actualizada correctamente" });
+      .send({ message: "Imagen eliminado correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const deleteAdvertisingById = async (req, res) => {
+  try {
+    const uuid = req.params.id;
+
+    const updatedRows = await advertisingModel.deleteAdvertisingById(
+      uuid
+    );
+
+    if (updatedRows == 0) {
+      return res.status(404).send({ message: "No se pudo eliminar este anuncio" });
+    }
+
+    return res
+      .status(200)
+      .send({ message: "Anuncio eliminado correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 
 export const getAllAdvertising = async (req, res) => {
   try {

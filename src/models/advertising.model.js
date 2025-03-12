@@ -30,3 +30,13 @@ export const updateImageById = async (imageUrl, uuid) => {
         throw new Error(error.message);
     }
 };
+
+export const deleteAdvertisingById = async (uuid) => {    
+    try {
+        const [statement] = await connection.query('DELETE FROM publicidades WHERE id = ?', [uuid]);
+        
+        return statement.affectedRows;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};

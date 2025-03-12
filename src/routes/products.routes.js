@@ -8,7 +8,7 @@ router.get('/price-analytics/:id', productController.getPriceAnalyticByProduct)
 router.get('/', productController.getAllProducts)
 router.get('/all', productController.getAllMarketProducts)
 router.post('/', authMiddleware.isAuthentified, productController.createProduct)
-router.delete('/:id', authMiddleware.isAuthentified, productController.deleteProductById)
+router.delete('/:id', authMiddleware.isAuthentified, productController.disableProductById)
 
 // ENDPOINT CREAR PRODUCTO
 // ENDPOINT ELIMINAR PRODUCTO

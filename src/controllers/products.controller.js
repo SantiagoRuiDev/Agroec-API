@@ -67,12 +67,12 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const deleteProductById = async (req, res) => {
+export const disableProductById = async (req, res) => {
   try {
     const uuid = req.params.id;
-    const deleteProduct = await productModel.deleteProductById(uuid);
+    const deleteProduct = await productModel.disableProductById(uuid);
 
-    if (!deleteProduct) {
+    if (deleteProduct == 0) {
       return res
         .status(404)
         .send({ message: "No se pudo eliminar el producto" });

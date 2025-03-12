@@ -4,7 +4,7 @@ import {
   accountSchema,
   accountUpdateSchema,
 } from "../schemas/account.schema.js";
-import { authSchema } from "../schemas/auth.schema.js";
+import { authAdminSchema, authSchema } from "../schemas/auth.schema.js";
 import { codeSchema } from "../schemas/code.schema.js";
 import { buyerSchema } from "../schemas/buyer.schema.js";
 import { bankAccount } from "../schemas/bank_account.schema.js";
@@ -73,6 +73,16 @@ export const createAccount = async (req, res, next) => {
           });
       }
     }
+
+    next();
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const loginAdminAccount = async (req, res, next) => {
+  try {
+    validateSchemas(req.body, authAdminSchema);
 
     next();
   } catch (error) {

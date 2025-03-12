@@ -105,10 +105,10 @@ export const createProduct = async (uuid, schema) => {
   }
 };
 
-export const deleteProductById = async (uuid) => {
+export const disableProductById = async (uuid) => {
   try {
     const [statement] = await connection.query(
-      "DELETE FROM productos WHERE id = ?",
+      "UPDATE productos SET estado = 0 WHERE id = ?",
       [uuid]
     );
 

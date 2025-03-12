@@ -7,6 +7,7 @@ export const router = Router();
 router.post('/', authMiddleware.createAccount, authController.createAccount);
 router.post('/reset-password', authController.resetPassword);
 router.put('/', authMiddleware.isAuthentified, authMiddleware.updateAccount, authController.updateAccount);
+router.post('/session/admin', authMiddleware.loginAdminAccount, authController.loginAdminAccount);
 router.post('/session/seller', authMiddleware.loginAccount, authController.loginSellerAccount);
 router.post('/session', authMiddleware.loginAccount, authController.loginAccount);
 router.get('/check', authMiddleware.isAuthentified, authController.isAuthentified);
