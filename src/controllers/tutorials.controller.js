@@ -89,8 +89,8 @@ export const createTutorial = async (req, res) => {
         const tutorial = await tutorialModel.createTutorial(uuid, category, req.body);
 
         if(tutorial > 0){
-            /*const url = "https://web.agroec.com/app/tutorials/" + category
-            await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);*/
+            const url = "https://web.agroec.com/app/tutorials/" + category
+            await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);
             return res.status(200).send({message: `Tutorial creado exitosamente`});
         }
 
