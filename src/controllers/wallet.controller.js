@@ -4,6 +4,7 @@ import * as orderModel from "../models/order.model.js";
 import * as profileChecker from "../libs/checker.js";
 import * as paymentCore from "../payments/index.js";
 import * as authModel from "../models/auth.model.js";
+import * as settingsModel from "../models/settings.model.js";
 import { formatTransactionMail } from "../email/transaction.js";
 import { sendMail } from "../libs/emailer.js";
 import { v4 as uuidv4 } from "uuid";
@@ -90,14 +91,135 @@ export const rechargeWallet = async (req, res) => {
   }
 };
 
+export const rechargeWalletByAdmin = async (req, res) => {
+  try {
+    const { monto_recarga, id } = req.body;
+
+    if (monto_recarga <= 0) {
+      throw new Error("Ingresa una cantidad mayor a 0");
+    }
+
+    const { wallet } = await walletModel.getWalletByUser(id);
+
+    const idWallet = wallet?.id;
+
+    if (!idWallet) {
+      return res
+        .status(404)
+        .send({ message: `La billetera con id: ${idWallet} no existe` });
+    }
+
+    const balanceNow = wallet?.saldo;
+
+    const rechargeAmount = monto_recarga;
+
+    const rechargeMoreBalance = balanceNow + rechargeAmount;
+
+    const rechargeResult = await walletModel.rechargeWallet(
+      uuidv4(),
+      idWallet,
+      { metodo_pago: "TC/TD" },
+      rechargeAmount
+    );
+
+    if (!rechargeResult) {
+      return res
+        .status(404)
+        .send({ message: "Hubo un error al recargar la billetera" });
+    }
+
+    const user = await authModel.getAccountById(id);
+    await sendMail(
+      "Agroec - Recarga exitosa ✔",
+      formatTransactionMail({
+        operacion: "Recarga de $" + rechargeAmount + " saldo en billetera",
+      }),
+      user.correo
+    );
+
+    await walletModel.updateBalance(idWallet, rechargeMoreBalance);
+
+    return res
+      .status(200)
+      .send({ message: "Billetera recargada exitosamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const chargebackWalletByAdmin = async (req, res) => {
+  try {
+    const { monto_devolucion, id } = req.body;
+
+    if (monto_devolucion <= 0) {
+      throw new Error("Ingresa una cantidad mayor a 0");
+    }
+
+    const { wallet } = await walletModel.getWalletByUser(id);
+
+    const idWallet = wallet?.id;
+
+    if (!idWallet) {
+      return res
+        .status(404)
+        .send({ message: `La billetera con id: ${idWallet} no existe` });
+    }
+
+    const balanceNow = wallet?.saldo;
+
+    const chargebackAmount = monto_devolucion;
+
+    if (balanceNow < chargebackAmount) {
+      throw new Error(
+        "No puedes hacer una devolución mayor a su balance actual"
+      );
+    }
+
+    const chargebackBalance = balanceNow - chargebackAmount;
+
+    const chargebackResult = await walletModel.chargebackWallet(
+      uuidv4(),
+      idWallet,
+      chargebackAmount
+    );
+
+    if (!chargebackResult) {
+      return res
+        .status(404)
+        .send({
+          message: "Hubo un error al realizar la devolución de la billetera",
+        });
+    }
+
+    const user = await authModel.getAccountById(id);
+    await sendMail(
+      "Agroec - Devolución exitosa ✔",
+      formatTransactionMail({
+        operacion:
+          "Devolución de $" + chargebackAmount + " saldo de tu billetera",
+      }),
+      user.correo
+    );
+
+    await walletModel.updateBalance(idWallet, chargebackBalance);
+
+    return res
+      .status(200)
+      .send({ message: "Devolución efectuada exitosamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const createFee = async (req, res) => {
   try {
     const table_id = uuidv4();
     const user_id = req.user_id;
     const id_delivery = req.params.id_entrega;
-    const feeSchema = req.body;
+    const { price, quantity } = req.body;
 
     const { wallet } = await walletModel.getWalletByUser(user_id);
+    const feePercentage = await settingsModel.getSettings();
 
     const idWallet = wallet?.id;
 
@@ -109,7 +231,15 @@ export const createFee = async (req, res) => {
 
     const balanceNow = wallet?.saldo;
 
-    const feeBalance = feeSchema.monto_fee;
+    let feeBalance = 0;
+
+    if (await profileChecker.isBuyerProfile(user_id)) {
+      feeBalance =
+        price * quantity * (feePercentage.porcentaje_fee_comprador / 100);
+    } else {
+      feeBalance =
+        price * quantity * (feePercentage.porcentaje_fee_vendedor / 100);
+    }
 
     if (balanceNow < feeBalance) {
       return res
@@ -123,7 +253,7 @@ export const createFee = async (req, res) => {
       table_id,
       id_delivery,
       idWallet,
-      feeSchema
+      feeBalance
     );
 
     if (!createFee) {
@@ -154,6 +284,20 @@ export const createFee = async (req, res) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
+};
+
+export const getWalletByUserId = async (req, res) => {
+  const user_id = req.params.id;
+
+  const allWallet = await walletModel.getWalletByUser(user_id);
+
+  if (!allWallet) {
+    res
+      .status(404)
+      .send({ message: "Error al obtener la billetera del usuario" });
+  }
+
+  return res.status(200).send(allWallet);
 };
 
 export const getWalletByUser = async (req, res) => {
@@ -225,7 +369,11 @@ export const createCardTokenization = async (req, res) => {
         paymentDetails.phone = userDetails.telefono;
         paymentDetails.address = userDetails.direccion;
       } else {
-        return res.status(400).json({error: "Necesitas agregar un documento de 10 digitos (No RUC, No Pasaporte)", document_field: true});
+        return res.status(400).json({
+          error:
+            "Necesitas agregar un documento de 10 digitos (No RUC, No Pasaporte)",
+          document_field: true,
+        });
       }
     } else {
       paymentDetails.document = req.body.documento;

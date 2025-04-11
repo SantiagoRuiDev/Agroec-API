@@ -44,6 +44,20 @@ export const isAssociationAgricultural = async (uuid) => {
   }
 };
 
+export const canUseInputModule = async (uuid) => {
+  try {
+    const profile = await profileModel.getProfileByUserId(uuid);
+    if(profile.modulo_insumos_activado == 1){
+      return true
+    }else {
+      return false
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+
 export const isMerchantAgrochemical = async (uuid) => {
   try {
     const profile = await profileModel.getMerchantAgrochemicalProfileByUser(uuid);

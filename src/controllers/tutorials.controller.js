@@ -19,22 +19,67 @@ export const getAllCategories = async (req, res) => {
 
 export const getTutorialsByCategories = async (req, res) => {
     try {
-
         const {category} = req.params;
+        
+        if(req.user_id == "Sistema"){
+           const tutorial = await tutorialModel.getTutorialsByCategoriesRaw(category);
+           if(!tutorial){
+               res.status(404).send({message: `Tutorial con ${category} no encontrado`});
+           }
+           res.status(200).send(tutorial)
+        } else {
+           const tutorial = await tutorialModel.getTutorialsByCategories(category, 1);
+           if(!tutorial){
+               res.status(404).send({message: `Tutorial con ${category} no encontrado`});
+           }
+   
+           res.status(200).send(tutorial)
+        }
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
 
-        const tutorial = await tutorialModel.getTutorialsByCategories(category);
+export const sendTutorialPushNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-        if(!tutorial){
-            res.status(404).send({message: `Tutorial con ${category} no encontrado`});
+        const tutorialExist = await tutorialModel.getTutorialById(id);
+
+        if(tutorialExist){
+            const url = "https://web.agroec.com/app/tutorials/" + category
+            await notificationService.sendPushNotificationToAll("Revisa nuestro tutorial", tutorialExist.titulo, url);
+            return res.status(200).send({message: `Notification enviada exitosamente`});
         }
 
-        res.status(200).send(tutorial)
+        throw new Error("Error al intentar enviar la notificacion del tutorial.")
 
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
 }
 
+export const setVisibility = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {visibility} = req.body;
+
+        if(visibility != 0 && visibility != 1){
+            throw new Error("Ingresa un valor valido para la visibilidad (0,1)")
+        }
+
+        const modifiedRows = await tutorialModel.setVisibility(id, visibility);
+
+        if(modifiedRows > 0){
+            return res.status(200).send({message: `Tutorial actualizado exitosamente`});
+        }
+
+        throw new Error("Error al intentar actualizar el tutorial.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
 
 export const createTutorial = async (req, res) => {
     try {
@@ -44,8 +89,8 @@ export const createTutorial = async (req, res) => {
         const tutorial = await tutorialModel.createTutorial(uuid, category, req.body);
 
         if(tutorial > 0){
-            const url = "http://localhost:5173/app/tutorials/" + category
-            //await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);
+            /*const url = "https://web.agroec.com/app/tutorials/" + category
+            await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);*/
             return res.status(200).send({message: `Tutorial creado exitosamente`});
         }
 

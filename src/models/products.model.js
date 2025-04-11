@@ -69,7 +69,25 @@ export const getPriceAnalyticByProduct = async (product) => {
   }
 };
 
+export const getProductById = async (id) => {
+  try {
+    const [statement] = await connection.query(`SELECT * FROM productos WHERE id = ?`, [id]);
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 export const getAllProducts = async () => {
+  try {
+    const [statement] = await connection.query(`SELECT * FROM productos WHERE estado = 1`);
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const getAllProductsRaw = async () => {
   try {
     const [statement] = await connection.query(`SELECT * FROM productos`);
 
@@ -92,11 +110,37 @@ export const getProductsByPreferences = async (user_id) => {
   }
 };
 
-export const createProduct = async (uuid, schema) => {
+export const createProduct = async (schema) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO productos (id, nombre, imagen) VALUES (?, ?, ?) `,
-      [uuid, schema.nombre, schema.imagen]
+      `INSERT INTO productos (id, nombre, estado) VALUES (?, ?, ?) `,
+      [schema.nombre, schema.nombre, schema.estado]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const setProductImage = async (uuid, image) => {
+  try {
+    const [statement] = await connection.query(
+      "UPDATE productos SET imagen = ? WHERE id = ?",
+      [image, uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const enableProductById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      "UPDATE productos SET estado = 1 WHERE id = ?",
+      [uuid]
     );
 
     return statement.affectedRows;

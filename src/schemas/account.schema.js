@@ -24,5 +24,5 @@ export const accountUpdateSchema = Joi.object({
   parroquia: Joi.string().min(0),
   direccion: Joi.string().min(3).required(),
   ubicacion_google_maps: Joi.string().min(3).required(),
-  telefono: Joi.string().min(3).required(),
+  telefono: Joi.string().min(3).required()
 });

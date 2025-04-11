@@ -6,5 +6,6 @@ export const router = Router();
 
 router.put('/', authMiddleware.isAuthentified, settingsController.updateSettings)
 router.get('/', authMiddleware.isAuthentified, settingsController.getSettings)
+router.get('/sidebar', authMiddleware.isAuthentified, settingsController.getSidebarSettings)
 
 // ENDPOINT LISTAR SUGERENCIAS

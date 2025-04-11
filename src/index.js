@@ -24,6 +24,7 @@ import { router as multiusersRoutes } from "./routes/multiusers.routes.js";
 import { router as suscriptionRoutes } from "./routes/suscription.routes.js";
 import { router as preferencesRoutes } from "./routes/preferences.routes.js";
 import { router as settingsRoutes } from "./routes/settings.routes.js";
+import { router as userRoutes } from "./routes/user.routes.js";
 import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
@@ -72,6 +73,7 @@ initializeSocket(io); // Inicia el socket, y lo envia a otra función para que c
 // RUTAS
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/tutorials", tutorialRoutes);
 app.use("/api/v1/category", categoriesRoutes);
 app.use("/api/v1/suggestion", suggestionRoutes);

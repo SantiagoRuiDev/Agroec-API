@@ -37,6 +37,19 @@ export const getProducts = async () => {
   }
 };
 
+export const enableProductById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE productos_listados SET estado = 1 WHERE id = ?`, [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const disableProductById = async (id) => {
   try {
     const [statement] = await connection.query(

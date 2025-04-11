@@ -6,4 +6,6 @@ export const router = Router();
 //Falta Middleware
 router.post('/:category', authMiddleware.isAuthentified, tutorialController.createTutorial)
 router.delete('/:id', authMiddleware.isAuthentified, tutorialController.deleteTutorial)
+router.post('/send-push/:id', authMiddleware.isAuthentified, tutorialController.sendTutorialPushNotification)
+router.put('/set-visibility/:id', authMiddleware.isAuthentified, tutorialController.setVisibility)
 router.get('/:category', authMiddleware.isAuthentified, tutorialController.getTutorialsByCategories);

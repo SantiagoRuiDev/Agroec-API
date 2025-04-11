@@ -1,16 +1,21 @@
 import * as productModel from "../models/products.model.js";
-import { v4 as uuidv4 } from "uuid";
 import { isAuthentified } from "../libs/auth.js";
 
 export const getAllMarketProducts = async (req, res) => {
   try {
-    const products = await productModel.getAllProducts();
-
-    if (!products) {
-      res.status(404).send({ message: `No hay productos para mostrar` });
+    if (req.user_id == "Sistema") {
+      const products = await productModel.getAllProductsRaw();
+      if (!products) {
+        res.status(404).send({ message: `No hay productos para mostrar` });
+      }
+      res.status(200).send(products);
+    } else {
+      const products = await productModel.getAllProducts();
+      if (!products) {
+        res.status(404).send({ message: `No hay productos para mostrar` });
+      }
+      res.status(200).send(products);
     }
-
-    res.status(200).send(products);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -52,16 +57,60 @@ export const getAllProducts = async (req, res) => {
 };
 export const createProduct = async (req, res) => {
   try {
-    const uuid = uuidv4();
     const schema = req.body;
 
-    const createProduct = await productModel.createProduct(uuid, schema);
+    if (await productModel.getProductById(schema.nombre)) {
+      throw new Error("Este producto ya existe");
+    }
+
+    const createProduct = await productModel.createProduct(schema);
 
     if (!createProduct) {
       res.status(404).send({ message: "No se pudo crear el producto" });
     }
 
-    res.status(200).send({ message: "Producto creado correctamente" });
+    res
+      .status(200)
+      .send({ message: "Producto creado correctamente", id: schema.nombre });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const setProductImage = async (req, res) => {
+  try {
+    const uuid = req.params.id;
+    const image = req.image_url;
+    const updatedRow = await productModel.setProductImage(uuid, image);
+
+    if (updatedRow == 0) {
+      return res
+        .status(404)
+        .send({ message: "No se pudo editar la imagen del producto" });
+    }
+
+    return res
+      .status(200)
+      .send({ message: "Imagen actualizada correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const enableProductById = async (req, res) => {
+  try {
+    const uuid = req.params.id;
+    const enabledRow = await productModel.enableProductById(uuid);
+
+    if (enabledRow == 0) {
+      return res
+        .status(404)
+        .send({ message: "No se pudo habilitar el producto" });
+    }
+
+    return res
+      .status(200)
+      .send({ message: "Producto habilitado correctamente" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

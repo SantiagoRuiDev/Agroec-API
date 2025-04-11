@@ -10,24 +10,36 @@ export const checkForUnpaidSuscriptions = async () => {
     for (const sub of suscriptions) {
       // Crear objeto de fecha de vencimiento desde el campo "vencimiento"
       const vencimientoDate = new Date(sub.vencimiento);
-
       // Comparar solo las fechas (ignorando la hora)
       if (
-        vencimientoDate.getFullYear() === today.getFullYear() &&
-        vencimientoDate.getMonth() === today.getMonth() &&
-        vencimientoDate.getDate() === today.getDate()
+        vencimientoDate <= today
       ) {
+        if(sub.id_tarjeta == "Sistema"){
+          suscriptionModel.deleteSuscription(sub.id_usuario);
+          console.log("Suscripción eliminada por no ser renovable (Otorgada por sistema)");
+        }
+        // Si el usuario la cancelo previamente no cobrar;
+        if(sub.estado == 0){
+          return;
+        }
         // Si está vencida, procesar el cobro
         console.log(`Procesando cobro para la suscripción: ${sub.id}`);
 
         // Llama al módulo de pagos
-        const payment = await paymentCore.chargeCard(
-          sub.valor,
-          "Cobro de suscripción recurrente",
-          sub.id_tarjeta,
-          String(sub.numero_identificacion),
-          "MEMBRESIA-" + Math.floor(Math.random() * 99999)
-        );
+        let payment = null;
+
+        try {
+          payment = await paymentCore.chargeCard(
+            sub.valor,
+            "Cobro de suscripción recurrente",
+            sub.id_tarjeta,
+            String(sub.numero_identificacion),
+            "MEMBRESIA-" + Math.floor(Math.random() * 99999)
+          );
+        } catch (error) {
+          suscriptionModel.deleteSuscription(sub.id_usuario);
+          console.log("Suscripción eliminada por falta de pago");
+        }
 
         if (payment) {
           console.log(`Pago exitoso para la suscripción: ${sub.id}`);
@@ -56,3 +68,9 @@ scheduleJob("0 3 * * * *", async () => {
   console.log("Iniciando revisión diaria de suscripciones vencidas...");
   await checkForUnpaidSuscriptions();
 });
+/*
+scheduleJob("10 * * * * *", async () => {
+  console.log("Iniciando revisión diaria de suscripciones vencidas...");
+  await checkForUnpaidSuscriptions();
+});
+*/

@@ -15,9 +15,11 @@ export const createMultipleInput = async (req, res) => {
     }
 
     if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
-      throw new Error(
-        "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
-      );
+      if (!(await profileChecker.canUseInputModule(uuid_user))) {
+        throw new Error(
+          "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
+        );
+      }
     }
 
     const filePath = req.file.path;
@@ -40,17 +42,22 @@ export const createMultipleInput = async (req, res) => {
       const uuid_table = uuidv4();
       const keepImage = row.imagen;
       const inputSchema = row;
-      if(categories.filter(category => category.id == row.categoria_insumo).length > 0){
-        row.incluido_iva = (String(row.incluido_iva).toLowerCase() == "si") ? 1 : 0;
-        row.precio_mas_iva = (String(row.precio_mas_iva).toLowerCase() == "si") ? 1 : 0;
-        if(row.incluido_iva == 1) {
+      if (
+        categories.filter((category) => category.id == row.categoria_insumo)
+          .length > 0
+      ) {
+        row.incluido_iva =
+          String(row.incluido_iva).toLowerCase() == "si" ? 1 : 0;
+        row.precio_mas_iva =
+          String(row.precio_mas_iva).toLowerCase() == "si" ? 1 : 0;
+        if (row.incluido_iva == 1) {
           row.precio_mas_iva = 0;
           row.incluido_iva == 1;
         } else {
           row.precio_mas_iva = 1;
           row.incluido_iva == 0;
         }
-        if(keepImage){
+        if (keepImage) {
           delete row.imagen;
         }
         await inputModel.createInput(uuid_table, uuid_user, inputSchema);
@@ -59,9 +66,7 @@ export const createMultipleInput = async (req, res) => {
     });
 
     fs.unlinkSync(filePath); // Elimina el archivo después de procesarlo
-    res
-      .status(200)
-      .send({ message: "Subida masiva exitosa" });
+    res.status(200).send({ message: "Subida masiva exitosa" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -74,9 +79,11 @@ export const createInput = async (req, res) => {
     const inputSchema = req.body;
 
     if (!(await profileChecker.isMerchantAgrochemical(uuid_user))) {
-      throw new Error(
-        "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
-      );
+      if (!(await profileChecker.canUseInputModule(uuid_user))) {
+        throw new Error(
+          "Solo perfiles de comerciante agroquímicos tienen permitido publicar insumos"
+        );
+      }
     }
 
     const createInput = await inputModel.createInput(
@@ -219,12 +226,10 @@ export const getInputByCreatorId = async (req, res) => {
         .send({ message: "Error al obtener el insumo del creador" });
     }
 
-    return res
-      .status(200)
-      .send({
-        message: `Insumo obtenido correctamente del creador con id: ${creatorUserId}`,
-        inputCreator,
-      });
+    return res.status(200).send({
+      message: `Insumo obtenido correctamente del creador con id: ${creatorUserId}`,
+      inputCreator,
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

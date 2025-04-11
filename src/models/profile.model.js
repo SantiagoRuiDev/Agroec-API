@@ -462,6 +462,27 @@ export const getAssociationAgriculturalProfileByUser = async (id) => {
   }
 };
 
+
+export const getProfileByUserId = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT u.id, 
+      COALESCE(pa.modulo_insumos, pc.modulo_insumos, pac.modulo_insumos, pca.modulo_insumos) AS modulo_insumos_activado
+      FROM usuarios u
+      LEFT JOIN perfil_comprador pc ON pc.id_usuario = u.id
+      LEFT JOIN perfil_agricultor pa ON pa.id_usuario = u.id
+      LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = u.id
+      LEFT JOIN perfil_comerciante pca ON pca.id_usuario = u.id
+      WHERE u.id = ?;`,
+      [id]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getMerchantAgrochemicalProfileByUser = async (id) => {
   try {
     const [statement] = await connection.query(

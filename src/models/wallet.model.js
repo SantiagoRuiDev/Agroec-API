@@ -13,11 +13,11 @@ export const createWallet = async (uuid, uuid_user) => {
   }
 };
 
-export const createFee = async (uuid, id_delivery, id_wallet, schema) => {
+export const createFee = async (uuid, id_delivery, id_wallet, amount) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO fee (id, id_entrega, id_billetera, monto_fee) VALUES (?, ?, ?, ?) `,
-      [uuid, id_delivery, id_wallet, schema.monto_fee]
+      [uuid, id_delivery, id_wallet, amount]
     );
 
     return statement;
@@ -90,6 +90,22 @@ export const getBalance = async (uuid_user) => {
   }
 };
 
+export const chargebackWallet = async (
+  uuid,
+  uuid_wallet,
+  amount
+) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO devoluciones (id, id_billetera, monto_devolucion) VALUES (?, ?, ?)`,
+      [uuid, uuid_wallet, amount]
+    );
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const rechargeWallet = async (
   uuid,
   uuid_wallet,
@@ -98,7 +114,7 @@ export const rechargeWallet = async (
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO recargas (id, id_billetera, metodo_pago,monto_recarga) VALUES (?, ?, ?, ?)`,
+      `INSERT INTO recargas (id, id_billetera, metodo_pago, monto_recarga) VALUES (?, ?, ?, ?)`,
       [uuid, uuid_wallet, schema.metodo_pago, rechargeMoreBalance]
     );
     return statement;

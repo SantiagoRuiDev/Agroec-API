@@ -56,6 +56,21 @@ export const getProducts = async (req, res) => {
   }
 };
 
+export const enableProductById = async (req, res) => {
+  try {
+    const modifiedRows = await suggestionModel.enableProductById(req.params.id);
+
+    if (modifiedRows == 0) {
+      res.status(404).send({ message: "No se pudo habilitar este producto" });
+      return;
+    }
+
+    return res.status(200).json({message: "Producto habilitado correctamente"});
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const disableProductById = async (req, res) => {
   try {
     const modifiedRows = await suggestionModel.disableProductById(req.params.id);

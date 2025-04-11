@@ -12,4 +12,10 @@ router.post('/cards/charge', authMiddleware.isAuthentified, authMiddleware.isMul
 router.get('/', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.getWalletByUser);
 router.post('/recharge', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletMiddleware.createRecharge, walletController.rechargeWallet);
 router.post('/fee/:id_entrega', authMiddleware.isAuthentified, authMiddleware.isMultiserPaymentAllowed, walletMiddleware.createFee, walletController.createFee);
+router.get('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserWalletAllowed, walletController.getWalletByUserId);
 
+
+// By admin
+
+router.post('/recharge/by-admin', authMiddleware.isAuthentified, walletController.rechargeWalletByAdmin);
+router.post('/chargeback/by-admin', authMiddleware.isAuthentified, walletController.chargebackWalletByAdmin);
