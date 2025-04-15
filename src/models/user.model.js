@@ -25,7 +25,6 @@ export const getById = async (id) => {
     const [statement] = await connection.query(
       `SELECT u.*, 
       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil, pc.tipo_perfil) AS tipo_perfil,
-      COALESCE(pa.modulo_insumos, pc.modulo_insumos, pac.modulo_insumos, pca.modulo_insumos) AS modulo_insumos_activado,
       COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre, pc.razon_social) AS nombre
       FROM usuarios u
       LEFT JOIN perfil_comprador pc ON pc.id_usuario = u.id
@@ -33,8 +32,29 @@ export const getById = async (id) => {
       LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = u.id
       LEFT JOIN perfil_comerciante pca ON pca.id_usuario = u.id
       LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = u.id
-      WHERE u.id = ?;`,
-      [id]
+      WHERE u.id = ?;`, [id]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM usuarios WHERE id = ?;`, [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const getByStatus = async () => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT count(*) AS cantidad_usuarios_pendientes FROM usuarios u WHERE (u.estado = 0 OR u.estado = 3) AND u.id != 'Sistema'`
     );
 
     return statement[0];

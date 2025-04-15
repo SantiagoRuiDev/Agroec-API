@@ -19,17 +19,60 @@ export const getWarrantyPayments = async (uuid_user) => {
   }
 };
 
+export const getPendingWarranties = async () => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT count(*) AS cantidad_garantias_pendientes FROM pago_garantia WHERE estado = 0`
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getWarrantyById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT * FROM pago_garantia WHERE id = ?`,
+      [uuid]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const updateWarrantyStatus = async (
+  uuid,
+  estado
+) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE pago_garantia SET estado = ? WHERE id = ?`,
+      [estado, uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const createWarranty = async (
   uuid,
   uuid_condition,
   metodo_pago,
   porcentaje,
-  total
+  total,
+  estado = 1
 ) => {
   try {
     const [statement] = await connection.query(
-      `INSERT INTO pago_garantia (id, id_condicion, porcentaje, metodo_pago, total) VALUES (?, ?, ?, ?, ?)`,
-      [uuid, uuid_condition, porcentaje, metodo_pago, total]
+      `INSERT INTO pago_garantia (id, id_condicion, porcentaje, metodo_pago, total, estado) VALUES (?, ?, ?, ?, ?, ?)`,
+      [uuid, uuid_condition, porcentaje, metodo_pago, total, estado]
     );
 
     return statement.affectedRows;
@@ -58,6 +101,18 @@ export const checkWarrantyExists = async (uuid_condition) => {
       [uuid_condition]
     );
     return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const deleteWarranty = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM pago_garantia WHERE id = ?`,
+      [uuid]
+    );
+    return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
   }

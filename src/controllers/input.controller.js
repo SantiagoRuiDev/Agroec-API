@@ -266,3 +266,51 @@ export const getAllInputs = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+export const createCategory = async (req, res) => {
+    try {
+        const category = await inputModel.createCategory(req.body.titulo, "https://icono.com");
+
+        if(category > 0){
+            return res.status(200).send({message: `Categoria creada exitosamente`, id: req.body.titulo});
+        }
+
+        throw new Error("Error al intentar crear la categoria.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+export const deleteCategory = async (req, res) => {
+  try {
+    const category_id = req.params.id;
+
+    const deletedRows = await inputModel.deleteCategory(category_id);
+
+    if (deletedRows == 0) {
+      return res.status(404).send({ message: "Error al eliminar la categoria" });
+    }
+
+    return res.status(200).send({ message: "Categoria eliminada correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const setCategoryImage = async (req, res) => {
+    try {
+        const updatedRow = await inputModel.setCategoryImage(req.params.id, req.image_url);
+
+        if(updatedRow > 0){
+            return res.status(200).send({message: `Categoria actualizada exitosamente`});
+        }
+
+        throw new Error("Error al intentar actualizar la categoria.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+

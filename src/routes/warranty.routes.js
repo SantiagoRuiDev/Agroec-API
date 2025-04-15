@@ -16,3 +16,9 @@ router.post(
   authMiddleware.isMultiserPaymentAllowed,
   warrantyController.createWarranty
 );
+router.put(
+  "/:id",
+  authMiddleware.isAuthentified,
+  warrantyController.updateWarranty
+);
+

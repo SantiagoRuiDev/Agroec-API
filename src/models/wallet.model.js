@@ -77,6 +77,60 @@ export const getWalletByUser = async (uuid_user) => {
   }
 };
 
+export const getWalletTransactions = async () => {
+  try {
+    const [recharge] = await connection.query(
+      `SELECT * FROM recargas ORDER BY fecha DESC`
+    );
+
+    const [fee] = await connection.query(
+      `
+          SELECT f.id, cc.id_producto, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps,
+          COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre
+          FROM fee f 
+          INNER JOIN entregas e ON f.id_entrega = e.id 
+          INNER JOIN ordenes o ON o.id_entrega = e.id
+          INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion
+          INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+          LEFT JOIN perfil_agricultor pa ON pa.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_comerciante pca ON pca.id_usuario = o.id_vendedor
+          LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = o.id_vendedor
+          ORDER BY f.fecha DESC
+          `
+    );
+
+    const [chargeback] = await connection.query(
+      `
+          SELECT * FROM devoluciones
+          ORDER BY fecha DESC
+          `
+    );
+
+    return {
+      recharge: recharge,
+      fee: fee,
+      chargeback: chargeback,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const deleteWalletByUserId = async (uuid_user) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM billetera WHERE id_usuario = ?`,
+      [uuid_user]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const getBalance = async (uuid_user) => {
   try {
     const [statement] = await connection.query(
@@ -90,11 +144,34 @@ export const getBalance = async (uuid_user) => {
   }
 };
 
-export const chargebackWallet = async (
-  uuid,
-  uuid_wallet,
-  amount
-) => {
+export const getPaidTodayRecharges = async (date) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT COALESCE(sum(monto_recarga),0) AS cantidad_recargas_diarias FROM recargas WHERE DATE(fecha) = ?`,
+      [date]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getPaidTodayFees = async (date) => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT COALESCE(sum(monto_fee),0) AS cantidad_fees_diarias FROM fee WHERE DATE(fecha) = ?`,
+      [date]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const chargebackWallet = async (uuid, uuid_wallet, amount) => {
   try {
     const [statement] = await connection.query(
       `INSERT INTO devoluciones (id, id_billetera, monto_devolucion) VALUES (?, ?, ?)`,

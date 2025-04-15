@@ -38,3 +38,17 @@ export const deleteCode = async (codigo) => {
     throw new Error(error.message);
   }
 };
+
+
+export const deleteCodeByUser = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM codigos_telefonicos WHERE id_usuario = ?`,
+      [uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

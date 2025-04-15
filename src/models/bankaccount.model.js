@@ -29,6 +29,19 @@ export const getBankAccount = async (uuid) => {
   }
 };
 
+export const deleteBankAccountById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM cuenta_bancaria WHERE id = ?`,
+      [uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 export const updateBankAccount = async (uuid, schema) => {
   try {

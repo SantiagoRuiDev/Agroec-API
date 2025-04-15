@@ -1,7 +1,6 @@
 import * as warrantyModel from "../models/warranty.model.js";
 import * as walletModel from "../models/wallet.model.js";
 import * as profileChecker from "../libs/checker.js";
-import * as authModel from "../models/auth.model.js";
 import * as notificationService from "../services/notification.service.js";
 import * as paymentCore from "../payments/index.js";
 import * as orderModel from "../models/order.model.js";
@@ -64,24 +63,29 @@ export const createWarranty = async (req, res) => {
 
     const total = price * quantity * (percentage / 100);
 
-    const payment = await paymentCore.chargeCard(
-      total,
-      "Pago de Garantia Agroec",
-      req.body.identificador,
-      String(req.body.documento),
-      "GARANTIA-" + Math.floor(Math.random() * 99999)
-    );
-
-    if (!payment) {
-      throw new Error("Error al realizar el cobro de la tarjeta.");
+    if(method_payment == 'TD/TC'){
+      const payment = await paymentCore.chargeCard(
+        total,
+        "Pago de Garantia Agroec",
+        req.body.identificador,
+        String(req.body.documento),
+        "GARANTIA-" + Math.floor(Math.random() * 99999)
+      );
+  
+      if (!payment) {
+        throw new Error("Error al realizar el cobro de la tarjeta.");
+      }
     }
+
+    const status = (method_payment == 'TD/TC') ? 1 : 0;
 
     const createWarranty = await warrantyModel.createWarranty(
       uuid,
       idCondition,
       method_payment,
       percentage,
-      total
+      total,
+      status
     );
 
     if (!createWarranty) {
@@ -90,7 +94,7 @@ export const createWarranty = async (req, res) => {
         .send({ message: "Hubo un error al pagar la garantia" });
     }
 
-    if (createWarranty > 0) {
+    if (createWarranty > 0 && status == 1) {
       const orderData = await orderModel.getOrdersByConditions(idCondition);
       const notification = await notificationService.createNotification(
         orderData[0].id_vendedor,
@@ -119,6 +123,60 @@ export const createWarranty = async (req, res) => {
         await orderModel.createPendingStatus(uuidv4(), order.id);
       });
       return res.status(200).send({ message: "Garantia pagada exitosamente" });
+    } else {
+      return res.status(200).send({ message: "Garantia enviada, pendiente de aprobación" });
+    }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+export const updateWarranty = async (req, res) => {
+  try {
+    const warranty_id = req.params.id;
+    const condition_id = req.body.id_condition;
+    const order_id = req.body.id_order;
+    const status = req.body.status;
+
+    const warrantyExist = await warrantyModel.getWarrantyById(warranty_id);
+
+    if(status == 1){
+      await warrantyModel.updateWarrantyStatus(warranty_id, status)
+    } else {
+      await warrantyModel.deleteWarranty(warranty_id);
+    }
+
+    if (status == 1) {
+      const orderData = await orderModel.getOrdersByConditions(condition_id);
+      const notification = await notificationService.createNotification(
+        orderData[0].id_vendedor,
+        orderData[0].id_producto,
+        `El comprador ha completado el pago de garantía de $${warrantyExist.total}`,
+        "Pago de garantía",
+        "/order/" + order_id
+      );
+
+      const receptors = await notificationService.getNotificationsReceptors(
+        orderData[0].id_vendedor
+      );
+      if (notification) {
+        await notificationService.sendPushNotification(
+          "Pago de garantía",
+          "El comprador ha realizado el pago de $" + warrantyExist.total,
+          receptors,
+          "/order/" + order_id
+        );
+      }
+
+      orderData.forEach(async (order) => {
+        await orderModel.updateOrderStatus(order.id, "Pendiente de entrega");
+        await orderModel.createPendingStatus(uuidv4(), order.id);
+      });
+      return res.status(200).send({ message: "Garantia pagada exitosamente" });
+    } else {
+      return res.status(200).send({ message: "Garantia denegada correctamente" });
     }
   } catch (error) {
     return res.status(400).json({ error: error.message });

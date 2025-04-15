@@ -126,7 +126,7 @@ export const createCategory = async (req, res) => {
         const category = await tutorialModel.createCategory(uuid, req.body.titulo);
 
         if(category > 0){
-            return res.status(200).send({message: `Categoria creada exitosamente`});
+            return res.status(200).send({message: `Categoria creada exitosamente`, id: uuid});
         }
 
         throw new Error("Error al intentar crear la categoria.")
@@ -153,4 +153,20 @@ export const setCategoryImage = async (req, res) => {
     }
 }
 
+
+export const deleteCategory = async (req, res) => {
+    try {
+        await tutorialModel.deleteTutorialByCategory(req.params.id);
+        const deletedRows = await tutorialModel.deleteCategoryById(req.params.id);
+
+        if(deletedRows > 0){
+            return res.status(200).send({message: `Categoria eliminada exitosamente`});
+        }
+
+        throw new Error("Error al intentar eliminar la categoria.")
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
 

@@ -29,6 +29,20 @@ export const getSuscriptionByPlan = async (uuid_plan) => {
 export const getSuscriptionByUser = async (uuid_user) => {
   try {
     const [statement] = await connection.query(
+      `SELECT s.*, p.valor, p.nombre FROM suscripcion s INNER JOIN planes p ON s.id_plan = p.id WHERE s.id_usuario = ? AND s.estado != 2`,
+      [uuid_user]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getSuscriptionByUserRaw = async (uuid_user) => {
+  try {
+    const [statement] = await connection.query(
       `SELECT s.*, p.valor, p.nombre FROM suscripcion s INNER JOIN planes p ON s.id_plan = p.id WHERE s.id_usuario = ?`,
       [uuid_user]
     );
@@ -38,6 +52,40 @@ export const getSuscriptionByUser = async (uuid_user) => {
     throw new Error(error.message);
   }
 };
+
+
+export const getPendingSuscriptions = async () => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT count(*) AS cantidad_suscripciones_pendientes FROM suscripcion WHERE estado = 2`
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getAllSuscriptions = async () => {
+  try {
+    const [statement] = await connection.query(
+      `SELECT s.*, p.valor, p.nombre, 
+      COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre, pc.razon_social) AS usuario
+      FROM suscripcion s 
+      LEFT JOIN perfil_comprador pc ON pc.id_usuario = s.id_usuario
+      LEFT JOIN perfil_agricultor pa ON pa.id_usuario = s.id_usuario
+      LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = s.id_usuario
+      LEFT JOIN perfil_comerciante pca ON pca.id_usuario = s.id_usuario
+      LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = s.id_usuario
+      INNER JOIN planes p ON s.id_plan = p.id`
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 
 export const updatePlanStatus = async (uuid_plan, status) => {
   try {
@@ -57,6 +105,20 @@ export const updateSuscriptionDate = async (uuid_user, date) => {
     const [statement] = await connection.query(
       `UPDATE suscripcion SET vencimiento = ? WHERE id_usuario = ?`,
       [date, uuid_user]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const updateSuscriptionStatus = async (uuid_user, status) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE suscripcion SET estado = ? WHERE id_usuario = ?`,
+      [status, uuid_user]
     );
 
     return statement.affectedRows;

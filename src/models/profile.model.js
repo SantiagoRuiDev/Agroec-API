@@ -557,3 +557,64 @@ export const createOrganization = async (id, nombre) => {
     throw new Error(error.message);
   }
 };
+
+export const deleteBuyerProfileById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM perfil_comprador WHERE id_usuario = ?;`,
+      [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteMerchantProfileById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM perfil_comerciante WHERE id_usuario = ?;`,
+      [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteMerchantAgrochemicalProfileById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM perfil_comerciante_agroquimicos WHERE id_usuario = ?;`,
+      [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteFarmerProfileById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM perfil_agricultor WHERE id_usuario = ?;`,
+      [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteAgriculturalAssociationProfileById = async (id) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM perfil_asociacion_agricola WHERE id_usuario = ?;`,
+      [id]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

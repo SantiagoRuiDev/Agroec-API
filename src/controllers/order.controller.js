@@ -39,6 +39,17 @@ export const getOrderPDF = async (req, res) => {
   }
 };
 
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderModel.getAllOrders();
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
 export const getOrdersByUser = async (req, res) => {
   try {
     const user_id = req.user_id;

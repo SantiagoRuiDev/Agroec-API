@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as inputController from '../controllers/input.controller.js'
 import * as authMiddleware from '../middlewares/auth.middleware.js'
 import * as inputMiddleware from '../middlewares/input.middleware.js'
-import {upload, addFileUrls, uploadTemp} from '../libs/images.js'
+import {upload, addFileUrls, uploadTemp, addFileUrl} from '../libs/images.js'
 
 export const router = Router();
 
@@ -17,5 +17,7 @@ router.post('/set-images/:input_id', authMiddleware.isAuthentified, upload.array
 router.put('/:input_id', authMiddleware.isAuthentified, inputMiddleware.createInput, inputController.updateInput)
 router.delete('/:input_id', authMiddleware.isAuthentified, inputController.deleteInput);
 
-
-
+// Categories
+router.post('/category/', authMiddleware.isAuthentified, inputController.createCategory)
+router.put('/category/set-image/:id', authMiddleware.isAuthentified, upload.single('image'), addFileUrl, inputController.setCategoryImage)
+router.delete('/category/:id', authMiddleware.isAuthentified, inputController.deleteCategory)

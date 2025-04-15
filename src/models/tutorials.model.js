@@ -52,6 +52,19 @@ export const getTutorialsByCategoriesRaw = async (category) => {
   }
 };
 
+export const deleteTutorialByCategory = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM tutoriales WHERE id_categoria = ?`,
+      [uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const deleteTutorial = async (uuid) => {
   try {
     const [statement] = await connection.query(
@@ -93,8 +106,20 @@ export const createTutorial = async (uuid, category_uuid, schema) => {
 export const createCategory = async (uuid, title) => {
   try {
     const [statement] = await connection.query(
-      `INSERTO INTO categoria (id, imagen, nombre) VALUES (?,null,?)`,
+      `INSERT INTO categoria (id, imagen, nombre) VALUES (?,"not image",?)`,
       [uuid, title]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteCategoryById = async (uuid) => {
+  try {
+    const [statement] = await connection.query(
+      `DELETE FROM categoria WHERE id = ?`,
+      [uuid]
     );
 
     return statement.affectedRows;

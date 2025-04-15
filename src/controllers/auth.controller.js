@@ -38,7 +38,7 @@ export const createAccount = async (req, res) => {
     }
 
     let insertedRow = 0;
-    if (req.body.profile.type == "Comprador") {
+    if (req.body.profile.type == "Comprador" || req.body.profile.type == "Agroquimicos") {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 0);
     } else {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 1);
@@ -157,7 +157,7 @@ export const createAccount = async (req, res) => {
           await pointsModel.createPoint(uuidv4(), uuid, point);
         });
       }
-
+      /*
         const accountSid = APP_SETTINGS.account_sid_twilio;
         const authToken = APP_SETTINGS.auth_token_twilio;
         const client = Twilio(accountSid, authToken);
@@ -169,7 +169,7 @@ export const createAccount = async (req, res) => {
             to: req.body.user.telefono,
           })
           .then()
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => console.error("Error:", error));*/
 
       return res.status(200).json({
         message: "Codigo enviado a tu telefono revisalo porfavor", code: code, id: uuid
@@ -218,6 +218,10 @@ export const loginAccount = async (req, res) => {
       throw new Error("Tu cuenta no finalizo el registro");
     }
 
+    if (fetchUser.estado == 3) {
+      throw new Error("Tu cuenta no ha sido aprobada");
+    }
+
     if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
       throw new Error("Clave Incorrecta");
     }
@@ -246,6 +250,10 @@ export const loginSellerAccount = async (req, res) => {
 
     if (fetchUser.estado == 0) {
       throw new Error("Tu cuenta no finalizo el registro");
+    }
+    
+    if (fetchUser.estado == 3) {
+      throw new Error("Tu cuenta no ha sido aprobada por el administrador");
     }
 
     if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
@@ -295,7 +303,7 @@ export const finishAccount = async (req, res) => {
     const fetchCode = await codesModel.getCode(code);
 
     if (fetchCode.codigo) {
-      const updateUserState = await authModel.setState(fetchCode.id_usuario, 1);
+      const updateUserState = await authModel.setState(fetchCode.id_usuario, 3);
       if (updateUserState > 0) {
         await codesModel.deleteCode(code);
         return res

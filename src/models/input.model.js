@@ -189,3 +189,62 @@ export const getInputCategories = async () => {
     throw new Error(error.message);
   }
 };
+
+export const createCategory = async (uuid, icon) => {
+  try {
+    const [statement] = await connection.query(
+      `INSERT INTO categoria_insumos (id, icono) VALUES (?,?)`, [uuid, icon]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const setCategoryImage = async (uuid, icon) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE categoria_insumos SET icono = ? WHERE id = ?`, [icon, uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+export const deleteCategory = async (category_id) => {
+  try {
+    // 1. Obtener los insumos relacionados con la categoría
+    const [insumos] = await connection.query(
+      `SELECT id FROM insumos WHERE categoria_insumo = ?`,
+      [category_id]
+    );
+
+    const insumoIds = insumos.map((i) => i.id);
+
+    if (insumoIds.length > 0) {
+      // 2. Eliminar las imágenes de esos insumos
+      await connection.query(
+        `DELETE FROM insumos_imagenes WHERE id_insumo IN (?)`,
+        [insumoIds]
+      );
+
+      // 3. Eliminar los insumos
+      await connection.query(
+        `DELETE FROM insumos WHERE id IN (?)`,
+        [insumoIds]
+      );
+    }
+
+    // 4. Eliminar la categoría
+    const [result] = await connection.query(
+      `DELETE FROM categoria_insumos WHERE id = ?`,
+      [category_id]
+    );
+
+    return result.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

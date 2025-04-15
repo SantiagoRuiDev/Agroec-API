@@ -105,7 +105,7 @@ export const sendPushNotificationToAll = async (title, message, url) => {
     };
 
     try {
-        const response = await axios.post('https://onesignal.com/api/v1/notifications', payload, {
+        await axios.post('https://onesignal.com/api/v1/notifications', payload, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Basic ${apiKey}`,

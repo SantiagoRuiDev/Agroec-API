@@ -4,14 +4,18 @@ import { v4 as uuidv4 } from "uuid";
 
 export const createSuscription = async (req, res) => {
   try {
-    const { plan, identificador, documento } = req.body;
+    const { plan, identificador, documento, payment_method } = req.body;
 
-    const isSuscribed = await suscriptionModel.getSuscriptionByUser(
+    if(!plan && plan == ""){
+      throw new Error("Selecciona un plan valido");
+    }
+
+    const isSuscribed = await suscriptionModel.getSuscriptionByUserRaw(
       req.user_id
     );
 
     if (isSuscribed) {
-      throw new Error("Ya tienes una suscripción activa");
+      throw new Error("Tienes una suscripción activa o pendiente de aprobación");
     }
 
     const details = await suscriptionModel.getSuscriptionPlanById(plan);
@@ -20,33 +24,48 @@ export const createSuscription = async (req, res) => {
       throw new Error("Porfavor, selecciona un plan de suscripción valido");
     }
 
-    const payment = await paymentCore.chargeCard(
-      details.valor,
-      "Cobro de suscripción recurrente",
-      identificador,
-      String(documento),
-      "MEMBRESIA-" + Math.floor(Math.random() * 99999)
-    );
-
-    if (!payment) {
-      throw new Error("Error al realizar el cobro de la tarjeta.");
-    }
-
     const limit_date = new Date();
     limit_date.setMonth(limit_date.getMonth() + details.meses); // Sumar los meses del plan
 
     const uuid = uuidv4();
 
-    const suscription = await suscriptionModel.createSuscription(
-      uuid,
-      plan,
-      req.user_id,
-      identificador,
-      limit_date
-    );
+    if (payment_method == "TD/TC") {
+      const payment = await paymentCore.chargeCard(
+        details.valor,
+        "Cobro de suscripción recurrente",
+        identificador,
+        String(documento),
+        "MEMBRESIA-" + Math.floor(Math.random() * 99999)
+      );
 
-    if (suscription == 0) {
-      return res.status(404).send({ message: `No fue posible suscribirse` });
+      if (!payment) {
+        throw new Error("Error al realizar el cobro de la tarjeta.");
+      }
+
+      const suscription = await suscriptionModel.createSuscription(
+        uuid,
+        plan,
+        req.user_id,
+        identificador,
+        limit_date
+      );
+
+      if (suscription == 0) {
+        return res.status(404).send({ message: `No fue posible suscribirse` });
+      }
+    } else {
+      const suscription = await suscriptionModel.createSuscription(
+        uuid,
+        plan,
+        req.user_id,
+        "Transferencia",
+        limit_date,
+        2
+      );
+
+      if (suscription == 0) {
+        return res.status(404).send({ message: `No fue posible suscribirse` });
+      }
     }
 
     return res
@@ -134,6 +153,19 @@ export const createSuscriptionPlan = async (req, res) => {
   }
 };
 
+export const updateSuscriptionStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+ 
+    await suscriptionModel.updateSuscriptionStatus(id, status);
+    return res
+      .status(200)
+      .json({ message: `El estado de la suscripción ha sido modificado` });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 
 export const updatePlanStatus = async (req, res) => {
   try {
@@ -144,11 +176,12 @@ export const updatePlanStatus = async (req, res) => {
     if (planExist) {
       const newState = planExist.estado == 1 ? 0 : 1;
       await suscriptionModel.updatePlanStatus(id, newState);
-      return res.status(200).json({ message: `El estado del plan ha sido modificado` });
-    }else {
+      return res
+        .status(200)
+        .json({ message: `El estado del plan ha sido modificado` });
+    } else {
       throw new Error("Este plan no existe");
     }
-    
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -162,7 +195,9 @@ export const deleteSuscriptionPlan = async (req, res) => {
 
     if (planHaveActiveSubs.length > 0) {
       await suscriptionModel.updatePlanStatus(0, id);
-      return res.status(200).json({ message: `Existen suscripciones activas: Plan desactivado` });
+      return res
+        .status(200)
+        .json({ message: `Existen suscripciones activas: Plan desactivado` });
     }
 
     const deletedRow = await suscriptionModel.deleteSuscriptionPlan(id);
@@ -174,6 +209,22 @@ export const deleteSuscriptionPlan = async (req, res) => {
     }
 
     return res.status(200).json({ message: `Plan eliminado correctamente` });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const deleteSuscription = async (req, res) => {
+  try {
+    const cancelation = await suscriptionModel.deleteSuscription(req.params.id);
+
+    if (cancelation > 0) {
+      return res
+        .status(200)
+        .json({ message: "La suscripción fue revocada correctamente" });
+    }
+
+    throw new Error("No se pudo revocar la suscripción");
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -200,6 +251,16 @@ export const getSuscription = async (req, res) => {
     const suscription = await suscriptionModel.getSuscriptionByUser(
       req.user_id
     );
+
+    return res.status(200).json(suscription);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const getAllSuscriptions = async (req, res) => {
+  try {
+    const suscription = await suscriptionModel.getAllSuscriptions();
 
     return res.status(200).json(suscription);
   } catch (error) {

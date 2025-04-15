@@ -38,3 +38,16 @@ export const deletePoint = async (user_id, point_id) => {
       throw new Error(error.message);
     }
 }
+
+export const deletePointsByUser = async (user_id) => {
+  try {
+      const [statement] = await connection.query(
+        `DELETE FROM puntos_recepcion WHERE id_usuario = ?`,
+        [user_id]
+      );
+  
+      return statement.affectedRows;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}

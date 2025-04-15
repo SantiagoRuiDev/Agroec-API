@@ -7,6 +7,7 @@ import { router as authRoutes } from "./routes/auth.routes.js";
 import { router as tutorialRoutes } from "./routes/tutorials.routes.js";
 import { router as categoriesRoutes } from "./routes/categories.routes.js";
 import { router as suggestionRoutes } from "./routes/suggestion.routes.js";
+import { router as paymentsRoutes } from "./routes/payments.routes.js";
 import { router as productsRoutes } from "./routes/products.routes.js";
 import { router as profilesRoutes } from "./routes/profiles.routes.js";
 import { router as licitationRoutes } from "./routes/licitation.routes.js";
@@ -16,6 +17,7 @@ import { router as inputRoutes } from "./routes/input.routes.js";
 import { router as qualificationRoutes } from "./routes/qualification.routes.js";
 import { router as ordersRoutes } from "./routes/order.routes.js";
 import { router as chatRoutes } from "./routes/chat.routes.js";
+import { router as transactionsRoutes } from "./routes/transactions.routes.js";
 import { router as walletRoutes } from "./routes/wallet.routes.js";
 import { router as warrantyRoutes } from "./routes/warranty.routes.js";
 import { router as advertisingRoutes } from "./routes/advertising.routes.js";
@@ -93,10 +95,13 @@ app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/multiusers", multiusersRoutes);
 app.use("/api/v1/suscription", suscriptionRoutes);
 app.use("/api/v1/preferences", preferencesRoutes);
+app.use("/api/v1/payments", paymentsRoutes);
+app.use("/api/v1/transactions", transactionsRoutes);
 app.use("/api/v1/settings", settingsRoutes);
 
 // Rutas de archivos estaticos en el servidor
 app.use("/public/images/products", express.static("public/images/products"));
+app.use("/public/images/icons", express.static("public/images/icons"));
 app.use("/public/images/sales", express.static("public/images/sales"));
 app.use("/public/sheets", express.static("public/sheets"));
 
