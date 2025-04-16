@@ -1,8 +1,9 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 export const getPriceAnalyticByProduct = async (product) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `
       WITH precios AS (
         -- Seleccionamos los precios de producto_licitar
@@ -66,40 +67,52 @@ export const getPriceAnalyticByProduct = async (product) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getProductById = async (id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(`SELECT * FROM productos WHERE id = ?`, [id]);
+    const [statement] = await db.query(`SELECT * FROM productos WHERE id = ?`, [id]);
 
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const getAllProducts = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(`SELECT * FROM productos WHERE estado = 1`);
+    const [statement] = await db.query(`SELECT * FROM productos WHERE estado = 1`);
 
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const getAllProductsRaw = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(`SELECT * FROM productos`);
+    const [statement] = await db.query(`SELECT * FROM productos`);
 
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getProductsByPreferences = async (user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT p.*, pf.id as id_preferencia FROM productos p INNER JOIN preferencias pf ON pf.id_producto = p.id WHERE pf.id_usuario = ?`,
       [user_id]
     );
@@ -107,12 +120,15 @@ export const getProductsByPreferences = async (user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const createProduct = async (schema) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO productos (id, nombre, estado) VALUES (?, ?, ?) `,
       [schema.nombre, schema.nombre, schema.estado]
     );
@@ -120,12 +136,15 @@ export const createProduct = async (schema) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const setProductImage = async (uuid, image) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       "UPDATE productos SET imagen = ? WHERE id = ?",
       [image, uuid]
     );
@@ -133,12 +152,15 @@ export const setProductImage = async (uuid, image) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const enableProductById = async (uuid) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       "UPDATE productos SET estado = 1 WHERE id = ?",
       [uuid]
     );
@@ -146,12 +168,15 @@ export const enableProductById = async (uuid) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const disableProductById = async (uuid) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       "UPDATE productos SET estado = 0 WHERE id = ?",
       [uuid]
     );
@@ -159,5 +184,7 @@ export const disableProductById = async (uuid) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };

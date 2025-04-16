@@ -1,42 +1,63 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 export const createAdvertising = async (uuid_ads, schema) => {
-    try {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      "INSERT INTO publicidades (id, nombre, url) VALUES (?, ?, ?)",
+      [uuid_ads, schema.nombre, schema.url]
+    );
 
-        const [statement] = await connection.query('INSERT INTO publicidades (id, nombre, url) VALUES (?, ?, ?)', [uuid_ads, schema.nombre, schema.url]);
-
-        return statement.affectedRows;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
 };
 
 export const getAllAdvertisings = async () => {
-    try {
-
-        const [statement] = await connection.query('SELECT * FROM publicidades GROUP BY id');
-        return statement;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      "SELECT * FROM publicidades GROUP BY id"
+    );
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
 };
 
-export const updateImageById = async (imageUrl, uuid) => {    
-    try {
-        const [statement] = await connection.query('UPDATE publicidades SET imagen = ? WHERE id = ?', [imageUrl, uuid]);
-        
-        return statement.affectedRows;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+export const updateImageById = async (imageUrl, uuid) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      "UPDATE publicidades SET imagen = ? WHERE id = ?",
+      [imageUrl, uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
 };
 
-export const deleteAdvertisingById = async (uuid) => {    
-    try {
-        const [statement] = await connection.query('DELETE FROM publicidades WHERE id = ?', [uuid]);
-        
-        return statement.affectedRows;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+export const deleteAdvertisingById = async (uuid) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      "DELETE FROM publicidades WHERE id = ?",
+      [uuid]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
 };

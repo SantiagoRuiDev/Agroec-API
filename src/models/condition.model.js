@@ -1,21 +1,42 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
-export const createCondition = async (condition_id, product_id, reception_rules, schema) => {
+export const createCondition = async (
+  condition_id,
+  product_id,
+  reception_rules,
+  schema
+) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO condiciones_compra(id, id_producto, precio, precio_unidad, cantidad, cantidad_unidad, politicas_recepcion) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [condition_id, product_id, schema.precio, schema.precio_unidad, schema.cantidad, schema.cantidad_unidad, reception_rules]
+      [
+        condition_id,
+        product_id,
+        schema.precio,
+        schema.precio_unidad,
+        schema.cantidad,
+        schema.cantidad_unidad,
+        reception_rules,
+      ]
     );
 
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
-export const updateCondition = async (condition_id, schema, reception_rules) => {
+export const updateCondition = async (
+  condition_id,
+  schema,
+  reception_rules
+) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE condiciones_compra SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, modo_pago = ?, notas = ?, precio_puesto_domicilio = ?, politicas_recepcion = ? WHERE id = ?`,
       [
         schema.precio,
@@ -33,12 +54,15 @@ export const updateCondition = async (condition_id, schema, reception_rules) => 
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateConditionWarranty = async (condition_id, schema) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE condiciones_compra SET porcentaje_inicial = ?, modo_pago_final = ?, porcentaje_final = ? WHERE id = ?`,
       [
         schema.porcentaje_inicial,
@@ -51,12 +75,15 @@ export const updateConditionWarranty = async (condition_id, schema) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getConditionBySaleProposal = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT c.* FROM propuesta_venta_contiene_condicion pvc INNER JOIN condiciones_compra c ON pvc.id_condicion = c.id WHERE pvc.id_propuesta = ?`,
       [proposal_id]
     );
@@ -64,12 +91,15 @@ export const getConditionBySaleProposal = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getConditionByBuyProposal = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT c.* FROM propuesta_compra_contiene_condicion pvc INNER JOIN condiciones_compra c ON pvc.id_condicion = c.id WHERE pvc.id_propuesta = ?`,
       [proposal_id]
     );
@@ -77,12 +107,15 @@ export const getConditionByBuyProposal = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getConditionById = async (condition_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM condiciones_compra WHERE id = ?`,
       [condition_id]
     );
@@ -90,12 +123,15 @@ export const getConditionById = async (condition_id) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getDeliveriesByCondition = async (condition_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM entregas WHERE id_condicion = ?`,
       [condition_id]
     );
@@ -103,12 +139,15 @@ export const getDeliveriesByCondition = async (condition_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getConditionByChat = async (chat_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT cc.*, p.imagen, 
       COALESCE(pf.url_castigos) AS url_castigos,
       COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta,
@@ -137,8 +176,8 @@ export const getConditionByChat = async (chat_id) => {
       WHERE ch.id = ?`,
       [chat_id]
     );
-    
-    const [deliveries] = await connection.query(
+
+    const [deliveries] = await db.query(
       `SELECT e.*, o.id as id_orden, o.estado, pr.nombre, pr.ubicacion_google_maps, pr.id as id_punto, pr.direccion
       FROM entregas e 
       INNER JOIN puntos_recepcion pr ON pr.id = e.id_punto
@@ -147,7 +186,7 @@ export const getConditionByChat = async (chat_id) => {
       [statement[0].id]
     );
 
-    const [quality_params] = await connection.query(
+    const [quality_params] = await db.query(
       `SELECT pc.*
       FROM parametros_calidad pc
       INNER JOIN condicion_contiene_parametros ccp ON ccp.id_parametros = pc.id
@@ -162,27 +201,26 @@ export const getConditionByChat = async (chat_id) => {
       quality_params: quality_params,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw new Error(error.message);
   }
 };
 
 export const updateConditionReceptionRules = async (rules, user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE condiciones_compra cc 
       SET cc.politicas_recepcion = ? 
       WHERE cc.id IN (SELECT pccc.id_condicion FROM propuesta_compra_contiene_condicion pccc INNER JOIN propuesta_compra pc ON pc.id = pccc.id_propuesta WHERE pc.id_comprador = ?)
       OR cc.id IN (SELECT pvcc.id_condicion FROM propuesta_venta_contiene_condicion pvcc INNER JOIN propuesta_venta pv ON pv.id = pvcc.id_propuesta INNER JOIN producto_licitar pl ON pl.id = pv.id_licitacion WHERE pl.id_usuario = ?)`,
-      [
-        rules,
-        user_id,
-        user_id
-      ]
+      [rules, user_id, user_id]
     );
 
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
-}
+};

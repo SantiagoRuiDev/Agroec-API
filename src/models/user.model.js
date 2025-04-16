@@ -1,8 +1,9 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 export const getAll = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT u.*, 
       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil, pc.tipo_perfil) AS tipo_perfil,
       COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre, pc.razon_social) AS nombre
@@ -18,11 +19,14 @@ export const getAll = async () => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const getById = async (id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT u.*, 
       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil, pc.tipo_perfil) AS tipo_perfil,
       COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre, pc.razon_social) AS nombre
@@ -38,33 +42,42 @@ export const getById = async (id) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const deleteById = async (id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `DELETE FROM usuarios WHERE id = ?;`, [id]
     );
 
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const getByStatus = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT count(*) AS cantidad_usuarios_pendientes FROM usuarios u WHERE (u.estado = 0 OR u.estado = 3) AND u.id != 'Sistema'`
     );
 
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const setStateByUserId = async (id, state) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE usuarios u SET estado = ?
       WHERE u.id = ?;`,
       [state, id]
@@ -73,10 +86,13 @@ export const setStateByUserId = async (id, state) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const setInputPermissionByUserId = async (id, state) => {
-  const conn = await connection.getConnection(); // Usa getConnection para manejar transacciones
+  const db = await pool.getConnection();
+  const conn = await db.getConnection(); // Usa getConnection para manejar transacciones
   try {
     await conn.beginTransaction();
 
@@ -117,8 +133,9 @@ export const setInputPermissionByUserId = async (id, state) => {
   }
 };
 export const updateById = async (uuid, schema) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE usuarios SET tipo_identificacion = ?, numero_identificacion = ?, correo = ?, clave = ?, provincia = ?, parroquia = ?, canton = ?, direccion = ?, ubicacion_google_maps = ?, telefono = ? 
       WHERE id = ?`,
       [
@@ -139,5 +156,7 @@ export const updateById = async (uuid, schema) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };

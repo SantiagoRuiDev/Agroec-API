@@ -27,7 +27,6 @@ import { router as suscriptionRoutes } from "./routes/suscription.routes.js";
 import { router as preferencesRoutes } from "./routes/preferences.routes.js";
 import { router as settingsRoutes } from "./routes/settings.routes.js";
 import { router as userRoutes } from "./routes/user.routes.js";
-import { connect } from "./database/index.js";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import "./socket/socket.js";
@@ -45,8 +44,6 @@ const limiter = rateLimit({
 })
 
 // ---
-// Abro la conexión aca para evitar realizar muchas conexiones en modelo.
-export const connection = await connect();
 
 const app = express();
 const server = createServer(app);

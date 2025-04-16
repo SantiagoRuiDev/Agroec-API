@@ -1,4 +1,4 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 // Modelo de Licitaciones
 
@@ -8,8 +8,9 @@ export const createLicitation = async (
   user_id,
   schema
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO producto_licitar(id, id_producto, id_usuario, precio, precio_unidad, cantidad, cantidad_unidad, presentacion_entrega, valida_hasta, informacion_adicional) VALUES (?,?,?,?,?,?,?,?,?,?)`,
       [
         licitation_id,
@@ -28,12 +29,15 @@ export const createLicitation = async (
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateLicitation = async (licitation_id, user_id, schema) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET precio = ?, precio_unidad = ?, cantidad = ?, cantidad_unidad = ?, presentacion_entrega = ?, valida_hasta = ?, informacion_adicional = ?
       WHERE id = ? AND id_usuario = ?`,
       [
@@ -52,12 +56,15 @@ export const updateLicitation = async (licitation_id, user_id, schema) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationsByUser = async (user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pl.*, p.nombre, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto WHERE id_usuario = ? AND pl.estado != "Eliminada" AND pl.estado != "Cumplida"
       ORDER BY pl.fecha_publicacion DESC`,
       [user_id]
@@ -66,12 +73,15 @@ export const getLicitationsByUser = async (user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pl.*, p.nombre, p.imagen, COALESCE(
           (SELECT SUM(cc.precio * cc.cantidad) / NULLIF(SUM(cc.cantidad), 0)
           FROM condiciones_compra cc
@@ -97,19 +107,22 @@ export const getLicitationsByUserAndProduct = async (user_id, product_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationById = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pl.*, pf.razon_social, u.provincia, u.canton FROM producto_licitar pl
       INNER JOIN usuarios u ON u.id = pl.id_usuario
       INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
       WHERE pl.id = ?`,
       [licitation_id]
     );
-    const [quality_params] = await connection.query(
+    const [quality_params] = await db.query(
       `SELECT * FROM parametros_calidad pc INNER JOIN licitacion_contiene_calidad lcc ON lcc.id_parametros = pc.id WHERE lcc.id_licitacion = ?`,
       [licitation_id]
     );
@@ -120,12 +133,15 @@ export const getLicitationById = async (licitation_id) => {
     };
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAllLicitationsNotExpired = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM producto_licitar WHERE estado != "Caducada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
       ORDER BY fecha_publicacion DESC`
     );
@@ -133,12 +149,15 @@ export const getAllLicitationsNotExpired = async () => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAllLicitations = async () => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM producto_licitar WHERE estado != "Eliminada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
       ORDER BY fecha_publicacion DESC`
     );
@@ -146,12 +165,15 @@ export const getAllLicitations = async () => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAllLicitationsByProduct = async (product_id, user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pl.*, pf.razon_social, u.provincia, u.canton, COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion,
       (
         SELECT pamc.nombre
@@ -187,12 +209,15 @@ export const getAllLicitationsByProduct = async (product_id, user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const deleteLicitation = async (user_id, licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET estado = "Eliminada" WHERE id_usuario = ? AND id = ?`,
       [user_id, licitation_id]
     );
@@ -200,12 +225,15 @@ export const deleteLicitation = async (user_id, licitation_id) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const expireLicitationById = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET estado = "Caducada" WHERE id = ?`,
       [licitation_id]
     );
@@ -213,12 +241,15 @@ export const expireLicitationById = async (licitation_id) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const closeLicitationById = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET estado = "Cerrada" WHERE id = ?`,
       [licitation_id]
     );
@@ -226,12 +257,15 @@ export const closeLicitationById = async (licitation_id) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const closeLicitation = async (user_id, licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET estado = "Cerrada" WHERE id_usuario = ? AND id = ?`,
       [user_id, licitation_id]
     );
@@ -239,12 +273,15 @@ export const closeLicitation = async (user_id, licitation_id) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const setQuantity = async (licitation_id, quantity) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET cantidad = cantidad - ? WHERE id = ?`,
       [quantity, licitation_id]
     );
@@ -252,24 +289,30 @@ export const setQuantity = async (licitation_id, quantity) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const checkQuantity = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT cantidad FROM producto_licitar WHERE cantidad <= 0 AND id = ?`,
       [licitation_id]
     );
     return statement.length > 0;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const markLicitationAsDone = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE producto_licitar SET estado = "Cumplida", cantidad = 0 WHERE id = ?`,
       [licitation_id]
     );
@@ -277,5 +320,7 @@ export const markLicitationAsDone = async (licitation_id) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };

@@ -1,8 +1,9 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 export const createWallet = async (uuid, uuid_user) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO billetera (id, id_usuario, saldo) VALUES (?, ?, ?) `,
       [uuid, uuid_user, 0]
     );
@@ -10,12 +11,15 @@ export const createWallet = async (uuid, uuid_user) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const createFee = async (uuid, id_delivery, id_wallet, amount) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO fee (id, id_entrega, id_billetera, monto_fee) VALUES (?, ?, ?, ?) `,
       [uuid, id_delivery, id_wallet, amount]
     );
@@ -23,24 +27,27 @@ export const createFee = async (uuid, id_delivery, id_wallet, amount) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getWalletByUser = async (uuid_user) => {
+  const db = await pool.getConnection();
   try {
-    const [wallet] = await connection.query(
+    const [wallet] = await db.query(
       `SELECT * FROM billetera WHERE id_usuario = ?`,
       [uuid_user]
     );
 
     wallet;
 
-    const [recharge] = await connection.query(
+    const [recharge] = await db.query(
       `SELECT * FROM recargas WHERE id_billetera = ? ORDER BY fecha ASC`,
       [wallet[0].id]
     );
 
-    const [fee] = await connection.query(
+    const [fee] = await db.query(
       `
           SELECT f.id, cc.id_producto, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps,
           COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre
@@ -58,7 +65,7 @@ export const getWalletByUser = async (uuid_user) => {
       [wallet[0].id]
     );
 
-    const [chargeback] = await connection.query(
+    const [chargeback] = await db.query(
       `
           SELECT * FROM devoluciones
           WHERE id_billetera = ? ORDER BY fecha ASC
@@ -74,16 +81,19 @@ export const getWalletByUser = async (uuid_user) => {
     };
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getWalletTransactions = async () => {
+  const db = await pool.getConnection();
   try {
-    const [recharge] = await connection.query(
+    const [recharge] = await db.query(
       `SELECT * FROM recargas ORDER BY fecha DESC`
     );
 
-    const [fee] = await connection.query(
+    const [fee] = await db.query(
       `
           SELECT f.id, cc.id_producto, f.monto_fee, f.fecha, e.cantidad, e.cantidad_unidad, pr.ubicacion_google_maps,
           COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre
@@ -100,7 +110,7 @@ export const getWalletTransactions = async () => {
           `
     );
 
-    const [chargeback] = await connection.query(
+    const [chargeback] = await db.query(
       `
           SELECT * FROM devoluciones
           ORDER BY fecha DESC
@@ -114,12 +124,15 @@ export const getWalletTransactions = async () => {
     };
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const deleteWalletByUserId = async (uuid_user) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `DELETE FROM billetera WHERE id_usuario = ?`,
       [uuid_user]
     );
@@ -127,13 +140,16 @@ export const deleteWalletByUserId = async (uuid_user) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 
 export const getBalance = async (uuid_user) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT saldo FROM billetera WHERE id_usuario = ?`,
       [uuid_user]
     );
@@ -141,12 +157,15 @@ export const getBalance = async (uuid_user) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getPaidTodayRecharges = async (date) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT COALESCE(sum(monto_recarga),0) AS cantidad_recargas_diarias FROM recargas WHERE DATE(fecha) = ?`,
       [date]
     );
@@ -154,13 +173,16 @@ export const getPaidTodayRecharges = async (date) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 
 export const getPaidTodayFees = async (date) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT COALESCE(sum(monto_fee),0) AS cantidad_fees_diarias FROM fee WHERE DATE(fecha) = ?`,
       [date]
     );
@@ -168,18 +190,23 @@ export const getPaidTodayFees = async (date) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const chargebackWallet = async (uuid, uuid_wallet, amount) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO devoluciones (id, id_billetera, monto_devolucion) VALUES (?, ?, ?)`,
       [uuid, uuid_wallet, amount]
     );
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -189,25 +216,31 @@ export const rechargeWallet = async (
   schema,
   rechargeMoreBalance
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO recargas (id, id_billetera, metodo_pago, monto_recarga) VALUES (?, ?, ?, ?)`,
       [uuid, uuid_wallet, schema.metodo_pago, rechargeMoreBalance]
     );
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateBalance = async (id_wallet, newBalance) => {
+  const db = await pool.getConnection();
   try {
-    const [result] = await connection.query(
+    const [result] = await db.query(
       `UPDATE billetera SET saldo = ? WHERE id = ?`,
       [newBalance, id_wallet]
     );
     return result;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };

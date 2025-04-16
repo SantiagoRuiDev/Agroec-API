@@ -1,8 +1,9 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 export const createAccount = async (uuid, schema, state) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO usuarios
       (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono, estado) 
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
@@ -26,25 +27,30 @@ export const createAccount = async (uuid, schema, state) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAccountById = async (uuid) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
-      `SELECT * FROM usuarios WHERE id = ?`,
-      [uuid]
-    );
+    const [statement] = await db.query(`SELECT * FROM usuarios WHERE id = ?`, [
+      uuid,
+    ]);
 
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAccountByDocument = async (documento) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM usuarios WHERE numero_identificacion = ?`,
       [documento]
     );
@@ -52,12 +58,15 @@ export const getAccountByDocument = async (documento) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getAccountByEmail = async (correo) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM usuarios WHERE correo = ?`,
       [correo]
     );
@@ -65,12 +74,15 @@ export const getAccountByEmail = async (correo) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getMultiuserByEmail = async (correo) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM multiusuarios WHERE correo = ?`,
       [correo]
     );
@@ -78,12 +90,15 @@ export const getMultiuserByEmail = async (correo) => {
     return statement[0];
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const setState = async (uuid, state) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE usuarios SET estado = ? WHERE id = ?`,
       [state, uuid]
     );
@@ -91,12 +106,15 @@ export const setState = async (uuid, state) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const accountIsBlocked = async (uuid) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT * FROM usuarios WHERE estado = 2 AND id = ?`,
       [uuid]
     );
@@ -104,12 +122,15 @@ export const accountIsBlocked = async (uuid) => {
     return statement.length > 0;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateAccount = async (uuid, schema) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE usuarios SET tipo_identificacion = ?, numero_identificacion = ?, correo = ?, clave = ?, provincia = ?, parroquia = ?, canton = ?, direccion = ?, ubicacion_google_maps = ?, telefono = ? 
       WHERE id = ?`,
       [
@@ -130,12 +151,15 @@ export const updateAccount = async (uuid, schema) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateAccountPassword = async (uuid, clave) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE usuarios SET clave = ?
       WHERE id = ?`,
       [clave, uuid]
@@ -144,5 +168,7 @@ export const updateAccountPassword = async (uuid, clave) => {
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };

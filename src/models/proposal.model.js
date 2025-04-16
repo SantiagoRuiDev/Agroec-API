@@ -1,4 +1,4 @@
-import { connection } from "../index.js";
+import pool from "../database/index.js";
 
 // Modelo de Ventas
 
@@ -8,8 +8,9 @@ export const createSaleProposal = async (
   user_id,
   schema
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO propuesta_venta(id, id_licitacion, id_vendedor, precio, precio_unidad, cantidad, cantidad_unidad, presentacion_entrega, fecha_entrega, informacion_adicional) VALUES (?,?,?,?,?,?,?,?,?,?)`,
       [
         proposal_id,
@@ -28,12 +29,15 @@ export const createSaleProposal = async (
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleProposalById = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pv.*, u1.id as id_comprador FROM propuesta_venta pv
       INNER JOIN producto_licitar pl ON pl.id = pv.id_licitacion INNER JOIN usuarios u1 ON u1.id = pl.id_usuario
       INNER JOIN usuarios u2 ON pv.id_vendedor = u2.id WHERE pv.id = ?`,
@@ -43,12 +47,15 @@ export const getSaleProposalById = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleDeliveryWithConditionsById = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT e.* FROM propuesta_venta pv INNER JOIN propuesta_venta_contiene_condicion pvcc ON pv.id = pvcc.id_propuesta INNER JOIN condiciones_compra c ON pvcc.id_condicion = c.id INNER JOIN entregas e ON e.id_condicion = c.id WHERE pv.id = ?`,
       [proposal_id]
     );
@@ -56,12 +63,15 @@ export const getSaleDeliveryWithConditionsById = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleProposalByUser = async (user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pv.*, u.*, pl.id_producto,
       (SELECT m.id_remitente
       FROM condiciones_compra cc
@@ -94,23 +104,26 @@ export const getSaleProposalByUser = async (user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getProposalInformation = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [sale] = await connection.query(
+    const [sale] = await db.query(
       `SELECT * FROM propuesta_venta pv WHERE pv.id = ?`,
       [proposal_id]
     );
-    const [licitation] = await connection.query(
+    const [licitation] = await db.query(
       `SELECT * FROM propuesta_compra pc WHERE pc.id = ?`,
       [proposal_id]
     );
 
     let statement = null;
     if (sale[0]) {
-      [statement] = await connection.query(
+      [statement] = await db.query(
         `SELECT pl.*, pv.id_vendedor, pv.fecha_entrega,
         COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
         COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
@@ -126,7 +139,7 @@ export const getProposalInformation = async (proposal_id) => {
         [proposal_id]
       );
     } else if (licitation[0]) {
-      [statement] = await connection.query(
+      [statement] = await db.query(
         `SELECT pv.*, pv.id_usuario as id_vendedor, pc.valida_hasta as fecha_entrega,
         COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
         COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS nombre,
@@ -143,7 +156,7 @@ export const getProposalInformation = async (proposal_id) => {
       );
     }
 
-    const [quality_params] = await connection.query(
+    const [quality_params] = await db.query(
       `SELECT 
       pc.*
       FROM parametros_calidad pc
@@ -156,12 +169,15 @@ export const getProposalInformation = async (proposal_id) => {
     return { ...statement[0], quality_params };
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getProposalsBySale = async (sale_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pc.*, pv.cantidad FROM propuesta_compra pc 
       INNER JOIN producto_vender pv ON pc.id_venta = pv.id 
       WHERE pv.id = ?`,
@@ -171,11 +187,14 @@ export const getProposalsBySale = async (sale_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 export const getProposalsByLicitation = async (licitation_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pv.*, pl.cantidad FROM propuesta_venta pv 
       INNER JOIN producto_licitar pl ON pv.id_licitacion = pl.id 
       WHERE pl.id = ?`,
@@ -185,12 +204,15 @@ export const getProposalsByLicitation = async (licitation_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleProposalByLicitation = async (user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pv.* FROM propuesta_venta pv 
       INNER JOIN producto_licitar pl ON pv.id_licitacion = pl.id 
       WHERE pl.id_usuario = ? AND NOT (pv.estado_vendedor = "Aceptada" AND pv.estado_comprador = "Aceptada") GROUP BY pv.id;`,
@@ -200,13 +222,16 @@ export const getSaleProposalByLicitation = async (user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT pv.*,
        pc.id_producto, 
        uv.provincia, uv.canton, u.id as id_comprador,
@@ -233,8 +258,9 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
     // Iterar sobre las propuestas para obtener el último mensaje de cada una
     const proposalsWithMessages = await Promise.all(
       proposals.map(async (proposal) => {
+  const db = await pool.getConnection();
         // Obtener el último mensaje del chat correspondiente a la propuesta actual
-        const [lastMessage] = await connection.query(
+        const [lastMessage] = await db.query(
           `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
           [proposal.chat_id]
         );
@@ -250,13 +276,16 @@ export const getSaleProposalByUserAndProduct = async (user_id, product_id) => {
     return proposalsWithMessages;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT pv.*,
        pc.id_producto, 
        uv.provincia, uv.canton, u.id as id_comprador,
@@ -283,8 +312,9 @@ export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
     // Iterar sobre las propuestas para obtener el último mensaje de cada una
     const proposalsWithMessages = await Promise.all(
       proposals.map(async (proposal) => {
+  const db = await pool.getConnection();
         // Obtener el último mensaje del chat correspondiente a la propuesta actual
-        const [lastMessage] = await connection.query(
+        const [lastMessage] = await db.query(
           `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
           [proposal.chat_id]
         );
@@ -300,12 +330,15 @@ export const getSaleProposalByBuyerAndProduct = async (user_id, product_id) => {
     return proposalsWithMessages;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateSaleProposalStateBySeller = async (sale_id, state) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE propuesta_venta SET estado_vendedor = ? WHERE id = ?`,
       [state, sale_id]
     );
@@ -313,12 +346,15 @@ export const updateSaleProposalStateBySeller = async (sale_id, state) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateSaleProposalStateByBuyer = async (sale_id, state) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE propuesta_venta SET estado_comprador = ? WHERE id = ?`,
       [state, sale_id]
     );
@@ -326,6 +362,8 @@ export const updateSaleProposalStateByBuyer = async (sale_id, state) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -334,8 +372,9 @@ export const createSaleCondition = async (
   sale_id,
   condition_id
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO propuesta_venta_contiene_condicion(id, id_propuesta, id_condicion) VALUES (?,?,?)`,
       [contain_id, sale_id, condition_id]
     );
@@ -343,6 +382,8 @@ export const createSaleCondition = async (
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -354,8 +395,9 @@ export const createLicitationProposal = async (
   user_id,
   schema
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO propuesta_compra(id, id_venta, id_comprador, precio, precio_unidad, cantidad, cantidad_unidad, presentacion_entrega, valida_hasta, horarios, ubicacion_google_maps, informacion_adicional) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         proposal_id,
@@ -376,12 +418,15 @@ export const createLicitationProposal = async (
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationProposalById = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pc.*, u1.id as id_vendedor FROM propuesta_compra pc
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta INNER JOIN usuarios u1 ON u1.id = pv.id_usuario
       INNER JOIN usuarios u2 ON pc.id_comprador = u2.id WHERE pc.id = ?`,
@@ -391,12 +436,15 @@ export const getLicitationProposalById = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationDeliveryWithConditionsById = async (proposal_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT e.* FROM propuesta_compra pc 
       INNER JOIN propuesta_compra_contiene_condicion pccc ON pc.id = pccc.id_propuesta 
       INNER JOIN condiciones_compra c ON pccc.id_condicion = c.id
@@ -407,13 +455,16 @@ export const getLicitationDeliveryWithConditionsById = async (proposal_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationProposalBySeller = async (user_id) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT 
     pc.*, 
     u.*, 
@@ -441,13 +492,16 @@ export const getLicitationProposalBySeller = async (user_id) => {
     return proposals;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationProposalByUser = async (user_id) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT 
     pc.*, 
     u.*, 
@@ -482,6 +536,8 @@ export const getLicitationProposalByUser = async (user_id) => {
     return proposals;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -489,9 +545,10 @@ export const getLicitationProposalByUserAndProduct = async (
   user_id,
   product_id
 ) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT pc.*, 
        pv.id_producto, 
        uv.provincia, uv.canton, uv.id as id_vendedor,
@@ -520,8 +577,9 @@ export const getLicitationProposalByUserAndProduct = async (
     // Iterar sobre las propuestas para obtener el último mensaje de cada una
     const proposalsWithMessages = await Promise.all(
       proposals.map(async (proposal) => {
+  const db = await pool.getConnection();
         // Obtener el último mensaje del chat correspondiente a la propuesta actual
-        const [lastMessage] = await connection.query(
+        const [lastMessage] = await db.query(
           `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
           [proposal.chat_id]
         );
@@ -537,6 +595,8 @@ export const getLicitationProposalByUserAndProduct = async (
     return proposalsWithMessages;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -544,9 +604,10 @@ export const getLicitationProposalBySellerAndProduct = async (
   user_id,
   product_id
 ) => {
+  const db = await pool.getConnection();
   try {
     // Obtener todas las propuestas del usuario
-    const [proposals] = await connection.query(
+    const [proposals] = await db.query(
       `SELECT pc.*, 
        pv.id_producto, 
        uv.provincia, uv.canton, uv.id as id_vendedor,
@@ -573,8 +634,9 @@ export const getLicitationProposalBySellerAndProduct = async (
     // Iterar sobre las propuestas para obtener el último mensaje de cada una
     const proposalsWithMessages = await Promise.all(
       proposals.map(async (proposal) => {
+  const db = await pool.getConnection();
         // Obtener el último mensaje del chat correspondiente a la propuesta actual
-        const [lastMessage] = await connection.query(
+        const [lastMessage] = await db.query(
           `SELECT m.* FROM mensajes m INNER JOIN chat c ON m.id_chat = c.id WHERE c.id = ? ORDER BY m.fecha DESC LIMIT 1`,
           [proposal.chat_id]
         );
@@ -590,12 +652,15 @@ export const getLicitationProposalBySellerAndProduct = async (
     return proposalsWithMessages;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getLicitationProposalBySale = async (user_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT pv.id_producto, p.imagen, COUNT(pc.id) AS num_propuestas
       FROM propuesta_compra pc
       INNER JOIN producto_vender pv ON pv.id = pc.id_venta
@@ -612,6 +677,8 @@ export const getLicitationProposalBySale = async (user_id) => {
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -619,8 +686,9 @@ export const updateLicitationProposalStateBySeller = async (
   proposal_id,
   state
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE propuesta_compra SET estado_vendedor = ? WHERE id = ?`,
       [state, proposal_id]
     );
@@ -628,6 +696,8 @@ export const updateLicitationProposalStateBySeller = async (
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -635,8 +705,9 @@ export const updateLicitationProposalStateByBuyer = async (
   proposal_id,
   state
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `UPDATE propuesta_compra SET estado_comprador = ? WHERE id = ?`,
       [state, proposal_id]
     );
@@ -644,6 +715,8 @@ export const updateLicitationProposalStateByBuyer = async (
     return statement;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
@@ -652,8 +725,9 @@ export const createLicitationCondition = async (
   licitation_id,
   condition_id
 ) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `INSERT INTO propuesta_compra_contiene_condicion(id, id_propuesta, id_condicion) VALUES (?,?,?)`,
       [contain_id, licitation_id, condition_id]
     );
@@ -661,12 +735,15 @@ export const createLicitationCondition = async (
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const getProposalByConditions = async (condition_id) => {
+  const db = await pool.getConnection();
   try {
-    const [statement] = await connection.query(
+    const [statement] = await db.query(
       `SELECT COALESCE(pccc.id_propuesta, pvcc.id_propuesta) AS id_propuesta, cc.modo_pago, ch.id as id_chat, cc.id_producto
       FROM condiciones_compra cc 
       INNER JOIN chat ch ON ch.id_condiciones = cc.id
@@ -677,7 +754,7 @@ export const getProposalByConditions = async (condition_id) => {
     );
 
     if (statement[0]) {
-      const [sale] = await connection.query(
+      const [sale] = await db.query(
         `SELECT *
         FROM propuesta_venta pv 
         WHERE pv.id = ?`,
@@ -685,7 +762,7 @@ export const getProposalByConditions = async (condition_id) => {
       );
 
       if (sale[0]) {
-        const [buyer] = await connection.query(
+        const [buyer] = await db.query(
           `SELECT pl.id_usuario
           FROM producto_licitar pl 
           WHERE pl.id = ?`,
@@ -701,7 +778,7 @@ export const getProposalByConditions = async (condition_id) => {
         };
       }
 
-      const [licitation] = await connection.query(
+      const [licitation] = await db.query(
         `SELECT *
         FROM propuesta_compra pc 
         WHERE pc.id = ?`,
@@ -709,7 +786,7 @@ export const getProposalByConditions = async (condition_id) => {
       );
 
       if (licitation[0]) {
-        const [seller] = await connection.query(
+        const [seller] = await db.query(
           `SELECT pv.id_usuario
           FROM producto_vender pv 
           WHERE pv.id = ?`,
@@ -727,17 +804,20 @@ export const getProposalByConditions = async (condition_id) => {
     }
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
 
 export const updateProposalByConditions = async (condition_id) => {
+  const db = await pool.getConnection();
   try {
-    const [buyProposal] = await connection.query(
+    const [buyProposal] = await db.query(
       `UPDATE propuesta_compra pc SET pc.estado_comprador = 'Recibida', pc.estado_vendedor = 'Recibida'
       WHERE pc.id IN (SELECT pccc.id_propuesta FROM propuesta_compra_contiene_condicion pccc WHERE pccc.id_condicion = ?)`,
       [condition_id]
     );
-    const [saleProposal] = await connection.query(
+    const [saleProposal] = await db.query(
       `UPDATE propuesta_venta pv SET pv.estado_comprador = 'Recibida', pv.estado_vendedor = 'Recibida'
       WHERE pv.id IN (SELECT pvcc.id_propuesta FROM propuesta_venta_contiene_condicion pvcc WHERE pvcc.id_condicion = ?)`,
       [condition_id]
@@ -746,5 +826,7 @@ export const updateProposalByConditions = async (condition_id) => {
     return saleProposal.affectedRows + buyProposal.affectedRows;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
   }
 };
