@@ -93,6 +93,23 @@ export const updateInput = async (input_id, schema) => {
   }
 };
 
+
+export const updateInputStockById = async (input_id, stock) => {
+  try {
+    const [statement] = await connection.query(
+      `UPDATE insumos SET stock = ?  WHERE id = ?`,
+      [
+        stock,
+        input_id
+      ]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const deleteInput = async (input_id) => {
   try {
     await connection.query(`DELETE FROM insumos_imagenes WHERE id_insumo = ?`, [

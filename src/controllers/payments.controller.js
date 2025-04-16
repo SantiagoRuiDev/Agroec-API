@@ -1,10 +1,21 @@
+import * as walletModel from "../models/wallet.model.js";
 import * as paymentsModel from "../models/payments.model.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const getPaymentsByUser = async (req, res) => {
   try {
-    const preferences = await paymentsModel.getPaymentsByUser(req.params.id);
-    return res.status(200).send(preferences);
+    const payments = await paymentsModel.getPaymentsByUser(req.params.id);
+    return res.status(200).send(payments);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const getPaymentsByLoggedUser = async (req, res) => {
+  try {
+    const payments = await paymentsModel.getPaymentsByUser(req.user_id);
+    const balance = await walletModel.getBalance(req.user_id);
+    return res.status(200).send({saldo: balance.saldo, payments: payments});
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -32,7 +43,13 @@ export const createPaymentByUser = async (req, res) => {
       throw new Error("Porfavor ingresa los campos codigo y fecha");
     }
     
-    await paymentsModel.createPaymentByUser(uuidv4(), user_id, schema);
+    const paymentExist = await paymentsModel.getPaymentsByOrderId(req.body.id_orden);
+
+    if(paymentExist){
+      throw new Error("El pago de la garantia de esta orden ya ha sido realizado al vendedor");
+    }
+
+    await paymentsModel.createPaymentByUser(uuidv4(), req.body.id_orden, user_id, schema);
 
     return res
       .status(200)

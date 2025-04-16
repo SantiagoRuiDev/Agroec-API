@@ -43,12 +43,18 @@ export const getTutorialsByCategories = async (req, res) => {
 export const sendTutorialPushNotification = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        const {message} = req.body;
+
+        if(!message || message == ''){
+            throw new Error("El mensaje no puede estar vacio");
+        }
 
         const tutorialExist = await tutorialModel.getTutorialById(id);
 
         if(tutorialExist){
             const url = "https://web.agroec.com/app/tutorials/" + category
-            await notificationService.sendPushNotificationToAll("Revisa nuestro tutorial", tutorialExist.titulo, url);
+            await notificationService.sendPushNotificationToAll(tutorialExist.titulo, req.body.message, url);
             return res.status(200).send({message: `Notification enviada exitosamente`});
         }
 
@@ -90,7 +96,7 @@ export const createTutorial = async (req, res) => {
 
         if(tutorial > 0){
             const url = "https://web.agroec.com/app/tutorials/" + category
-            await notificationService.sendPushNotificationToAll("Nuevo tutorial", req.body.titulo, url);
+            await notificationService.sendPushNotificationToAll(req.body.titulo, "Revisa el nuevo tutorial", url);
             return res.status(200).send({message: `Tutorial creado exitosamente`});
         }
 

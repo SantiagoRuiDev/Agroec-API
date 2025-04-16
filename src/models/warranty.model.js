@@ -3,7 +3,7 @@ import { connection } from "../index.js";
 export const getWarrantyPayments = async (uuid_user) => {
   try {
     const [statement] = await connection.query(
-      `SELECT pg.*, count(*) AS entregas_pagas
+      `SELECT pg.*, o.id as id_orden, count(*) AS entregas_pagas
       FROM entregas e 
       INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion 
       INNER JOIN ordenes o ON o.id_entrega = e.id 

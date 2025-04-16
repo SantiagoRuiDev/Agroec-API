@@ -14,6 +14,7 @@ router.post('/', authMiddleware.isAuthentified, inputMiddleware.createInput, inp
 router.post('/multiple', authMiddleware.isAuthentified, uploadTemp.single('input-sheet'), inputController.createMultipleInput)
 router.delete('/remove-image/:input_id/:id', authMiddleware.isAuthentified, inputController.deleteImage)
 router.post('/set-images/:input_id', authMiddleware.isAuthentified, upload.array('input-image'), addFileUrls, inputController.insertImageInput)
+router.put('/set-stock/:input_id', authMiddleware.isAuthentified, inputController.updateInputStockById)
 router.put('/:input_id', authMiddleware.isAuthentified, inputMiddleware.createInput, inputController.updateInput)
 router.delete('/:input_id', authMiddleware.isAuthentified, inputController.deleteInput);
 

@@ -46,6 +46,58 @@ export const getReceptorsByUser = async (uuid_user) => {
   }
 };
 
+export const getReceptorsByBuyerProfile = async () => {
+  try {
+    const [usersIds] = await connection.query(
+      `SELECT id_usuario FROM perfil_comprador`
+    );
+
+    const mappedIds = usersIds.map(row => row.id_usuario)
+    
+    const [statement] = await connection.query(
+      `SELECT id_onesignal
+      FROM notificaciones_receptores
+      WHERE id_usuario IN (?)`, [mappedIds]
+    );
+
+    return statement.map(row => {
+      return row.id_onesignal;
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
+export const getReceptoresBySellerProfile = async () => {
+  try {
+    const [usersIds] = await connection.query(
+      `SELECT id_usuario FROM perfil_agricultor
+      UNION
+      SELECT id_usuario FROM perfil_comerciante
+      UNION
+      SELECT id_usuario FROM perfil_comerciante_agroquimicos
+      UNION
+      SELECT id_usuario FROM perfil_asociacion_agricola`
+    );
+
+    const mappedIds = usersIds.map(row => row.id_usuario)
+    
+    const [statement] = await connection.query(
+      `SELECT id_onesignal
+      FROM notificaciones_receptores
+      WHERE id_usuario IN (?)`, [mappedIds]
+    );
+
+    return statement.map(row => {
+      return row.id_onesignal;
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+
 export const createNotification = async (
   uuid_notification,
   uuid_user,

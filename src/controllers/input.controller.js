@@ -146,6 +146,24 @@ export const insertImageInput = async (req, res) => {
   }
 };
 
+export const updateInputStockById = async (req, res) => {
+  try {
+    const input_id = req.params.input_id;
+    const stock = req.body.stock;
+
+    const updatedRows = await inputModel.updateInputStockById(input_id, stock);
+
+    if (updatedRows == 0) {
+      res.status(404).json({ message: "Error al actualizar el insumo" });
+    }
+
+    return res.status(200).json({ message: "Insumo actualizado correctamente" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+
 export const updateInput = async (req, res) => {
   try {
     const input_id = req.params.input_id;

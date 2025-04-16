@@ -49,6 +49,26 @@ export const getNotificationsReceptors = async (uuid_user) => {
     }
 }
 
+export const getBuyerNotificationsReceptors = async () => {
+    try {
+        const receptors = await notificationModel.getReceptorsByBuyerProfile();
+        
+        return receptors;
+    } catch (error) {
+        throw new Error("Error al leer los receptores: " + error.message);
+    }
+}
+
+export const getSellerNotificationsReceptors = async () => {
+    try {
+        const receptors = await notificationModel.getReceptoresBySellerProfile();
+        
+        return receptors;
+    } catch (error) {
+        throw new Error("Error al leer los receptores: " + error.message);
+    }
+}
+
 export const createNotification = async (uuid_user, uuid_product, message, title, redirection) => {
     try {
         const notification = await  notificationModel.createNotification(uuidv4(), uuid_user, uuid_product, message, title, redirection);

@@ -1,6 +1,7 @@
 import * as licitationModel from "../models/licitations.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
+import * as notificationService from "../services/notification.service.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createLicitation = async (req, res) => {
@@ -15,8 +16,18 @@ export const createLicitation = async (req, res) => {
       user_id,
       req.body.licitation
     );
-
+  
     if (insertLicitation > 0) {
+      const receptors = await notificationService.getSellerNotificationsReceptors();
+      if(receptors.length > 0){
+        await notificationService.sendPushNotification(
+          "Nueva licitación de " + product_id,
+          "Revisa las ofertas del mercado",
+          receptors,
+          "/info/licitacion/" + product_id + "/" + licitation_id
+        );
+      }
+  
       if (req.body.quality_params) {
         for (const param of req.body.quality_params) {
           const newParamRowId = uuidv4();

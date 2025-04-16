@@ -290,10 +290,17 @@ export const getOrdersById = async (order_id, user_id) => {
       [user_id, order_id]
     );
 
+    const [payment] = await connection.query(
+      `SELECT * FROM pagos_vendedores WHERE id_orden = ?
+        `,
+      [order_id]
+    );
+
     return {
       order: statement[0],
       statuses: statuses,
       warranty: warranty[0] != undefined ? warranty[0] : null,
+      payment: payment[0] != undefined ? payment[0] : null,
       fee: fee[0] != undefined ? fee[0] : null,
     };
   } catch (error) {
