@@ -45,7 +45,7 @@ export const getSidebarSettings = async (req, res) => {
       res.status(404).send({ message: "No hay configuración para mostrar" });
     }
 
-    return res.status(200).json({terminos_condiciones: settings.url_terminos_condiciones, input_module: inputModule});
+    return res.status(200).json({terminos_condiciones: settings.url_terminos_condiciones, input_module: inputModule, soporte_whatsapp: settings.soporte_whatsapp_dos});
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

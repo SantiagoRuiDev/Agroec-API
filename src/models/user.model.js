@@ -29,6 +29,7 @@ export const getById = async (id) => {
     const [statement] = await db.query(
       `SELECT u.*, 
       COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil, pc.tipo_perfil) AS tipo_perfil,
+      COALESCE(pa.modulo_insumos, pac.modulo_insumos, pca.modulo_insumos, pc.modulo_insumos) AS modulo_insumos_activado,
       COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre, pc.razon_social) AS nombre
       FROM usuarios u
       LEFT JOIN perfil_comprador pc ON pc.id_usuario = u.id
@@ -91,8 +92,7 @@ export const setStateByUserId = async (id, state) => {
   }
 };
 export const setInputPermissionByUserId = async (id, state) => {
-  const db = await pool.getConnection();
-  const conn = await db.getConnection(); // Usa getConnection para manejar transacciones
+  const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
