@@ -1,7 +1,6 @@
 import * as notificationService from "../services/notification.service.js";
 import * as orderModel from "../models/order.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
-import * as authModel from "../models/auth.model.js";
 import * as profileChecker from "../libs/checker.js";
 import PDF from "html-pdf";
 import { v4 as uuidv4 } from "uuid";

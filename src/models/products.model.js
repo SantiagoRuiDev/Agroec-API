@@ -4,64 +4,106 @@ export const getPriceAnalyticByProduct = async (product) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `
-      WITH precios AS (
-        -- Seleccionamos los precios de producto_licitar
-        SELECT 
-            pl.precio, 
-            u.provincia,
-            pl.fecha_publicacion
-        FROM producto_licitar pl
-        INNER JOIN usuarios u ON pl.id_usuario = u.id
-        INNER JOIN productos p ON pl.id_producto = p.id
-        WHERE p.nombre = ?
+      `WITH precios_unificados AS (
+  SELECT 
+    pl.precio,
+    pl.fecha_publicacion,
+    pl.id_producto,
+    u.provincia
+  FROM producto_licitar pl
+  INNER JOIN usuarios u ON pl.id_usuario = u.id
 
-        UNION ALL
+  UNION ALL
 
-        -- Seleccionamos los precios de producto_vender
-        SELECT 
-            pv.precio, 
-            u.provincia,
-            pv.fecha_publicacion
-        FROM producto_vender pv
-        INNER JOIN usuarios u ON pv.id_usuario = u.id
-        INNER JOIN productos p ON pv.id_producto = p.id
-        WHERE p.nombre = ?
-    ),
-    precios_ordenados AS (
-        -- Ordenamos los precios por provincia y fecha_publicacion descendente
-        SELECT 
-            provincia,
-            precio,
-            fecha_publicacion,
-            LAG(precio) OVER (PARTITION BY provincia ORDER BY fecha_publicacion DESC) AS precio_anterior
-        FROM precios
-    ),
-    precios_agrupados AS (
-        -- Calculamos el precio mínimo, máximo y el último precio registrado
-        SELECT 
-            provincia, 
-            MIN(precio) AS precio_minimo,
-            MAX(precio) AS precio_maximo,
-            FIRST_VALUE(precio) OVER (PARTITION BY provincia ORDER BY fecha_publicacion DESC) AS ultimo_precio,
-            MAX(precio_anterior) AS precio_anterior
-        FROM precios_ordenados
-        GROUP BY provincia
-    )
-    SELECT 
-        provincia, 
-        precio_minimo, 
-        precio_maximo, 
-        ultimo_precio,
-        CASE 
-            WHEN ultimo_precio >= precio_anterior THEN 'Subida'
-            WHEN ultimo_precio < precio_anterior THEN 'Bajada'
-            WHEN ultimo_precio = precio_maximo THEN 'Max'
-            ELSE 'Estable'
-        END AS tendencia
-    FROM precios_agrupados;
+  SELECT 
+    pv.precio,
+    pv.fecha_publicacion,
+    pv.id_producto,
+    u.provincia
+  FROM producto_vender pv
+  INNER JOIN usuarios u ON pv.id_usuario = u.id
+),
+precios_filtrados AS (
+  SELECT 
+    precio,
+    fecha_publicacion,
+    id_producto,
+    provincia,
+    YEARWEEK(fecha_publicacion, 1) AS semana
+  FROM precios_unificados
+  WHERE id_producto = ?
+)
+SELECT 
+  provincia,
+  semana,
+  AVG(precio) AS promedio
+FROM precios_filtrados
+GROUP BY provincia, semana
+ORDER BY provincia, semana;
 `,
-      [product, product]
+      [product]
+    );
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+
+export const getPriceByProductAndState = async (product) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `WITH precios_unificados AS (
+  SELECT 
+    pl.precio,
+    pl.fecha_publicacion,
+    pl.id_producto,
+    u.provincia
+  FROM producto_licitar pl
+  INNER JOIN usuarios u ON pl.id_usuario = u.id
+
+  UNION ALL
+
+  SELECT 
+    pv.precio,
+    pv.fecha_publicacion,
+    pv.id_producto,
+    u.provincia
+  FROM producto_vender pv
+  INNER JOIN usuarios u ON pv.id_usuario = u.id
+),
+precios_con_semana AS (
+  SELECT 
+    precio,
+    fecha_publicacion,
+    id_producto,
+    provincia,
+    YEARWEEK(fecha_publicacion, 1) AS semana
+  FROM precios_unificados
+  WHERE id_producto = ?
+),
+ultima_semana_por_provincia AS (
+  SELECT 
+    provincia,
+    MAX(semana) AS ultima_semana
+  FROM precios_con_semana
+  GROUP BY provincia
+)
+SELECT 
+  p.provincia,
+  p.semana,
+  MAX(p.precio) AS max,
+  MIN(p.precio) AS min
+FROM precios_con_semana p
+JOIN ultima_semana_por_provincia u
+  ON p.provincia = u.provincia AND p.semana = u.ultima_semana
+GROUP BY p.provincia, p.semana
+ORDER BY p.provincia;
+`,
+      [product]
     );
 
     return statement;
@@ -75,7 +117,9 @@ export const getPriceAnalyticByProduct = async (product) => {
 export const getProductById = async (id) => {
   const db = await pool.getConnection();
   try {
-    const [statement] = await db.query(`SELECT * FROM productos WHERE id = ?`, [id]);
+    const [statement] = await db.query(`SELECT * FROM productos WHERE id = ?`, [
+      id,
+    ]);
 
     return statement[0];
   } catch (error) {
@@ -87,7 +131,9 @@ export const getProductById = async (id) => {
 export const getAllProducts = async () => {
   const db = await pool.getConnection();
   try {
-    const [statement] = await db.query(`SELECT * FROM productos WHERE estado = 1`);
+    const [statement] = await db.query(
+      `SELECT * FROM productos WHERE estado = 1`
+    );
 
     return statement;
   } catch (error) {

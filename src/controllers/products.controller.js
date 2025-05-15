@@ -1,4 +1,5 @@
 import * as productModel from "../models/products.model.js";
+import { calcMarketTrend } from "../libs/calc.js";
 import { isAuthentified } from "../libs/auth.js";
 
 export const getAllMarketProducts = async (req, res) => {
@@ -25,11 +26,42 @@ export const getPriceAnalyticByProduct = async (req, res) => {
   try {
     const data = await productModel.getPriceAnalyticByProduct(req.params.id);
 
-    if (!data) {
-      res.status(404).send({ message: `No hay datos para mostrar` });
+    const provincias = {};
+
+    for (const item of data) {
+      if (!provincias[item.provincia]) {
+        provincias[item.provincia] = [];
+      }
+      provincias[item.provincia].push(item);
     }
 
-    res.status(200).send(data);
+    const resultado = [];
+
+    let latestWeekPrices = {};
+    if(Object.entries(provincias).length > 0){
+      latestWeekPrices = await productModel.getPriceByProductAndState(req.params.id);
+    }
+    for (const [provincia, registros] of Object.entries(provincias)) {
+      const x = registros.map((r) => r.semana);
+      const y = registros.map((r) => r.promedio);
+      const m = calcMarketTrend(x, y);
+
+      let tendencia = "Estable";
+      if (m > 0.01) tendencia = "Subida";
+      else if (m < -0.01) tendencia = "Bajada";
+
+      const max = Math.max(Array.from(latestWeekPrices).find((week) => week.provincia == provincia).max);
+      const min = Math.max(Array.from(latestWeekPrices).find((week) => week.provincia == provincia).min);
+
+      resultado.push({
+        provincia,
+        max,
+        min,
+        tendencia,
+      });
+    }
+
+    res.status(200).send(resultado);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
