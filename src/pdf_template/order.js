@@ -199,7 +199,7 @@ html, body {
   <footer>
     <div class="footer-contact">
       <div>Agroec S.A. - Todos los derechos reservados © 2025</div>
-      <div>www.agroec.com | soporte@agroec.com | +593 7 456 7890</div>
+      <div>www.agroec.com | soporte@agroec.com | +593 9 63195377</div>
     </div>
   </footer>
 
