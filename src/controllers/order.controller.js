@@ -2,8 +2,8 @@ import * as notificationService from "../services/notification.service.js";
 import * as orderModel from "../models/order.model.js";
 import * as deliveryModel from "../models/delivery.model.js";
 import * as profileChecker from "../libs/checker.js";
-import PDF from "html-pdf";
 import { v4 as uuidv4 } from "uuid";
+import { generatePDF } from "../libs/puppeter.js";
 import { getOrderTemplate } from "../pdf_template/order.js";
 
 export const getOrderPDF = async (req, res) => {
@@ -12,27 +12,17 @@ export const getOrderPDF = async (req, res) => {
 
     const order = await orderModel.getOrdersById(order_id);
 
-    // Opciones de configuración del PDF (puedes ajustar según tus necesidades)
-    const options = {
-      format: "A4",
-      orientation: "portrait",
-    };
-
     // Generar el PDF
-    PDF.create(getOrderTemplate(order), options).toBuffer((err, buffer) => {
-      if (err) {
-        res.status(500).send("Error al generar el PDF");
-        return;
-      }
+    const template = getOrderTemplate(order);
+    const buffer = await generatePDF(template);
 
-      // Enviar el PDF como una respuesta para su descarga
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        'attachment; filename="documento.pdf"'
-      );
-      return res.status(200).send(buffer);
-    });
+    // Enviar el PDF como una respuesta para su descarga
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="Comprobante de Orden.pdf"'
+    );
+    return res.status(200).send(buffer);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -47,7 +37,6 @@ export const getAllOrders = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
-
 
 export const getOrdersByUser = async (req, res) => {
   try {
