@@ -12,6 +12,8 @@ export const accountSchema = Joi.object({
   direccion: Joi.string().required(),
   ubicacion: Joi.string().required(),
   telefono: Joi.string().required(),
+  longitud: Joi.number().required(),
+  latitud: Joi.number().required(),
 });
 
 export const accountUpdateSchema = Joi.object({
@@ -24,5 +26,7 @@ export const accountUpdateSchema = Joi.object({
   parroquia: Joi.string().min(0),
   direccion: Joi.string().min(3).required(),
   ubicacion_google_maps: Joi.string().min(3).required(),
-  telefono: Joi.string().min(3).required()
+  telefono: Joi.string().min(3).required(),
+  longitud: Joi.number().required(),
+  latitud: Joi.number().required(),
 });

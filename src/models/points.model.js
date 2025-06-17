@@ -4,13 +4,15 @@ export const createPoint = async (point_id, user_id, schema) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `INSERT INTO puntos_recepcion(id, id_usuario, nombre, direccion, ubicacion_google_maps) VALUES (?,?,?,?,?)`,
+      `INSERT INTO puntos_recepcion(id, id_usuario, nombre, direccion, ubicacion_google_maps, ubicacion_longitud, ubicacion_latitud) VALUES (?,?,?,?,?,?,?)`,
       [
         point_id,
         user_id,
         schema.nombre,
         schema.direccion,
         schema.ubicacion_google_maps,
+        schema.ubicacion_longitud,
+        schema.ubicacion_latitud,
       ]
     );
 
@@ -26,7 +28,7 @@ export const getPoints = async (user_id) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `SELECT id, nombre, direccion, ubicacion_google_maps FROM puntos_recepcion WHERE id_usuario = ?`,
+      `SELECT id, nombre, direccion, ubicacion_google_maps, ubicacion_longitud, ubicacion_latitud FROM puntos_recepcion WHERE id_usuario = ?`,
       [user_id]
     );
 

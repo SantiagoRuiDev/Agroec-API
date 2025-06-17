@@ -288,7 +288,7 @@ export const getOrdersById = async (order_id, user_id) => {
     const [statement] = await db.query(
       `SELECT o.id, o.id_comprador, o.estado, o.id_vendedor, o.cantidad_recibida, o.creado,p.id as producto, p.imagen, cc.notas, cc.precio_puesto_domicilio, cc.modo_pago, cc.modo_pago_final, cc.porcentaje_inicial, cc.porcentaje_final, cc.precio, cc.politicas_recepcion, ch.id as id_chat, cc.cantidad as condicion_cantidad, cc.id as id_negociacion, cc.precio_unidad
 		,e.id as id_entrega, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega, pc.razon_social as comprador_nombre,
-		pr.nombre, pr.ubicacion_google_maps, pr.direccion,
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion, pr.ubicacion_longitud, pr.ubicacion_latitud,
        COALESCE(pa.nombre, pac.nombre, pca.nombre, pcaq.nombre) AS vendedor_nombre
 	   FROM ordenes o 
        INNER JOIN entregas e ON o.id_entrega = e.id

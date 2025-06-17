@@ -30,6 +30,24 @@ export const getWarrantyByUser = async (req, res) => {
   }
 };
 
+export const getAllWarranties = async (req, res) => {
+  try {
+    const user_id = req.user_id;
+
+    const warranties = await warrantyModel.getAllWarrantyPayments(user_id);
+
+    if (!warranties) {
+      return res
+        .status(404)
+        .send({ message: "No se pudo obtener las garantias del sistema" });
+    }
+
+    return res.status(200).send(warranties);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const createWarranty = async (req, res) => {
   try {
     const user_id = req.user_id;

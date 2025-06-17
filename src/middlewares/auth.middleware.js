@@ -66,11 +66,9 @@ export const createAccount = async (req, res, next) => {
     if (req.body.bank_account) {
       validateSchemas(req.body.bank_account, bankAccount);
       if (!/^\d+$/.test(req.body.bank_account.numero_de_cuenta)) {
-        return res
-          .status(400)
-          .json({
-            error: "El campo numero de cuenta solo debe contener números",
-          });
+        return res.status(400).json({
+          error: "El campo numero de cuenta solo debe contener números",
+        });
       }
     }
 
@@ -370,6 +368,11 @@ export const isMultiserWalletAllowed = async (req, res, next) => {
 
 export const isMultiserManagmentAllowed = async (req, res, next) => {
   try {
+    if (req.user_id == "Sistema") {
+      next();
+      return;
+    }
+
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;

@@ -1,6 +1,7 @@
 import * as productModel from "../models/products.model.js";
 import { calcMarketTrend } from "../libs/calc.js";
 import { isAuthentified } from "../libs/auth.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const getAllMarketProducts = async (req, res) => {
   try {
@@ -38,8 +39,10 @@ export const getPriceAnalyticByProduct = async (req, res) => {
     const resultado = [];
 
     let latestWeekPrices = {};
-    if(Object.entries(provincias).length > 0){
-      latestWeekPrices = await productModel.getPriceByProductAndState(req.params.id);
+    if (Object.entries(provincias).length > 0) {
+      latestWeekPrices = await productModel.getPriceByProductAndState(
+        req.params.id
+      );
     }
     for (const [provincia, registros] of Object.entries(provincias)) {
       const x = registros.map((r) => r.semana);
@@ -50,8 +53,14 @@ export const getPriceAnalyticByProduct = async (req, res) => {
       if (m > 0.01) tendencia = "Subida";
       else if (m < -0.01) tendencia = "Bajada";
 
-      const max = Math.max(Array.from(latestWeekPrices).find((week) => week.provincia == provincia).max);
-      const min = Math.max(Array.from(latestWeekPrices).find((week) => week.provincia == provincia).min);
+      const max = Math.max(
+        Array.from(latestWeekPrices).find((week) => week.provincia == provincia)
+          .max
+      );
+      const min = Math.max(
+        Array.from(latestWeekPrices).find((week) => week.provincia == provincia)
+          .min
+      );
 
       resultado.push({
         provincia,
@@ -67,6 +76,27 @@ export const getPriceAnalyticByProduct = async (req, res) => {
   }
 };
 
+export const getProductById = async (req, res) => {
+  try {
+    const { units } = req.query;
+
+    let products = [];
+
+    if (units) {
+      products = await productModel.getProductUnitsById(req.params.id);
+    } else {
+      products = await productModel.getProductById(req.params.id);
+    }
+
+    if (!products) {
+      res.status(404).send({ message: `No hay productos para mostrar` });
+    }
+
+    res.status(200).send(products);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
 export const getAllProducts = async (req, res) => {
   try {
     const isLoggedUser = await isAuthentified(req);
@@ -104,6 +134,67 @@ export const createProduct = async (req, res) => {
     res
       .status(200)
       .send({ message: "Producto creado correctamente", id: schema.nombre });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+export const deleteUnit = async (req, res) => {
+  try {
+    const removed = await productModel.deleteUnit(req.params.id);
+
+    if (removed > 0) {
+      return res
+        .status(200)
+        .send({ message: "Unidad de medida creada correctamente" });
+    }
+
+    throw new Error("Error al intentar eliminar la unidad.");
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+export const createUnit = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+
+    if (await productModel.getUnitNameAndProduct(req.params.id, nombre)) {
+      throw new Error("Esta unidad ya existe");
+    }
+
+    const createdUnit = await productModel.createUnit(
+      uuidv4(),
+      req.params.id,
+      nombre
+    );
+
+    if (!createdUnit) {
+      res.status(404).send({ message: "No se pudo crear la unidad" });
+    }
+
+    res
+      .status(200)
+      .send({ message: "Unidad de medida creada correctamente", id: nombre });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+export const updateProduct = async (req, res) => {
+  try {
+    const schema = req.body;
+
+    const updateProduct = await productModel.updateProduct(
+      req.params.id,
+      schema
+    );
+
+    if (!updateProduct) {
+      res.status(404).send({ message: "No se pudo crear el producto" });
+    }
+
+    res.status(200).send({
+      message: "Producto actualizado correctamente",
+      id: schema.nombre,
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

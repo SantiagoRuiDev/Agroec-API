@@ -5,8 +5,8 @@ export const createAccount = async (uuid, schema, state) => {
   try {
     const [statement] = await db.query(
       `INSERT INTO usuarios
-      (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono, estado) 
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      (id, tipo_identificacion, numero_identificacion, correo, clave, provincia, canton, parroquia, acepto_terminos, direccion, ubicacion_google_maps, telefono, estado, ubicacion_longitud, ubicacion_latitud) 
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         uuid,
         schema.tipo_identificacion,
@@ -21,6 +21,8 @@ export const createAccount = async (uuid, schema, state) => {
         schema.ubicacion,
         schema.telefono,
         state,
+        schema.longitud,
+        schema.latitud
       ]
     );
 
@@ -131,7 +133,7 @@ export const updateAccount = async (uuid, schema) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `UPDATE usuarios SET tipo_identificacion = ?, numero_identificacion = ?, correo = ?, clave = ?, provincia = ?, parroquia = ?, canton = ?, direccion = ?, ubicacion_google_maps = ?, telefono = ? 
+      `UPDATE usuarios SET tipo_identificacion = ?, numero_identificacion = ?, correo = ?, clave = ?, provincia = ?, parroquia = ?, canton = ?, direccion = ?, ubicacion_google_maps = ?, ubicacion_longitud = ?, ubicacion_latitud = ?, telefono = ? 
       WHERE id = ?`,
       [
         schema.tipo_identificacion,
@@ -143,6 +145,8 @@ export const updateAccount = async (uuid, schema) => {
         schema.canton,
         schema.direccion,
         schema.ubicacion_google_maps,
+        schema.longitud,
+        schema.latitud,
         schema.telefono,
         uuid,
       ]

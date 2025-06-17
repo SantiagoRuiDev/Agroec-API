@@ -5,6 +5,10 @@ import * as multiuserMiddleware from '../middlewares/multiuser.middleware.js'
 
 export const router = Router();
 
+router.delete('/roles/:id', authMiddleware.isAuthentified, multiusersController.deleteRole)
+router.put('/roles/:id', authMiddleware.isAuthentified, multiusersController.updateRole)
+router.post('/roles', authMiddleware.isAuthentified, multiusersController.createRole)
+router.get('/roles/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserManagmentAllowed, multiusersController.getRoleById)
 router.get('/roles', authMiddleware.isAuthentified, authMiddleware.isMultiserManagmentAllowed, multiusersController.getMultiusersRoles)
 router.get('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserManagmentAllowed, multiusersController.getMultiuserById)
 router.get('/', authMiddleware.isAuthentified, authMiddleware.isMultiserManagmentAllowed, multiusersController.getMultiusersByUser)

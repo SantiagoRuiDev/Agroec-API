@@ -138,11 +138,104 @@ export const getLicitationById = async (licitation_id) => {
   }
 };
 
+
+export const getFullLicitationById = async (licitation_id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pl.*, pf.razon_social, u.provincia, u.canton FROM producto_licitar pl
+      INNER JOIN usuarios u ON u.id = pl.id_usuario
+      INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
+      WHERE pl.id = ?`,
+      [licitation_id]
+    );
+    const [quality_params] = await db.query(
+      `SELECT * FROM parametros_calidad pc INNER JOIN licitacion_contiene_calidad lcc ON lcc.id_parametros = pc.id WHERE lcc.id_licitacion = ?`,
+      [licitation_id]
+    );
+    const [proposals] = await db.query(
+      `SELECT * FROM propuesta_venta pv WHERE pv.id_licitacion = ?`,
+      [licitation_id]
+    );
+
+
+    return {
+      ...statement[0],
+      quality_params,
+      proposals
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getAllLicitationsNotExpired = async () => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
       `SELECT * FROM producto_licitar WHERE estado != "Caducada" AND NOT (estado = "Cerrada" OR estado = "Eliminada" OR estado = "Cumplida")
+      ORDER BY fecha_publicacion DESC`
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+export const getLicitationsByProductWithLocationData = async (product_id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pl.*, pf.razon_social, u.provincia, u.canton, u.ubicacion_longitud, u.ubicacion_latitud, COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion,
+      (
+        SELECT pamc.nombre
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS nombre_parametro_calidad,
+      (
+        SELECT pamc.min_calidad
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS min_parametro_calidad,
+      (
+        SELECT pamc.max_calidad
+        FROM licitacion_contiene_calidad lcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = lcc.id_parametros
+        WHERE lcc.id_licitacion = pl.id
+        LIMIT 1
+      ) AS max_parametro_calidad
+      FROM producto_licitar pl
+      INNER JOIN usuarios u ON u.id = pl.id_usuario
+      INNER JOIN perfil_comprador pf ON pf.id_usuario = pl.id_usuario
+      LEFT JOIN calificacion c ON c.id_calificado = pl.id_usuario
+      WHERE pl.id_producto = ? AND NOT (pl.estado = "Cerrada" OR pl.estado = "Eliminada" OR pl.estado = "Cumplida")
+      GROUP BY pl.id
+      ORDER BY pl.fecha_publicacion DESC`,
+      [product_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+export const getAllLicitationsNotFiltered = async () => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pl.*, p.imagen FROM producto_licitar pl INNER JOIN productos p ON p.id = pl.id_producto
       ORDER BY fecha_publicacion DESC`
     );
 

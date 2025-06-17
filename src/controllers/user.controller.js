@@ -46,11 +46,13 @@ export const getAnalytics = async (req, res) => {
     const users = await userModel.getByStatus();
     const suscriptions = await suscriptionModel.getPendingSuscriptions();
     const warranties = await warrantyModel.getPendingWarranties();
-    const fees = await walletModel.getPaidTodayFees(todayString);
-    const recharges = await walletModel.getPaidTodayRecharges(todayString);
+    const suscriptions_earnings = await suscriptionModel.getPaidTodaySuscriptions(todayString);
+    const fees_earnings = await walletModel.getPaidTodayFees(todayString);
+    const recharges_earnings = await walletModel.getPaidTodayRecharges(todayString);
+    const warranties_earnings = await warrantyModel.getPaidTodayWarranties(todayString);
     return res
       .status(200)
-      .json({ users, suscriptions, warranties, fees, recharges });
+      .json({ users, suscriptions, warranties, fees_earnings, recharges_earnings, suscriptions_earnings, warranties_earnings });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

@@ -2,6 +2,8 @@ import * as licitationModel from "../models/licitations.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import * as notificationService from "../services/notification.service.js";
+import { calculateDistance } from "../libs/calc.js";
+import * as authModel from "../models/auth.model.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createLicitation = async (req, res) => {
@@ -140,6 +142,43 @@ export const getLicitationsByUserAndProduct = async (req, res) => {
 
 export const getAllLicitations = async (req, res) => {
   try {
+    const { filter, product, radius, prov } = req.query;
+
+    if (radius) {
+      const request_user = await authModel.getAccountById(req.user_id);
+      const rawLicitations = await licitationModel.getLicitationsByProductWithLocationData(product);
+
+      let filteredLicitations = await rawLicitations.filter((licitation) => {
+        const dist = calculateDistance(
+          request_user.ubicacion_latitud,
+          request_user.ubicacion_longitud,
+          licitation.ubicacion_latitud,
+          licitation.ubicacion_longitud
+        )
+        return dist <= radius
+      });
+
+      if(prov){
+        filteredLicitations = filteredLicitations.filter(licitation => licitation.provincia == prov)
+      }
+
+      res.status(200).json(filteredLicitations);
+      return;
+    }
+
+    if(product){
+      const licitations = await licitationModel.getAllLicitationsByProduct(product);
+      res.status(200).json(licitations);
+      return;
+    }
+
+
+    if(filter){
+      const licitations = await licitationModel.getAllLicitationsNotFiltered();
+      res.status(200).json(licitations);
+      return;
+    }
+
     const licitations = await licitationModel.getAllLicitations();
 
     if (licitations) {
@@ -154,6 +193,13 @@ export const getAllLicitations = async (req, res) => {
 
 export const getLicitationById = async (req, res) => {
   try {
+    const {proposals} = req.query;
+    if(proposals){
+      const licitation = await licitationModel.getFullLicitationById(req.params.id);
+      res.status(200).json(licitation);
+      return 
+    }
+
     const licitation = await licitationModel.getLicitationById(req.params.id);
 
     if (licitation) {

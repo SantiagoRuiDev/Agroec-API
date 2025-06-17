@@ -10,7 +10,6 @@ export const router = Router();
 router.post('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, ruler.checkNotReceivedOrders, licitationMiddleware.createLicitation, licitationController.createLicitation)
 router.put('/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, ruler.checkNotReceivedOrders, licitationMiddleware.createLicitation, licitationController.updateLicitation)
 
-router.get('/filter/:id', authMiddleware.isAuthentified, licitationController.getAllLicitationsByProduct)
 router.get('/me', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUser)
 router.get('/me/:id', authMiddleware.isAuthentified, authMiddleware.isMultiserLicitationsAllowed, licitationController.getLicitationsByUserAndProduct)
 router.get('/', authMiddleware.isAuthentified, licitationController.getAllLicitations)

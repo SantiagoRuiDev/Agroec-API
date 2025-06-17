@@ -101,6 +101,56 @@ export const getSalesByProduct = async (product_id, user_id) => {
   }
 };
 
+
+export const getSalesByProductWithLocationData = async (product_id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen, u.ubicacion_longitud, u.ubicacion_latitud, COALESCE(pa.tipo_perfil, pac.tipo_perfil, pca.tipo_perfil, pcaq.tipo_perfil) AS tipo_perfil,
+      COALESCE(AVG(c.puntaje), 0) AS promedio_calificacion,
+      (
+        SELECT pamc.nombre
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS nombre_parametro_calidad,
+      (
+        SELECT pamc.min_calidad
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS min_parametro_calidad,
+      (
+        SELECT pamc.max_calidad
+        FROM venta_contiene_calidad vcc
+        LEFT JOIN parametros_calidad pamc ON pamc.id = vcc.id_parametros
+        WHERE vcc.id_venta = pv.id
+        LIMIT 1
+      ) AS max_parametro_calidad
+      FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto 
+      INNER JOIN usuarios u ON u.id = pv.id_usuario
+      LEFT JOIN perfil_agricultor pa ON pa.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_asociacion_agricola pac ON pac.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_comerciante pca ON pca.id_usuario = pv.id_usuario
+      LEFT JOIN perfil_comerciante_agroquimicos pcaq ON pcaq.id_usuario = pv.id_usuario
+      LEFT JOIN calificacion c ON c.id_calificado = pv.id_usuario
+      WHERE pv.id_producto = ? AND pv.estado NOT IN ("Cerrada", "Eliminada") 
+      GROUP BY pv.id
+      ORDER BY pv.fecha_publicacion DESC`,
+      [product_id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getSalesByUser = async (user_id) => {
   const db = await pool.getConnection();
   try {
@@ -153,6 +203,45 @@ export const getSaleByIdentifier = async (identifer) => {
   }
 };
 
+
+export const getFullSaleByIdentifier = async (identifer) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pv.*, u.provincia, u.parroquia, u.canton, p.nombre, p.imagen FROM producto_vender pv 
+      INNER JOIN productos p ON p.id = pv.id_producto 
+      INNER JOIN usuarios u ON u.id = pv.id_usuario
+      LEFT JOIN venta_contiene_calidad vcc ON vcc.id_venta = pv.id
+      LEFT JOIN parametros_calidad pc ON pc.id = vcc.id_parametros
+      WHERE pv.id = ?`,
+      [identifer]
+    );
+    const [images] = await db.query(
+      `SELECT url_imagen, id FROM productos_vender_imagenes WHERE id_venta = ?`,
+      [identifer]
+    );
+    const [quality_params] = await db.query(
+      `SELECT * FROM parametros_calidad pc INNER JOIN venta_contiene_calidad vcc ON vcc.id_parametros = pc.id WHERE vcc.id_venta = ?`,
+      [identifer]
+    );
+    const [proposals] = await db.query(
+      `SELECT * FROM propuesta_compra WHERE id_venta = ?`,
+      [identifer]
+    );
+
+    return {
+      ...statement[0],
+      images,
+      quality_params,
+      proposals
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getSaleByIdentifierAndProduct = async (identifer, product) => {
   const db = await pool.getConnection();
   try {
@@ -196,6 +285,22 @@ export const getSalesById = async (sale_id) => {
     );
 
     return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+
+export const getAllSalesNotFiltered = async () => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pv.*, p.imagen FROM producto_vender pv INNER JOIN productos p ON p.id = pv.id_producto ORDER BY pv.fecha_publicacion DESC`
+    );
+
+    return statement;
   } catch (error) {
     throw new Error(error.message);
   } finally {

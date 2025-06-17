@@ -81,6 +81,23 @@ export const getPendingSuscriptions = async () => {
   }
 };
 
+
+export const getPaidTodaySuscriptions = async (date) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT COALESCE(sum(p.valor),0) AS total_diario FROM suscripcion s INNER JOIN planes p ON p.id = s.id_plan WHERE DATE(s.fecha) = ?`,
+      [date]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getAllSuscriptions = async () => {
   const db = await pool.getConnection();
   try {

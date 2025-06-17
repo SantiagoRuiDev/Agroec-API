@@ -166,7 +166,7 @@ export const getPaidTodayRecharges = async (date) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `SELECT COALESCE(sum(monto_recarga),0) AS cantidad_recargas_diarias FROM recargas WHERE DATE(fecha) = ?`,
+      `SELECT COALESCE(sum(monto_recarga),0) AS total_diario FROM recargas WHERE DATE(fecha) = ?`,
       [date]
     );
 
@@ -183,7 +183,7 @@ export const getPaidTodayFees = async (date) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `SELECT COALESCE(sum(monto_fee),0) AS cantidad_fees_diarias FROM fee WHERE DATE(fecha) = ?`,
+      `SELECT COALESCE(sum(monto_fee),0) AS total_diario FROM fee WHERE DATE(fecha) = ?`,
       [date]
     );
 

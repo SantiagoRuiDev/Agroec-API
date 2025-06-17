@@ -1,7 +1,9 @@
 import * as salesModel from "../models/sale.model.js";
 import * as profileModel from "../models/profile.model.js";
+import * as authModel from "../models/auth.model.js";
 import * as proposalModel from "../models/proposal.model.js";
 import * as profileChecker from "../libs/checker.js";
+import { calculateDistance } from "../libs/calc.js";
 import * as qualityParamsModel from "../models/qualityParams.model.js";
 import * as notificationService from "../services/notification.service.js";
 import { v4 as uuidv4 } from "uuid";
@@ -20,8 +22,9 @@ export const createSale = async (req, res) => {
     );
 
     if (insertSale > 0) {
-      const receptors = await notificationService.getBuyerNotificationsReceptors();
-      if(receptors.length > 0){
+      const receptors =
+        await notificationService.getBuyerNotificationsReceptors();
+      if (receptors.length > 0) {
         await notificationService.sendPushNotification(
           "Nueva publicación de " + product_id,
           "Revisa las ofertas del mercado",
@@ -29,7 +32,7 @@ export const createSale = async (req, res) => {
           "/sale/" + product_id + "/" + sale_id
         );
       }
-  
+
       if (req.body.quality_params) {
         for (const param of req.body.quality_params) {
           const newParamRowId = uuidv4();
@@ -119,6 +122,30 @@ export const insertImageSale = async (req, res) => {
 
 export const getSalesByProduct = async (req, res) => {
   try {
+    const { radius, prov } = req.query;
+
+    if (radius) {
+      const request_user = await authModel.getAccountById(req.user_id);
+      const rawSales = await salesModel.getSalesByProductWithLocationData(req.params.id);
+
+      let filteredSales = await rawSales.filter((sale) => {
+        const dist = calculateDistance(
+          request_user.ubicacion_latitud,
+          request_user.ubicacion_longitud,
+          sale.ubicacion_latitud,
+          sale.ubicacion_longitud
+        )
+        return dist <= radius
+      });
+
+      if(prov){
+        filteredSales = filteredSales.filter(sale => sale.provincia == prov)
+      }
+
+      res.status(200).json(filteredSales);
+      return;
+    }
+
     const productSales = await salesModel.getSalesByProduct(
       req.params.id,
       req.user_id
@@ -216,6 +243,20 @@ export const getSaleByIdentifierAndProduct = async (req, res) => {
 
 export const getAllSales = async (req, res) => {
   try {
+    const { filter, id } = req.query;
+
+    if (id) {
+      const sale = await salesModel.getFullSaleByIdentifier(id);
+      res.status(200).json(sale);
+      return;
+    }
+
+    if (filter) {
+      const sales = await salesModel.getAllSalesNotFiltered();
+      res.status(200).json(sales);
+      return;
+    }
+
     const sales = await salesModel.getAllSales();
 
     if (sales) {

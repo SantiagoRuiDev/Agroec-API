@@ -22,6 +22,28 @@ export const getWarrantyPayments = async (uuid_user) => {
   }
 };
 
+
+export const getAllWarrantyPayments = async (uuid_user) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT pg.*, o.id as id_orden, count(*) AS entregas_pagas
+      FROM entregas e 
+      INNER JOIN condiciones_compra cc ON cc.id = e.id_condicion 
+      INNER JOIN ordenes o ON o.id_entrega = e.id 
+      INNER JOIN pago_garantia pg ON pg.id_condicion = e.id_condicion 
+      GROUP BY pg.id_condicion ORDER BY pg.fecha DESC`,
+      [uuid_user]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getPendingWarranties = async () => {
   const db = await pool.getConnection();
   try {
@@ -37,6 +59,22 @@ export const getPendingWarranties = async () => {
   }
 };
 
+
+export const getPaidTodayWarranties = async (date) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT COALESCE(sum(total),0) AS total_diario FROM pago_garantia WHERE DATE(fecha) = ?`,
+      [date]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
 
 export const getWarrantyById = async (uuid) => {
   const db = await pool.getConnection();

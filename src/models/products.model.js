@@ -51,7 +51,6 @@ ORDER BY provincia, semana;
   }
 };
 
-
 export const getPriceByProductAndState = async (product) => {
   const db = await pool.getConnection();
   try {
@@ -114,14 +113,48 @@ ORDER BY p.provincia;
   }
 };
 
+export const getUnitNameAndProduct = async (id, name) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT * FROM unidades WHERE id_producto = ? AND nombre = ?`,
+      [id, name]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+export const getProductUnitsById = async (id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT * FROM unidades WHERE id_producto = ?`,
+      [id]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
 export const getProductById = async (id) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(`SELECT * FROM productos WHERE id = ?`, [
       id,
     ]);
+    const [unidades] = await db.query(
+      `SELECT * FROM unidades WHERE id_producto = ?`,
+      [id]
+    );
 
-    return statement[0];
+    return { ...statement[0], unidades };
   } catch (error) {
     throw new Error(error.message);
   } finally {
@@ -171,12 +204,59 @@ export const getProductsByPreferences = async (user_id) => {
   }
 };
 
+export const deleteUnit = async (id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(`DELETE FROM unidades WHERE id = ?`, [
+      id,
+    ]);
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+export const createUnit = async (id, id_product, name) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `INSERT INTO unidades (id, id_producto, nombre) VALUES (?, ?, ?) `,
+      [id, id_product, name]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const createProduct = async (schema) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
       `INSERT INTO productos (id, nombre, estado) VALUES (?, ?, ?) `,
       [schema.nombre, schema.nombre, schema.estado]
+    );
+
+    return statement.affectedRows;
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
+export const updateProduct = async (uuid, schema) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      "UPDATE productos SET nombre = ?, estado = ? WHERE id = ?",
+      [schema.nombre, schema.estado, uuid]
     );
 
     return statement.affectedRows;
