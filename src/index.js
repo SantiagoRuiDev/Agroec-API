@@ -46,6 +46,9 @@ const limiter = rateLimit({
 // ---
 
 const app = express();
+
+app.set('trust proxy', true);
+
 const server = createServer(app);
 export const io = new Server(server, {
   cors: {
