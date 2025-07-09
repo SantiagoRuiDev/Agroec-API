@@ -282,6 +282,32 @@ export const getOrdersByConditions = async (condition_id) => {
   }
 };
 
+
+export const getDeliveryInformationById = async (order_id) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT o.id, p.imagen, e.cantidad, e.cantidad_unidad, e.fecha_entrega, e.hora_entrega, pc.razon_social as comprador_nombre,
+		pr.nombre, pr.ubicacion_google_maps, pr.direccion, pr.ubicacion_longitud, pr.ubicacion_latitud
+	   FROM ordenes o 
+       INNER JOIN entregas e ON o.id_entrega = e.id
+       INNER JOIN condiciones_compra cc ON e.id_condicion = cc.id
+       INNER JOIN productos p ON p.id = cc.id_producto
+       INNER JOIN puntos_recepcion pr ON e.id_punto = pr.id
+       LEFT JOIN perfil_comprador pc ON pc.id_usuario = o.id_comprador
+       WHERE o.id = ?
+      `,
+      [order_id]
+    );
+
+    return statement[0];
+  } catch (error) {
+    throw new Error(error.message);
+  } finally {
+    db.release(); // Muy importante
+  }
+};
+
 export const getOrdersById = async (order_id, user_id) => {
   const db = await pool.getConnection();
   try {

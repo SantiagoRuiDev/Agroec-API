@@ -24,6 +24,20 @@ export const createPoint = async (point_id, user_id, schema) => {
   }
 };
 
+export const getPointById = async (uuid) => {
+  const db = await pool.getConnection();
+  try {
+    const [statement] = await db.query(
+      `SELECT id, nombre, direccion, ubicacion_google_maps, ubicacion_longitud, ubicacion_latitud FROM puntos_recepcion WHERE id = ?`,
+      [uuid]
+    );
+
+    return statement;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export const getPoints = async (user_id) => {
   const db = await pool.getConnection();
   try {

@@ -6,6 +6,7 @@ export const router = Router();
 
 // ORDENES ROUTES
 
+router.get('/delivery-information/:id', orderController.getDeliveryInformationById)
 router.get('/me', authMiddleware.isAuthentified, orderController.getOrdersByUser)
 router.get('/:id', authMiddleware.isAuthentified, orderController.getOrdersById)
 router.get('/pdf/:id', authMiddleware.isAuthentified, orderController.getOrderPDF)

@@ -346,6 +346,17 @@ export const createReceptionPoint = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+export const getReceptionPointById = async (req, res) => {
+  try {
+      const point = await pointsModel.getPointById(req.user_id);
+
+      return res.status(200).json(point);
+
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const getProfilePoints = async (req, res) => {
   try {
     if (profileChecker.isBuyerProfile(req.user_id)) {

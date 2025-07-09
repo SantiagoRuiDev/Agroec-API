@@ -363,7 +363,7 @@ export const updateAssociationAgriculturalProfile = async (user_id, schema) => {
         schema.capacidad_almacenamiento,
         schema.capacidad,
         schema.numero_hectareas,
-        schema.cantidad_hectareas_siembras,
+        schema.cantidad_hectareas_siembra,
         schema.acceso_internet,
         user_id,
       ]

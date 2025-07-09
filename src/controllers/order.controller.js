@@ -50,6 +50,22 @@ export const getOrdersByUser = async (req, res) => {
   }
 };
 
+export const getDeliveryInformationById = async (req, res) => {
+  try {
+    const order_id = req.params.id;
+
+    const information = await orderModel.getDeliveryInformationById(order_id);
+
+    if(information){
+      return res.status(200).json({information});
+    } else {
+      return res.status(200).json({information: null});
+    }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const getOrdersById = async (req, res) => {
   try {
     const order_id = req.params.id;
