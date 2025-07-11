@@ -7,6 +7,6 @@ export const router = Router();
 
 //Falta Middleware
 router.get('/', authMiddleware.isAuthentified, tutorialController.getAllCategories)
-router.post('/', authMiddleware.isAuthentified, tutorialController.createCategory)
-router.put('/set-image/:id', authMiddleware.isAuthentified, upload.single('image'), addFileUrl, tutorialController.setCategoryImage)
-router.delete('/:id', authMiddleware.isAuthentified, tutorialController.deleteCategory)
+router.post('/', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, tutorialController.createCategory)
+router.put('/set-image/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, upload.single('image'), addFileUrl, tutorialController.setCategoryImage)
+router.delete('/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, tutorialController.deleteCategory)

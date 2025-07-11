@@ -7,13 +7,13 @@ export const router = Router();
 router.get(
   "/",
   authMiddleware.isAuthentified,
-  authMiddleware.isMultiserWalletAllowed,
+  authMiddleware.isMultiuserWarrantiesAllowed,
   warrantyController.getWarrantyByUser
 );
 router.post(
   "/:id_condition",
   authMiddleware.isAuthentified,
-  authMiddleware.isMultiserPaymentAllowed,
+  authMiddleware.isMultiuserWarrantyPaymentAllowed,
   warrantyController.createWarranty
 );
 router.put(

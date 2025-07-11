@@ -7,8 +7,8 @@ import * as ruler from '../middlewares/ruler.middleware.js';
 export const router = Router();
 
 router.get('/:id', authMiddleware.isAuthentified, proposalController.getProposalInformation)
-router.post('/accept/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiserTalksAllowed, proposalController.acceptProposalByConditions)
-router.post('/reject/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiserTalksAllowed, proposalController.rejectProposalByConditions)
+router.post('/accept/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiuserAcceptProposalsAllowed, proposalController.acceptProposalByConditions)
+router.post('/reject/:id', authMiddleware.isAuthentified, ruler.checkAccountStatus, authMiddleware.isMultiuserAcceptProposalsAllowed, proposalController.rejectProposalByConditions)
 
 // Propuestas de Ventas a Licitaciones
 router.post('/sale/:id', authMiddleware.isAuthentified, ruler.checkPendingOrders, proposalMiddleware.createSaleProposal, proposalController.createSaleProposal)
@@ -17,7 +17,7 @@ router.get('/sale/:id', authMiddleware.isAuthentified, proposalController.getSal
 router.get('/sale/product-filter/:id', authMiddleware.isAuthentified, proposalController.getSaleProposalByUserAndProduct)
 
 // Propuestas de Compras a Ventas
-router.post('/licitation/:id', authMiddleware.isAuthentified, ruler.checkNotReceivedOrders, proposalMiddleware.createLicitationProposal, proposalController.createLicitationProposal)
+router.post('/licitation/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserSendProposalsAllowed, ruler.checkNotReceivedOrders, proposalMiddleware.createLicitationProposal, proposalController.createLicitationProposal)
 router.get('/licitation/me', authMiddleware.isAuthentified, proposalController.getLicitationProposalByUser)
 router.get('/licitation/:id', authMiddleware.isAuthentified, proposalController.getLicitationProposalById)
 router.get('/licitation/product-filter/:id', authMiddleware.isAuthentified, proposalController.getLicitationProposalByUserAndProduct)

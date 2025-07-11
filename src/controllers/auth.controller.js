@@ -1,4 +1,5 @@
 import * as authModel from "../models/auth.model.js";
+import * as multiusersModel from "../models/multiusers.model.js";
 import * as codesModel from "../models/codes.model.js";
 import * as profileModel from "../models/profile.model.js";
 import * as bankAccountModel from "../models/bankaccount.model.js";
@@ -9,7 +10,11 @@ import * as walletModel from "../models/wallet.model.js";
 import { sendMail } from "../libs/emailer.js";
 import { formatMailBuyer } from "../email/buyer.js";
 import { formatMailSeller } from "../email/seller.js";
-import { comparePassword, generateRandomPassword, hashPassword } from "../libs/password.js";
+import {
+  comparePassword,
+  generateRandomPassword,
+  hashPassword,
+} from "../libs/password.js";
 import { v4 as uuidv4 } from "uuid";
 import { encodeMultiuserToken, encodeToken } from "../libs/token.js";
 import Twilio from "twilio";
@@ -38,7 +43,10 @@ export const createAccount = async (req, res) => {
     }
 
     let insertedRow = 0;
-    if (req.body.profile.type == "Comprador" || req.body.profile.type == "Agroquimicos") {
+    if (
+      req.body.profile.type == "Comprador" ||
+      req.body.profile.type == "Agroquimicos"
+    ) {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 0);
     } else {
       insertedRow = await authModel.createAccount(uuid, req.body.user, 1);
@@ -172,7 +180,9 @@ export const createAccount = async (req, res) => {
           .catch((error) => console.error("Error:", error));*/
 
       return res.status(200).json({
-        message: "Codigo enviado a tu telefono revisalo porfavor", code: code, id: uuid
+        message: "Codigo enviado a tu telefono revisalo porfavor",
+        code: code,
+        id: uuid,
       });
     }
   } catch (error) {
@@ -207,6 +217,9 @@ export const loginAccount = async (req, res) => {
         message: "Sesion iniciada correctamente",
         token: token,
         multi_token: multi_token,
+        permissions: await multiusersModel.getMultiuserRoleByUser(
+          fetchMultiuser.id_usuario
+        ),
       });
     }
 
@@ -251,7 +264,7 @@ export const loginSellerAccount = async (req, res) => {
     if (fetchUser.estado == 0) {
       throw new Error("Tu cuenta no finalizo el registro");
     }
-    
+
     if (fetchUser.estado == 3) {
       throw new Error("Tu cuenta no ha sido aprobada por el administrador");
     }
@@ -270,7 +283,6 @@ export const loginSellerAccount = async (req, res) => {
   }
 };
 
-
 export const loginAdminAccount = async (req, res) => {
   try {
     const fetchUser = await authModel.getAccountByEmail(req.body.correo);
@@ -280,7 +292,9 @@ export const loginAdminAccount = async (req, res) => {
     }
 
     if (fetchUser.id != "Sistema") {
-      throw new Error("No puedes ingresar con una cuenta de comprador o vendedor");
+      throw new Error(
+        "No puedes ingresar con una cuenta de comprador o vendedor"
+      );
     }
 
     if (!(await comparePassword(req.body.clave, fetchUser.clave))) {
@@ -347,35 +361,44 @@ export const isAuthentified = async (req, res) => {
           multiuser_token: refreshMultiuserToken,
           type: "multiuser",
           profile: req.token.profile,
+          permissions: await multiusersModel.getMultiuserRoleByUser(
+            req.token.multiuser
+          ),
           "expire-date": expireDate,
-          "today-date": todayDate
+          "today-date": todayDate,
         });
       } else {
-        let refreshToken = null
-        if(req.token.profile == "admin"){
-          refreshToken = encodeToken(
-            req.token.user,
-            req.token.profile,
-            "1d"
-          );
+        let refreshToken = null;
+
+        if (req.token.profile == "admin") {
+          refreshToken = encodeToken(req.token.user, req.token.profile, "1d");
         } else {
-          refreshToken = encodeToken(
-            req.token.user,
-            req.token.profile,
-            "360d"
-          );
+          refreshToken = encodeToken(req.token.user, req.token.profile, "360d");
         }
-        return res
-          .status(200)
-          .json({
-            loggedIn: true,
-            token: refreshToken,
-            type: "user",
-            profile: req.token.profile,
-            "expire-date": expireDate,
-            "today-date": todayDate
-          });
+        return res.status(200).json({
+          loggedIn: true,
+          token: refreshToken,
+          type: "user",
+          profile: req.token.profile,
+          "expire-date": expireDate,
+          "today-date": todayDate,
+        });
       }
+    }
+
+    if (req.token.multiuser) {
+      return res.status(200).json({
+        loggedIn: true,
+        token: null,
+        multiuser_token: null,
+        type: "multiuser",
+        profile: req.token.profile,
+        permissions: await multiusersModel.getMultiuserRoleByUser(
+          req.token.multiuser
+        ),
+        "expire-date": expireDate,
+        "today-date": todayDate,
+      });
     }
 
     // Si aún le queda más de 60 días al token, no lo renovamos
@@ -385,7 +408,7 @@ export const isAuthentified = async (req, res) => {
       type: "none",
       profile: req.token.profile,
       "expire-date": expireDate,
-      "today-date": todayDate
+      "today-date": todayDate,
     });
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -395,17 +418,20 @@ export const isAuthentified = async (req, res) => {
 export const logoutAccount = async (req, res) => {
   try {
     const notification_id = req.body.notification_id;
-    
-    if(notification_id != null || notification_id != undefined){
-      const result = await notificationService.deleteNotificationReceptor(req.user_id, notification_id);
-  
-      if(result){
+
+    if (notification_id != null || notification_id != undefined) {
+      const result = await notificationService.deleteNotificationReceptor(
+        req.user_id,
+        notification_id
+      );
+
+      if (result) {
         return res.status(200).json({ message: "Logout successful" });
-      }else {
-        throw new Error("Error while triying to logout")
+      } else {
+        throw new Error("Error while triying to logout");
       }
     }
-    
+
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -436,31 +462,33 @@ export const updateAccount = async (req, res) => {
   }
 };
 
-
 export const resetPassword = async (req, res) => {
   try {
     const email = req.body.correo;
 
-    if(email == null || email == undefined || String(email).trim() == ""){
+    if (email == null || email == undefined || String(email).trim() == "") {
       throw new Error("Porfavor ingresa un correo electronico valido");
     }
 
     const userData = await authModel.getAccountByEmail(email);
 
-    if(!userData){
+    if (!userData) {
       throw new Error("No encontramos una cuenta con este correo");
     }
 
     const plainPassword = generateRandomPassword();
     const randomGeneratedPassword = await hashPassword(plainPassword);
-    
+
     await sendMail(
       "Agroec - Cambio de contraseña ✔",
-      formatPasswordMail({correo: email, clave: plainPassword}),
+      formatPasswordMail({ correo: email, clave: plainPassword }),
       email
     );
 
-    const updateRow = await authModel.updateAccountPassword(userData.id, randomGeneratedPassword);
+    const updateRow = await authModel.updateAccountPassword(
+      userData.id,
+      randomGeneratedPassword
+    );
     if (updateRow > 0) {
       return res
         .status(200)

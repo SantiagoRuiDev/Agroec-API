@@ -13,8 +13,8 @@ router.get('/pdf/:id', authMiddleware.isAuthentified, orderController.getOrderPD
 router.get('/me/unpaid', authMiddleware.isAuthentified, orderController.getUnpaidOrders)
 router.get('/me/undelivered', authMiddleware.isAuthentified, orderController.getUndeliveredOrders)
 router.get('/', authMiddleware.isAuthentified, orderController.getAllOrders)
-router.put('/set-date-delivery/:id', authMiddleware.isAuthentified, orderController.setOrderDeliveryDate);
-router.put('/set-received/:id', authMiddleware.isAuthentified, orderController.setOrderReceivedStatus);
-router.put('/set-rejected/:id', authMiddleware.isAuthentified, orderController.setOrderRejectedStatus);
-router.put('/set-shipping/:id', authMiddleware.isAuthentified, orderController.setOrderShippedStatus);
-router.put('/set-delivered/:id', authMiddleware.isAuthentified, orderController.setOrderDeliveredStatus);
+router.put('/set-date-delivery/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserOrderStatusAllowed, orderController.setOrderDeliveryDate);
+router.put('/set-received/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserOrderStatusAllowed, orderController.setOrderReceivedStatus);
+router.put('/set-rejected/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserOrderStatusAllowed, orderController.setOrderRejectedStatus);
+router.put('/set-shipping/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserOrderStatusAllowed, orderController.setOrderShippedStatus);
+router.put('/set-delivered/:id', authMiddleware.isAuthentified, authMiddleware.isMultiuserOrderStatusAllowed, orderController.setOrderDeliveredStatus);

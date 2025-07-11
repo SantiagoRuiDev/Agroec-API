@@ -5,6 +5,6 @@ import * as authMiddleware from '../middlewares/auth.middleware.js'
 export const router = Router();
 
 router.get('/', authMiddleware.isAuthentified, paymentsController.getPaymentsByLoggedUser);
-router.get('/:id', authMiddleware.isAuthentified, paymentsController.getPaymentsByUser);
-router.delete('/:id', authMiddleware.isAuthentified, paymentsController.deletePaymentById);
-router.post('/:id', authMiddleware.isPreAuthentified, paymentsController.createPaymentByUser);
+router.get('/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, paymentsController.getPaymentsByUser);
+router.delete('/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, paymentsController.deletePaymentById);
+router.post('/:id', authMiddleware.isPreAuthentified, authMiddleware.isAdminAccount, paymentsController.createPaymentByUser);

@@ -105,6 +105,6 @@ app.use("/public/images/icons", express.static("public/images/icons"));
 app.use("/public/images/sales", express.static("public/images/sales"));
 app.use("/public/sheets", express.static("public/sheets"));
 
-server.listen(APP_SETTINGS.port, async () => {
+server.listen(Number(APP_SETTINGS.port), '0.0.0.0', async () => {
   console.log("API RUNNING ON PORT: " + APP_SETTINGS.port);
 });

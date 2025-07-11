@@ -206,19 +206,19 @@ export const isPreAuthentified = async (req, res, next) => {
   }
 };
 
-export const isMultiserDashboardAllowed = async (req, res, next) => {
+export const isMultiuserProfileAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if (req.permissions.permiso_dashboard > 0) {
+    if (req.permissions.modulo_perfil > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para acceder al perfil");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -226,19 +226,20 @@ export const isMultiserDashboardAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserTalksAllowed = async (req, res, next) => {
+
+export const isMultiuserDashboardAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if (req.permissions.permiso_negociaciones > 0) {
+    if (req.permissions.modulo_gestion > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para acceder a la dashboard");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -246,7 +247,47 @@ export const isMultiserTalksAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserLicitationsAllowed = async (req, res, next) => {
+export const isMultiuserAcceptProposalsAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.permiso_aceptar_propuesta > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No puedes aceptar una propuesta");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserSendProposalsAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.permiso_enviar_propuesta > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No puedes enviar una propuesta");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserLicitationsAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
@@ -258,7 +299,7 @@ export const isMultiserLicitationsAllowed = async (req, res, next) => {
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para gestionar las licitaciones");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -266,19 +307,19 @@ export const isMultiserLicitationsAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserAcceptOrdersAllowed = async (req, res, next) => {
+export const isMultiuserOrderStatusAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if (req.permissions.permiso_aceptar_pedido > 0) {
+    if (req.permissions.permiso_estados_finales > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para gestionar estados");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -286,19 +327,19 @@ export const isMultiserAcceptOrdersAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserReceiveOrdersAllowed = async (req, res, next) => {
+export const isMultiuserWarrantyPaymentAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if (req.permissions.permiso_recibir_pedido > 0) {
+    if (req.permissions.permiso_pagar_garantia > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para realizar pagos");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -306,27 +347,7 @@ export const isMultiserReceiveOrdersAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserRejectOrdersAllowed = async (req, res, next) => {
-  try {
-    if (req.permissions == undefined || req.permissions == null) {
-      next();
-      return;
-    }
-
-    if (req.permissions.permiso_rechazar_pedido > 0) {
-      next();
-      return;
-    }
-
-    throw new Error("No tienes permiso para realizar esta acción");
-  } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
-    }
-  }
-};
-
-export const isMultiserPaymentAllowed = async (req, res, next) => {
+export const isMultiuserPaymentAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
@@ -338,7 +359,7 @@ export const isMultiserPaymentAllowed = async (req, res, next) => {
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para realizar pagos");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -346,19 +367,19 @@ export const isMultiserPaymentAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserWalletAllowed = async (req, res, next) => {
+export const isMultiuserInputsAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
       next();
       return;
     }
 
-    if (req.permissions.permiso_billetera > 0) {
+    if (req.permissions.modulo_insumos > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para acceder al modulo insumos");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });
@@ -366,7 +387,87 @@ export const isMultiserWalletAllowed = async (req, res, next) => {
   }
 };
 
-export const isMultiserManagmentAllowed = async (req, res, next) => {
+export const isMultiuserNotificationsAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.modulo_notificaciones > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para acceder al modulo notificaciones");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserInterestProducts = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.permiso_productos_interes > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para modificar los productos de interes");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserWalletAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.modulo_billetera > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para acceder al modulo billetera");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserWarrantiesAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.modulo_garantias > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para acceder al modulo garantias");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+export const isMultiuserManagmentAllowed = async (req, res, next) => {
   try {
     if (req.user_id == "Sistema") {
       next();
@@ -378,12 +479,28 @@ export const isMultiserManagmentAllowed = async (req, res, next) => {
       return;
     }
 
-    if (req.permissions.permiso_usuarios > 0) {
+    if (req.permissions.modulo_multiusuarios > 0) {
       next();
       return;
     }
 
-    throw new Error("No tienes permiso para realizar esta acción");
+    throw new Error("No tienes permiso para acceder al modulo multiusuarios");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
+export const isAdminAccount = async (req, res, next) => {
+  try {
+    if (req.user_id == "Sistema") {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permisos para realizar esta acción");
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ error: error.message });

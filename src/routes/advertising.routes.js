@@ -11,7 +11,7 @@ export const router = Router();
 // El ultimo campo se completa mediante un put a esa publicidad.
 
 // Ruta [POST]: / (Enviar nombre y url); (La imagen estara nula al crear publicidad.)
-router.post('/', authMiddleware.isAuthentified, advertisingController.createAdvertising);
+router.post('/', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, advertisingController.createAdvertising);
 
 // Ruta [GET]: / Listar todos los anuncios;
 router.get('/', authMiddleware.isAuthentified, advertisingController.getAllAdvertising);
@@ -21,8 +21,8 @@ router.get('/', authMiddleware.isAuthentified, advertisingController.getAllAdver
 //  para pasarselo al modelo y actualizar la imagen.
 // Para probar enviar solicitud de tipo form-data con campo de file llamado image y una imagen de prueba.
 
-router.put('/set-image/:id', authMiddleware.isAuthentified, upload.single('image'), addFileUrl, advertisingController.updateImageById);
+router.put('/set-image/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, upload.single('image'), addFileUrl, advertisingController.updateImageById);
 
-router.delete('/:id', authMiddleware.isAuthentified, advertisingController.deleteAdvertisingById);
+router.delete('/:id', authMiddleware.isAuthentified, authMiddleware.isAdminAccount, advertisingController.deleteAdvertisingById);
 
 //Agregarla a Index al final.

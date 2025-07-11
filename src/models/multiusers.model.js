@@ -51,7 +51,7 @@ export const getMultiuserRoleByUser = async (uuid) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `SELECT * FROM roles r INNER JOIN multiusuarios m ON m.id_rol = r.id WHERE m.id = ?`,
+      `SELECT r.*, m.nombre, m.correo FROM roles r INNER JOIN multiusuarios m ON m.id_rol = r.id WHERE m.id = ?`,
       [uuid]
     );
 
@@ -128,17 +128,51 @@ export const updateRole = async (uuid, schema) => {
   const db = await pool.getConnection();
   try {
     const [statement] = await db.query(
-      `UPDATE roles SET permiso_dashboard = ?, permiso_negociaciones = ?, permiso_licitaciones = ?, permiso_aceptar_pedido = ?, permiso_recibir_pedido = ?, permiso_rechazar_pedido = ?, permiso_pagar = ?, permiso_billetera = ?, permiso_usuarios = ? WHERE id = ?`,
-      [schema.permiso_dashboard, schema.permiso_negociaciones, schema.permiso_licitaciones, schema.permiso_aceptar_pedido, schema.permiso_recibir_pedido, schema.permiso_rechazar_pedido, schema.permiso_pagar, schema.permiso_billetera, schema.permiso_usuarios, uuid]
+      `UPDATE roles SET 
+        modulo_billetera = ?, 
+        modulo_gestion = ?, 
+        modulo_multiusuarios = ?, 
+        modulo_perfil = ?, 
+        modulo_home = ?, 
+        modulo_notificaciones = ?, 
+        modulo_insumos = ?, 
+        modulo_garantias = ?, 
+        permiso_licitaciones = ?, 
+        permiso_pagar_garantia = ?, 
+        permiso_pagar = ?, 
+        permiso_productos_interes = ?, 
+        permiso_aceptar_propuesta = ?, 
+        permiso_enviar_propuesta = ?, 
+        permiso_estados_finales = ?
+      WHERE id = ?`,
+      [
+        schema.modulo_billetera,
+        schema.modulo_gestion,
+        schema.modulo_multiusuarios,
+        schema.modulo_perfil,
+        schema.modulo_home,
+        schema.modulo_notificaciones,
+        schema.modulo_insumos,
+        schema.modulo_garantias,
+        schema.permiso_licitaciones,
+        schema.permiso_pagar_garantia,
+        schema.permiso_pagar,
+        schema.permiso_productos_interes,
+        schema.permiso_aceptar_propuesta,
+        schema.permiso_enviar_propuesta,
+        schema.permiso_estados_finales,
+        uuid
+      ]
     );
 
     return statement.affectedRows;
   } catch (error) {
     throw new Error(error.message);
   } finally {
-    db.release(); // Muy importante
+    db.release();
   }
 };
+
 
 export const createMultiuser = async (uuid, uuid_user, schema) => {
   const db = await pool.getConnection();
