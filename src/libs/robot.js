@@ -7,14 +7,17 @@ export const checkForExpiredLicitations = async () => {
     const today = new Date();
 
     for (const lic of licitations) {
-      // Crear objeto de fecha de vencimiento desde el campo "vencimiento"
-      const vencimientoDate = new Date(lic.valida_hasta);
-      console.log(`Fecha de vencimiento: ${vencimientoDate}`);
-      console.log(`Fecha actual: ${today}`);
-      // Comparar si la fecha de vencimiento es menor que la fecha de hoy
-      if (vencimientoDate < today) {
-        console.log(`Cerrando licitación caducada: ${lic.id}`);
-        await licitationsModel.expireLicitationById(lic.id);
+      try {
+        const vencimientoDate = new Date(lic.valida_hasta);
+        console.log(`Fecha de vencimiento: ${vencimientoDate}`);
+        console.log(`Fecha actual: ${today}`);
+
+        if (vencimientoDate < today) {
+          console.log(`Cerrando licitación caducada: ${lic.id}`);
+          await licitationsModel.expireLicitationById(lic.id);
+        }
+      } catch (err) {
+        console.error(`Error al procesar licitación ${lic.id}:`, err);
       }
     }
   } catch (error) {
