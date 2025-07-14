@@ -415,6 +415,21 @@ export const isAuthentified = async (req, res) => {
   }
 };
 
+export const getPermissions = async (req, res) => {
+  try {
+    if (req.token.multiuser) {
+      res.status(200).json({
+        permissions: await multiusersModel.getMultiuserRoleByUser(
+          req.token.multiuser
+        ),
+      });
+      return;
+    }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 export const logoutAccount = async (req, res) => {
   try {
     const notification_id = req.body.notification_id;

@@ -5,6 +5,11 @@ import fs from "fs";
 import XLSX from "xlsx";
 import { inputMultipleSchemaArray } from "../schemas/input.schema.js";
 import { validateSchemas } from "../libs/schema.js";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 240 }); // 4 minutos por defecto
+const key_inputs = "inputs_";
+const key_categories = "categories";
 
 export const createMultipleInput = async (req, res) => {
   try {
@@ -255,6 +260,11 @@ export const getInputByCreatorId = async (req, res) => {
 
 export const getInputCategories = async (req, res) => {
   try {
+    const cached = cache.get(key_categories);
+    if (cached) {
+      res.status(200).json(cached);
+      return;
+    }
     const categories = await inputModel.getInputCategories();
 
     if (!categories) {
@@ -263,6 +273,7 @@ export const getInputCategories = async (req, res) => {
         .send({ message: "Error al obtener las categorias" });
     }
 
+    cache.set(key_categories, categories)
     return res.status(200).send(categories);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -271,6 +282,11 @@ export const getInputCategories = async (req, res) => {
 
 export const getAllInputs = async (req, res) => {
   try {
+    const cached = cache.get(key_inputs + req.params.category);
+    if (cached) {
+      res.status(200).json(cached);
+      return;
+    }
     const getAllInputs = await inputModel.getAllInputsByCategory(
       req.params.category
     );
@@ -279,6 +295,7 @@ export const getAllInputs = async (req, res) => {
       return res.status(404).send({ message: "Error al obtener los insumos" });
     }
 
+    cache.set(key_inputs + req.params.category, getAllInputs);
     return res.status(200).send(getAllInputs);
   } catch (error) {
     return res.status(400).json({ error: error.message });

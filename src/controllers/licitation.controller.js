@@ -4,7 +4,11 @@ import * as qualityParamsModel from "../models/qualityParams.model.js";
 import * as notificationService from "../services/notification.service.js";
 import { calculateDistance } from "../libs/calc.js";
 import * as authModel from "../models/auth.model.js";
+import NodeCache from "node-cache";
 import { v4 as uuidv4 } from "uuid";
+
+const cache = new NodeCache({ stdTTL: 120 }); // 5 minutos por defecto
+const key = "licitations_";
 
 export const createLicitation = async (req, res) => {
   try {
@@ -167,7 +171,13 @@ export const getAllLicitations = async (req, res) => {
     }
 
     if(product){
+      const cached = cache.get(key + product);
+      if (cached) {
+        res.status(200).json(cached);
+        return;
+      }
       const licitations = await licitationModel.getAllLicitationsByProduct(product);
+      cache.set(key + product, licitations);
       res.status(200).json(licitations);
       return;
     }
