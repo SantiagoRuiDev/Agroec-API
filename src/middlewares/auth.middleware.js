@@ -447,6 +447,26 @@ export const isMultiuserWalletAllowed = async (req, res, next) => {
   }
 };
 
+export const isMultiuserOrdersAllowed = async (req, res, next) => {
+  try {
+    if (req.permissions == undefined || req.permissions == null) {
+      next();
+      return;
+    }
+
+    if (req.permissions.modulo_ordenes > 0) {
+      next();
+      return;
+    }
+
+    throw new Error("No tienes permiso para acceder al modulo ordenes");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+};
+
 export const isMultiuserWarrantiesAllowed = async (req, res, next) => {
   try {
     if (req.permissions == undefined || req.permissions == null) {
